@@ -7,6 +7,7 @@ import Contact from "./pages/Contact";
 import AddCart from "./components/AddCart";
 import Checkout from "./components/Checkout";
 import SignIn from "./components/SignIn";
+import Distributor from "./components/Distributor";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/addcart" element={<AddCart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/distributor" element={<Distributor />} />
         
       </Routes>
     </BrowserRouter>

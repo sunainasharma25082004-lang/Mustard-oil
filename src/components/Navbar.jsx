@@ -6,12 +6,19 @@ function Navbar() {
     <nav className="navbar navbar-expand-lg custom-navbar fixed-top">
       <div className="container">
 
-        {/* Logo */}
+        {/* Logo Image */}
+        <img
+          src="/logo.jpeg"
+          alt="Karyor Logo"
+          className="navbar-logo"
+        />
+
+        {/* Text Logo */}
         <Link className="navbar-brand brand-logo" to="/">
           <span>KAR</span>YOR
         </Link>
 
-        {/* Premium Hamburger */}
+        {/* Hamburger */}
         <button
           className="navbar-toggler custom-toggler"
           type="button"
@@ -47,15 +54,16 @@ function Navbar() {
               </Link>
             </li>
 
-            <li className="nav-item">
-              <Link className="nav-link custom-link" to="/contact">
-                Contact
+             <li className="nav-item">
+              <Link className="nav-link custom-link" to="/distributor">
+                Distributor
               </Link>
             </li>
 
-            <li className="nav-item ms-lg-3 mt-3 mt-lg-0">
-              <Link className="btn contact-btn" to="/signin ">
-                Sign In
+
+            <li className="nav-item">
+              <Link className="nav-link custom-link" to="/contact">
+                Contact
               </Link>
             </li>
 

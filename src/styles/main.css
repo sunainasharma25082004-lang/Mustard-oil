@@ -1485,3 +1485,90 @@ width:100%;
   }
 
 }
+
+
+/* =========================
+   PREMIUM NAVBAR
+========================= */
+
+.custom-navbar{
+  background:#0f0f0f;
+  padding:12px 0;
+  border-bottom:1px solid rgba(212,175,55,.2);
+}
+
+/* LOGO IMAGE */
+.navbar-logo{
+  width:55px;
+  height:55px;
+  object-fit:cover;
+  border-radius:50%;
+  border:2px solid #d4af37;
+  margin-right:12px;
+  flex-shrink:0;
+}
+
+/* TEXT LOGO */
+.brand-logo{
+  color:#fff !important;
+  font-size:1.8rem;
+  font-weight:700;
+  text-decoration:none;
+  margin-right:auto;
+}
+
+.brand-logo span{
+  color:#d4af37;
+}
+
+/* NAV LINKS */
+.custom-link{
+  color:#fff !important;
+  margin-left:20px;
+  font-weight:500;
+  transition:.3s;
+}
+
+.custom-link:hover{
+  color:#d4af37 !important;
+}
+
+/* HAMBURGER */
+.custom-toggler{
+  border:none;
+  box-shadow:none !important;
+  padding:0;
+}
+
+.custom-toggler span{
+  display:block;
+  width:28px;
+  height:3px;
+  background:#d4af37;
+  margin:5px 0;
+  border-radius:10px;
+}
+
+/* MOBILE */
+@media(max-width:991px){
+
+  .navbar-logo{
+    width:45px;
+    height:45px;
+  }
+
+  .brand-logo{
+    font-size:1.4rem;
+  }
+
+  .navbar-collapse{
+    background:#111;
+    margin-top:15px;
+    padding:15px;
+    border-radius:12px;
+  }
+
+  .custom-link{
+    margin:10px 0;
+  }
+}

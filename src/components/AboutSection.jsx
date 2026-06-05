@@ -6,6 +6,46 @@ function About() {
     <>
       <Navbar />
 
+
+       <section className="about-features">
+        <div className="container">
+
+          <div className="section-title">
+            <span>WHY CHOOSE US</span>
+            <h2>Premium Quality In Every Drop</h2>
+          </div>
+
+          <div className="features-grid">
+
+            <div className="feature-card">
+              <div className="icon">🌱</div>
+              <h3>100% Natural</h3>
+              <p>No chemicals, no preservatives.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="icon">🛡️</div>
+              <h3>Pure & Safe</h3>
+              <p>Produced with strict quality standards.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="icon">💛</div>
+              <h3>Rich Aroma</h3>
+              <p>Authentic mustard flavor you can trust.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="icon">🏆</div>
+              <h3>Premium Quality</h3>
+              <p>Crafted using traditional cold press methods.</p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
       <section className="about-hero">
         <div className="container about-hero-content">
 
@@ -24,9 +64,9 @@ function About() {
               nutrients, rich aroma, and authentic taste.
             </p>
 
-            <button className="about-btn">
+            {/* <button className="about-btn">
               Explore Products
-            </button>
+            </button> */}
           </div>
 
           <div className="about-right">
@@ -81,44 +121,7 @@ function About() {
 </div>
       </section>
 
-      <section className="about-features">
-        <div className="container">
-
-          <div className="section-title">
-            <span>WHY CHOOSE US</span>
-            <h2>Premium Quality In Every Drop</h2>
-          </div>
-
-          <div className="features-grid">
-
-            <div className="feature-card">
-              <div className="icon">🌱</div>
-              <h3>100% Natural</h3>
-              <p>No chemicals, no preservatives.</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="icon">🛡️</div>
-              <h3>Pure & Safe</h3>
-              <p>Produced with strict quality standards.</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="icon">💛</div>
-              <h3>Rich Aroma</h3>
-              <p>Authentic mustard flavor you can trust.</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="icon">🏆</div>
-              <h3>Premium Quality</h3>
-              <p>Crafted using traditional cold press methods.</p>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
+     
     </>
   );
 }
