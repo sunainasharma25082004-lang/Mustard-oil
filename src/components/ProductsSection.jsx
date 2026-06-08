@@ -1,111 +1,74 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import "../styles/main.css";
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import '../styles/main.css';
+import { productApi } from '../utils/api';
+import { resolveImageUrl } from '../utils/imageUrl';
 
-function ProductsSection() {
-const products = [
-  {
-    id: 1,
-    title: "500 ML",
-    description: "Pure Kachi Ghani Mustard Oil",
-    image: "/bottle.png",
-    tag: "Best Seller",
-  },
-  {
-    id: 2,
-    title: "1 Litre",
-    description: "Rich Aroma & Natural Purity",
-    image: "/bottle.png",
-    tag: "Popular",
-  },
-  {
-    id: 3,
-    title: "2 Litre",
-    description: "Traditional Cold Pressed Process",
-    image: "/bottle51.png",
-    tag: "Family Pack",
-  },
-  {
-    id: 4,
-    title: "5 Litre",
-    description: "Premium Economy Pack",
-    image: "/product2.png",
-    tag: "Premium",
-  },
+const FALLBACK_PRODUCTS = [
+  { slug: '500ml-mustard-oil', size: '500 ML', description: 'Pure Kachi Ghani Mustard Oil', image: '/product-500ml.jpg', badge: 'Best Seller' },
+  { slug: '1-litre-mustard-oil', size: '1 Litre', description: 'Rich Aroma & Natural Purity', image: '/product-1l.jpg', badge: 'Popular' },
+  { slug: '2-litre-mustard-oil', size: '2 Litre', description: 'Traditional Cold Pressed Process', image: '/product-2l.jpg', badge: 'Family Pack' },
+  { slug: '5-litre-mustard-oil', size: '5 Litre', description: 'Premium Economy Pack', image: '/product-5l.jpg', badge: 'Premium' },
 ];
 
-return (
-<> 
+function ProductsSection() {
+  const [products, setProducts] = useState(FALLBACK_PRODUCTS);
 
+  useEffect(() => {
+    productApi
+      .getAll()
+      .then((res) => {
+        if (res.data?.length) setProducts(res.data);
+      })
+      .catch(() => {});
+  }, []);
 
-  <section className="premium-products">
+  return (
+    <section className="premium-products">
+      <div className="container">
+        <div className="premium-heading">
+          <span>OUR COLLECTION</span>
+          <h2>Premium Mustard Oil Products</h2>
+          <p>
+            Crafted from carefully selected mustard seeds,
+            delivering purity, aroma and authentic taste.
+          </p>
+        </div>
 
-    <div className="container">
+        <div className="row g-4 align-items-stretch">
+          {products.map((product) => (
+            <div className="col-lg-3 col-md-6" key={product._id || product.slug}>
+              <Link
+                to={`/products/${product.slug || product._id}`}
+                className="premium-card premium-card-link"
+                aria-label={`View ${product.size || product.name}`}
+              >
+                <div className="premium-card-bg" />
 
-      <div className="premium-heading">
-        <span>OUR COLLECTION</span>
+                <div className="premium-tag">{product.badge || product.tag}</div>
 
-        <h2>
-          Premium Mustard Oil Products
-        </h2>
+                <div className="product-image">
+                  <div className="product-image-inner">
+                    <img src={resolveImageUrl(product.image)} alt={product.size || product.name} className="product-showcase-img" />
+                  </div>
+                </div>
 
-        <p>
-          Crafted from carefully selected mustard seeds,
-          delivering purity, aroma and authentic taste.
-        </p>
-      </div>
+                <div className="product-content">
+                  <h4>{product.size || product.name || product.title}</h4>
+                  <p>{product.description}</p>
+                  {product.price && (
+                    <p className="premium-card-price">₹{product.price}</p>
+                  )}
 
-      <div className="row g-4 align-items-stretch">
-
-        {products.map((product) => (
-          <div
-            className="col-lg-3 col-md-6"
-            key={product.id}
-          >
-            <div className="premium-card">
-
-              <div className="premium-card-bg"></div>
-
-              <div className="premium-tag">
-                {product.tag}
-              </div>
-
-              <div className="product-image">
-                <img
-                  src={product.image}
-                  alt={product.title}
-                />
-              </div>
-
-              <div className="product-content">
-
-                <h4>{product.title}</h4>
-
-                <p>
-                  {product.description}
-                </p>
-
-                <Link
-                  to="/products"
-                  className="premium-btn"
-                >
-                  View Product
-                </Link>
-
-              </div>
-
+                  <span className="premium-btn">View Product</span>
+                </div>
+              </Link>
             </div>
-          </div>
-        ))}
-
+          ))}
+        </div>
       </div>
-
-    </div>
-
-  </section>
-</>
-
-);
+    </section>
+  );
 }
 
 export default ProductsSection;

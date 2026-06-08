@@ -1,16 +1,19 @@
-import React from 'react';
 import '../styles/main.css';
-
 
 function Hero() {
   return (
     <section className="karyorHeroSection">
       <div className="karyorHeroContainer">
-        <img
-          src="/banner-img.png"
-          alt="Karyor Banner"
-          className="karyorHeroBanner"
-        />
+        <picture>
+          <source media="(max-width: 768px)" srcSet="/banner-mobile.jpg" />
+          <img
+            src="/banner-img.png"
+            alt="Karyor Black Mustard Oil — Every Drop Carries Tradition"
+            className="karyorHeroBanner"
+            loading="eager"
+            fetchPriority="high"
+          />
+        </picture>
       </div>
     </section>
   );

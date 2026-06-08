@@ -1,0 +1,231 @@
+const Order = require('../models/Order');
+const { syncUserProfileFromCustomer } = require('../utils/userProfileHelpers');
+const {
+  generateOrderNumber,
+  buildOrderFromItems,
+  validateCustomer,
+} = require('../utils/orderHelpers');
+const {
+  getDefaultDeliveryDays,
+  calculateExpectedDeliveryDate,
+  canCancelOrder,
+} = require('../utils/deliveryHelpers');
+
+const applyDeliveryToOrder = async (orderData) => {
+  const deliveryDays = await getDefaultDeliveryDays();
+  const expectedDeliveryDate = calculateExpectedDeliveryDate(new Date(), deliveryDays);
+
+  return {
+    ...orderData,
+    deliveryDays,
+    expectedDeliveryDate,
+  };
+};
+
+const createOrder = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Please sign in to complete your order',
+      });
+    }
+
+    const { customer, items, paymentMethod = 'cod' } = req.body;
+
+    if (paymentMethod === 'online') {
+      return res.status(400).json({
+        success: false,
+        message: 'Use online payment flow for card/UPI payments',
+      });
+    }
+
+    validateCustomer(customer);
+
+    const { orderItems, subtotal, deliveryCharge, totalAmount } =
+      await buildOrderFromItems(items);
+
+    const order = await Order.create(
+      await applyDeliveryToOrder({
+        orderNumber: generateOrderNumber(),
+        user: req.user._id,
+        customer,
+        items: orderItems,
+        subtotal,
+        deliveryCharge,
+        totalAmount,
+        paymentMethod: 'cod',
+        paymentStatus: 'pending',
+        status: 'pending',
+      })
+    );
+
+    await syncUserProfileFromCustomer(req.user._id, customer);
+
+    res.status(201).json({
+      success: true,
+      message: 'Order placed successfully',
+      data: order,
+    });
+  } catch (error) {
+    const msg = error.message || 'Order creation failed';
+    if (msg.includes('shipping') || msg.includes('item') || msg.includes('unavailable')) {
+      return res.status(400).json({ success: false, message: msg });
+    }
+    next(error);
+  }
+};
+
+const getMyOrders = async (req, res, next) => {
+  try {
+    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: orders.length,
+      data: orders,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getOrderByNumber = async (req, res, next) => {
+  try {
+    const order = await Order.findOne({ orderNumber: req.params.orderNumber });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found',
+      });
+    }
+
+    res.json({ success: true, data: order });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const cancelMyOrder = async (req, res, next) => {
+  try {
+    const { reason } = req.body;
+    const order = await Order.findOne({ _id: req.params.id, user: req.user._id });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found',
+      });
+    }
+
+    if (!canCancelOrder(order.status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Orders can only be cancelled before they are shipped',
+      });
+    }
+
+    if (!reason?.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cancellation reason is required',
+      });
+    }
+
+    order.status = 'cancelled';
+    order.cancellationReason = reason.trim();
+    order.cancelledBy = 'user';
+    order.cancelledAt = new Date();
+    await order.save();
+
+    res.json({
+      success: true,
+      message: 'Order cancelled successfully',
+      data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAllOrders = async (req, res, next) => {
+  try {
+    const { status } = req.query;
+    const filter = status ? { status } : {};
+
+    const orders = await Order.find(filter)
+      .populate('user', 'name email phone address city pincode createdAt')
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: orders.length,
+      data: orders,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateOrderStatus = async (req, res, next) => {
+  try {
+    const { status, paymentStatus, deliveryDays, cancellationReason } = req.body;
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found',
+      });
+    }
+
+    if (status === 'cancelled') {
+      if (!cancellationReason?.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Cancellation reason is required',
+        });
+      }
+      order.cancellationReason = cancellationReason.trim();
+      order.cancelledBy = 'admin';
+      order.cancelledAt = new Date();
+      order.status = 'cancelled';
+    } else if (status) {
+      order.status = status;
+    }
+
+    if (paymentStatus) order.paymentStatus = paymentStatus;
+
+    if (deliveryDays !== undefined) {
+      const days = Number(deliveryDays);
+      if (days < 1 || days > 30) {
+        return res.status(400).json({
+          success: false,
+          message: 'Delivery days must be between 1 and 30',
+        });
+      }
+      order.deliveryDays = days;
+      order.expectedDeliveryDate = calculateExpectedDeliveryDate(order.createdAt, days);
+    }
+
+    await order.save();
+
+    res.json({
+      success: true,
+      message: 'Order updated successfully',
+      data: order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  createOrder,
+  getMyOrders,
+  getOrderByNumber,
+  cancelMyOrder,
+  getAllOrders,
+  updateOrderStatus,
+};

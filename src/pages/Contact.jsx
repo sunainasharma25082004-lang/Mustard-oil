@@ -1,7 +1,38 @@
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import { useState } from "react";
+import { contactApi } from "../utils/api";
 
 function Contact() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess(false);
+    setLoading(true);
+
+    try {
+      await contactApi.send(formData);
+      setSuccess(true);
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <style>{`
@@ -152,8 +183,6 @@ function Contact() {
 
       `}</style>
 
-      <Navbar />
-
       <section className="lux-contact-page">
 
         <div className="container">
@@ -213,23 +242,41 @@ function Contact() {
 
                 <h3>Send Message</h3>
 
-                <form>
+                <form onSubmit={handleSubmit}>
+
+                  {error && (
+                    <p style={{ color: "#ff6b6b", marginBottom: 15 }}>{error}</p>
+                  )}
+
+                  {success && (
+                    <p style={{ color: "#4ade80", marginBottom: 15 }}>
+                      Message sent! We will get back to you soon.
+                    </p>
+                  )}
 
                   <div className="row">
 
                     <div className="col-md-6">
                       <input
                         type="text"
+                        name="name"
                         placeholder="Full Name"
                         className="lux-input"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
                       />
                     </div>
 
                     <div className="col-md-6">
                       <input
                         type="email"
+                        name="email"
                         placeholder="Email Address"
                         className="lux-input"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
                       />
                     </div>
 
@@ -237,21 +284,29 @@ function Contact() {
 
                   <input
                     type="text"
+                    name="phone"
                     placeholder="Phone Number"
                     className="lux-input"
+                    value={formData.phone}
+                    onChange={handleChange}
                   />
 
                   <textarea
                     rows="6"
+                    name="message"
                     placeholder="Write Your Message..."
                     className="lux-input"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
                   ></textarea>
 
                   <button
                     type="submit"
                     className="lux-btn"
+                    disabled={loading}
                   >
-                    Send Message
+                    {loading ? "Sending..." : "Send Message"}
                   </button>
 
                 </form>
@@ -265,8 +320,6 @@ function Contact() {
         </div>
 
       </section>
-
-      <Footer />
     </>
   );
 }

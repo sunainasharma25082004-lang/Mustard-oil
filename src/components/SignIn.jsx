@@ -1,7 +1,64 @@
-import React, { useState } from "react";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function SignIn() {
+  const navigate = useNavigate();
+  const { login, register } = useAuth();
+
   const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [registerData, setRegisterData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      await login(loginData.email, loginData.password);
+      navigate('/');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (registerData.password !== registerData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await register({
+        name: registerData.name,
+        email: registerData.email,
+        phone: registerData.phone,
+        password: registerData.password,
+      });
+      navigate('/');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -118,7 +175,12 @@ function SignIn() {
         transition:.3s;
       }
 
-      .auth-btn:hover{
+      .auth-btn:disabled{
+        opacity:0.6;
+        cursor:not-allowed;
+      }
+
+      .auth-btn:hover:not(:disabled){
         transform:translateY(-3px);
         box-shadow:0 10px 25px rgba(212,175,55,.35);
       }
@@ -133,6 +195,16 @@ function SignIn() {
         color:#d4af37;
         cursor:pointer;
         font-weight:600;
+      }
+
+      .auth-error{
+        background:rgba(220,53,69,.15);
+        border:1px solid rgba(220,53,69,.4);
+        color:#ff6b6b;
+        padding:12px;
+        border-radius:12px;
+        margin-bottom:15px;
+        font-size:14px;
       }
 
       @media(max-width:576px){
@@ -161,76 +233,99 @@ function SignIn() {
           <div className="tab-buttons">
 
             <button
-              className={`tab-btn ${isLogin ? "active" : ""}`}
-              onClick={() => setIsLogin(true)}
+              className={`tab-btn ${isLogin ? 'active' : ''}`}
+              onClick={() => { setIsLogin(true); setError(''); }}
             >
               Sign In
             </button>
 
             <button
-              className={`tab-btn ${!isLogin ? "active" : ""}`}
-              onClick={() => setIsLogin(false)}
+              className={`tab-btn ${!isLogin ? 'active' : ''}`}
+              onClick={() => { setIsLogin(false); setError(''); }}
             >
               Register
             </button>
 
           </div>
 
+          {error && <div className="auth-error">{error}</div>}
+
           {isLogin ? (
-            <form>
+            <form onSubmit={handleLogin}>
 
               <input
                 type="email"
                 placeholder="Email Address"
                 className="auth-input"
+                value={loginData.email}
+                onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                required
               />
 
               <input
                 type="password"
                 placeholder="Password"
                 className="auth-input"
+                value={loginData.password}
+                onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                required
               />
 
-              <button className="auth-btn">
-                Sign In
+              <button className="auth-btn" disabled={loading}>
+                {loading ? 'Signing In...' : 'Sign In'}
               </button>
 
             </form>
           ) : (
-            <form>
+            <form onSubmit={handleRegister}>
 
               <input
                 type="text"
                 placeholder="Full Name"
                 className="auth-input"
+                value={registerData.name}
+                onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
+                required
               />
 
               <input
                 type="email"
                 placeholder="Email Address"
                 className="auth-input"
+                value={registerData.email}
+                onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
+                required
               />
 
               <input
                 type="tel"
                 placeholder="Phone Number"
                 className="auth-input"
+                value={registerData.phone}
+                onChange={(e) => setRegisterData({ ...registerData, phone: e.target.value })}
               />
 
               <input
                 type="password"
                 placeholder="Password"
                 className="auth-input"
+                value={registerData.password}
+                onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
+                required
+                minLength={6}
               />
 
               <input
                 type="password"
                 placeholder="Confirm Password"
                 className="auth-input"
+                value={registerData.confirmPassword}
+                onChange={(e) => setRegisterData({ ...registerData, confirmPassword: e.target.value })}
+                required
               />
 
-              <button className="auth-btn">
-                Create Account
+              <button className="auth-btn" disabled={loading}>
+                {loading ? 'Creating Account...' : 'Create Account'}
               </button>
 
             </form>
@@ -239,15 +334,15 @@ function SignIn() {
           <div className="auth-footer">
             {isLogin ? (
               <>
-                Don't have an account?{" "}
-                <span onClick={() => setIsLogin(false)}>
+                Don't have an account?{' '}
+                <span onClick={() => { setIsLogin(false); setError(''); }}>
                   Register
                 </span>
               </>
             ) : (
               <>
-                Already have an account?{" "}
-                <span onClick={() => setIsLogin(true)}>
+                Already have an account?{' '}
+                <span onClick={() => { setIsLogin(true); setError(''); }}>
                   Sign In
                 </span>
               </>

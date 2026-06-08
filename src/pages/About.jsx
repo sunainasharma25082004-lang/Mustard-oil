@@ -1,11 +1,8 @@
-import Navbar from "../components/Navbar";
 import "../styles/main.css";
 
 function About() {
   return (
     <>
-      <Navbar />
-
       <section className="about-hero">
         <div className="container about-hero-content">
 

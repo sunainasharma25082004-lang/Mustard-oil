@@ -1,29 +1,32 @@
-import Navbar from "../components/Navbar";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { productApi } from '../utils/api';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 function Products() {
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
 
-  const navigate = useNavigate(); 
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const products = [
-    {
-      title: "500 ML",
-      image: "/bottle.png",
-      desc: "Pure Kachi Ghani Mustard Oil",
-      badge: "Best Seller",
-    },
-    {
-      title: "5 Litre",
-      image: "/bottle51.png",
-      desc: "Family Pack Mustard Oil",
-      badge: "Premium Pack",
-    },
-  ];
+  useEffect(() => {
+    productApi
+      .getAll()
+      .then((res) => setProducts(res.data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleAddToCart = (product) => {
+    addToCart(product);
+    navigate('/addcart');
+  };
 
   return (
     <>
-      <Navbar />
-
       <section className="premium-products-page">
         <div className="container">
 
@@ -36,10 +39,18 @@ function Products() {
             </p>
           </div>
 
+          {loading && (
+            <p style={{ textAlign: 'center', color: '#d4af37' }}>Loading products...</p>
+          )}
+
+          {error && (
+            <p style={{ textAlign: 'center', color: '#ff6b6b' }}>{error}</p>
+          )}
+
           <div className="row g-4 justify-content-center">
 
-            {products.map((item, index) => (
-              <div className="col-lg-5 col-md-6" key={index}>
+            {products.map((item) => (
+              <div className="col-lg-5 col-md-6" key={item._id}>
                 <div className="premium-product-card">
 
                   <div className="product-badge">
@@ -47,21 +58,36 @@ function Products() {
                   </div>
 
                   <div className="product-image-box">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="img-fluid"
-                    />
+                    <div className="product-image-inner product-image-inner-lg">
+                      <img
+                        src={resolveImageUrl(item.image)}
+                        alt={item.name}
+                        className="img-fluid product-showcase-img"
+                      />
+                    </div>
                   </div>
 
                   <div className="product-content">
-                    <h3>{item.title}</h3>
-                    <p>{item.desc}</p>
+                    <h3>{item.size || item.name}</h3>
+                    <p>{item.description}</p>
+                    <p style={{ color: '#d4af37', fontWeight: 700, fontSize: '1.2rem' }}>
+                      ₹{item.price}
+                    </p>
 
-                    <button  onClick={() => navigate("/addcart")} 
-                    className="golden-btn">
-                      Add to Cart
-                    </button>
+                    <div className="product-card-actions">
+                      <Link
+                        to={`/products/${item.slug || item._id}`}
+                        className="product-view-btn"
+                      >
+                        View Details
+                      </Link>
+                      <button
+                        onClick={() => handleAddToCart(item)}
+                        className="golden-btn"
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
                   </div>
 
                 </div>

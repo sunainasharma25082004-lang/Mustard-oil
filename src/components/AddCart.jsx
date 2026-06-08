@@ -1,26 +1,10 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import { DELIVERY_CHARGE, useCart } from '../context/CartContext';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 function AddCart() {
-
-  const navigate = useNavigate();   
-
-  const products = [
-    {
-      id: 1,
-      name: "500 ML Mustard Oil",
-      price: "₹199",
-      image: "/bottle.png",
-      qty: 1,
-    },
-    {
-      id: 2,
-      name: "5 Litre Mustard Oil",
-      price: "₹899",
-      image: "/bottle5l.png",
-      qty: 1,
-    },
-  ];
+  const navigate = useNavigate();
+  const { items, subtotal, total, updateQuantity, removeFromCart } = useCart();
 
   return (
     <>
@@ -103,10 +87,37 @@ function AddCart() {
       }
 
       .qty-box{
+        display:flex;
+        align-items:center;
+        gap:10px;
         background:#1d1d1d;
         padding:10px 15px;
         border-radius:10px;
         border:1px solid rgba(212,175,55,.15);
+      }
+
+      .qty-btn{
+        background:transparent;
+        border:1px solid #d4af37;
+        color:#d4af37;
+        width:30px;
+        height:30px;
+        border-radius:8px;
+        cursor:pointer;
+      }
+
+      .remove-btn{
+        background:transparent;
+        border:none;
+        color:#ff6b6b;
+        cursor:pointer;
+        font-size:14px;
+      }
+
+      .empty-cart{
+        text-align:center;
+        padding:60px 20px;
+        color:#bdbdbd;
       }
 
       .summary-card{
@@ -155,7 +166,12 @@ function AddCart() {
         transition:.3s;
       }
 
-      .checkout-btn:hover{
+      .checkout-btn:disabled{
+        opacity:0.5;
+        cursor:not-allowed;
+      }
+
+      .checkout-btn:hover:not(:disabled){
         transform:translateY(-3px);
         box-shadow:0 10px 25px rgba(212,175,55,.35);
       }
@@ -203,60 +219,82 @@ function AddCart() {
             <p>Your Premium Mustard Oil Collection</p>
           </div>
 
-          <div className="cart-grid">
+          {items.length === 0 ? (
+            <div className="empty-cart">
+              <h3>Your cart is empty</h3>
+              <p style={{ marginTop: 10 }}>Add some premium mustard oil to get started.</p>
+              <button
+                onClick={() => navigate('/products')}
+                className="continue-btn"
+                style={{ maxWidth: 250, margin: '30px auto 0' }}
+              >
+                Browse Products
+              </button>
+            </div>
+          ) : (
+            <div className="cart-grid">
 
-            <div className="cart-items">
+              <div className="cart-items">
 
-              {products.map((item) => (
-                <div className="cart-card" key={item.id}>
+                {items.map((item) => (
+                  <div className="cart-card" key={item._id}>
 
-                  <img src={item.image} alt={item.name} />
+                    <img src={resolveImageUrl(item.image)} alt={item.name} />
 
-                  <div className="cart-info">
-                    <h3>{item.name}</h3>
-                    <div className="cart-price">{item.price}</div>
+                    <div className="cart-info">
+                      <h3>{item.name}</h3>
+                      <div className="cart-price">₹{item.price}</div>
+                    </div>
+
+                    <div className="qty-box">
+                      <button className="qty-btn" onClick={() => updateQuantity(item._id, item.quantity - 1)}>-</button>
+                      <span>{item.quantity}</span>
+                      <button className="qty-btn" onClick={() => updateQuantity(item._id, item.quantity + 1)}>+</button>
+                    </div>
+
+                    <button className="remove-btn" onClick={() => removeFromCart(item._id)}>
+                      Remove
+                    </button>
+
                   </div>
+                ))}
 
-                  <div className="qty-box">
-                    Qty: {item.qty}
-                  </div>
+              </div>
 
+              <div className="summary-card">
+
+                <h2>Order Summary</h2>
+
+                <div className="summary-row">
+                  <span>Subtotal</span>
+                  <span>₹{subtotal}</span>
                 </div>
-              ))}
+
+                <div className="summary-row">
+                  <span>Delivery</span>
+                  <span>₹{DELIVERY_CHARGE}</span>
+                </div>
+
+                <div className="summary-row summary-total">
+                  <span>Total</span>
+                  <span>₹{total}</span>
+                </div>
+
+                <button
+                  onClick={() => navigate('/checkout')}
+                  className="checkout-btn"
+                >
+                  Proceed to Checkout
+                </button>
+
+                <button onClick={() => navigate('/products')} className="continue-btn">
+                  Continue Shopping
+                </button>
+
+              </div>
 
             </div>
-
-            <div className="summary-card">
-
-              <h2>Order Summary</h2>
-
-              <div className="summary-row">
-                <span>Subtotal</span>
-                <span>₹1098</span>
-              </div>
-
-              <div className="summary-row">
-                <span>Delivery</span>
-                <span>₹50</span>
-              </div>
-
-              <div className="summary-row summary-total">
-                <span>Total</span>
-                <span>₹1148</span>
-              </div>
-
-              <button onClick={() => navigate("/checkout")}
-              className="checkout-btn">
-                Proceed to Checkout
-              </button>
-
-              <button onClick={() => navigate("/products")} className="continue-btn">
-                Continue Shopping
-              </button>
-
-            </div>
-
-          </div>
+          )}
 
         </div>
 

@@ -1,0 +1,381 @@
+---
+pid: 8556
+cwd: "D:\Programming\Viz_Official_01\Mustard-oil"
+command: "cd \"D:\\Programming\\Viz_Official_01\\Mustard-oil\"; npm run dev:all"
+started_at: 2026-06-08T10:10:32.450Z
+running_for_ms: 8615012  
+---
+
+> karyor@0.0.0 dev:all
+> concurrently -n server,store,admin -c blue,green,yellow "npm run dev:server" "npm run dev" "npm run dev:admin"
+
+[server] 
+[server] > karyor@0.0.0 dev:server
+[server] > npm run dev --prefix server
+[server] 
+[store] 
+[store] > karyor@0.0.0 dev
+[store] > vite
+[store] 
+[admin] 
+[admin] > karyor@0.0.0 dev:admin
+[admin] > npm run dev --prefix admin
+[admin] 
+[store] 
+[store]   VITE v8.0.16  ready in 527 ms
+[store] 
+[store]   ➜  Local:   http://localhost:5173/
+[store]   ➜  Network: use --host to expose
+[server] 
+[server] > server@1.0.0 dev
+[server] > nodemon src/server.js
+[server] 
+[admin] 
+[admin] > karyor-admin@1.0.0 dev
+[admin] > vite
+[admin] 
+[server] [nodemon] 3.1.14
+[server] [nodemon] to restart at any time, enter `rs`
+[server] [nodemon] watching path(s): *.*
+[server] [nodemon] watching extensions: js,mjs,cjs,json
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+[admin] 
+[admin]   VITE v8.0.16  ready in 681 ms
+[admin] 
+[admin]   ➜  Local:   http://localhost:5174/
+[admin]   ➜  Network: use --host to expose
+[server] MongoDB connected: ac-4xpykde-shard-00-02.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[server] (node:23572) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+[server] (Use `node --trace-warnings ...` to show where the warning was created)
+[server] (node:23572) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+[admin] 3:52:58 pm [vite] (client) hmr update /src/pages/AdminOrders.jsx
+[admin] 3:52:58 pm [vite] (client) hmr update /src/styles/admin.css
+[store] 3:53:07 pm [vite] (client) page reload admin/dist/index.html
+[store] 3:53:07 pm [vite] (client) page reload admin/dist/index.html
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+[server] MongoDB connected: ac-4xpykde-shard-00-00.n6ebgdj.mongodb.net
+[server] Default delivery settings seeded (5 days)
+[server] Server running on port 3000 [development]
+[store] 4:02:41 pm [vite] (client) hmr update /src/pages/Products.jsx, /src/pages/Contact.jsx, /src/context/AuthContext.jsx, /src/components/Checkout.jsx, /src/components/Distributor.jsx
+[store] 4:02:41 pm [vite] (client) hmr update /src/components/Navbar.jsx
+[store] 4:02:41 pm [vite] (client) hmr update /src/App.jsx
+[store] 4:02:41 pm [vite] (client) hmr update /src/App.jsx
+[store] 4:02:41 pm [vite] (client) hmr update /src/components/Navbar.jsx
+[store] 4:02:41 pm [vite] (client) hmr invalidate /src/context/AuthContext.jsx Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[store] 4:02:41 pm [vite] (client) hmr update /src/App.jsx, /src/components/Checkout.jsx, /src/components/PaymentAuth.jsx, /src/components/Navbar.jsx
+[admin] 4:02:48 pm [vite] (client) hmr update /src/context/AuthContext.jsx, /src/pages/AdminOrders.jsx, /src/pages/AdminProducts.jsx, /src/pages/AdminContacts.jsx, /src/pages/AdminDistributors.jsx, /src/pages/AdminDashboard.jsx
+[store] 4:02:48 pm [vite] (client) hmr update /src/components/Checkout.jsx
+[store] 4:02:48 pm [vite] (client) hmr update /src/components/Checkout.jsx
+[admin] 4:02:48 pm [vite] (client) hmr invalidate /src/context/AuthContext.jsx Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[admin] 4:02:48 pm [vite] (client) hmr update /src/App.jsx, /src/components/AdminRoute.jsx, /src/components/AdminLayout.jsx, /src/pages/AdminLogin.jsx
+[admin] 4:03:02 pm [vite] (client) hmr update /src/styles/admin.css
+[admin] 4:03:02 pm [vite] (client) hmr update /src/pages/AdminOrders.jsx
+[store] 4:03:07 pm [vite] (client) page reload admin/dist/index.html
+[store] 4:03:07 pm [vite] (client) page reload admin/dist/index.html
+[server] (node:15580) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+[server] (Use `node --trace-warnings ...` to show where the warning was created)
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+[server] MongoDB connected: ac-4xpykde-shard-00-02.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[store] 4:07:56 pm [vite] (client) hmr update /src/pages/MyOrders.jsx
+[store] 4:08:05 pm [vite] (client) hmr update /src/components/Checkout.jsx
+[store] 4:08:05 pm [vite] (client) hmr update /src/components/Checkout.jsx
+[store] 4:17:42 pm [vite] (client) hmr update /src/components/Hero.jsx
+[store] 4:17:48 pm [vite] (client) hmr update /src/styles/main.css
+[store] 4:18:01 pm [vite] (client) hmr update /src/pages/MyOrders.jsx
+[store] 4:18:01 pm [vite] (client) hmr update /src/pages/MyOrders.jsx
+[store] 4:18:01 pm [vite] (client) hmr update /src/pages/MyOrders.jsx
+[store] 4:18:01 pm [vite] (client) hmr update /src/pages/MyOrders.jsx
+[store] 4:18:01 pm [vite] (client) hmr update /src/pages/MyOrders.jsx
+[store] 4:18:01 pm [vite] (client) hmr update /src/pages/MyOrders.jsx
+[store] 4:18:22 pm [vite] (client) hmr update /src/components/Checkout.jsx
+[store] 4:18:22 pm [vite] (client) hmr update /src/components/Checkout.jsx
+[server] [nodemon] restarting due to changes...
+[store] 4:26:21 pm [vite] (client) hmr update /src/components/Hero.jsx
+[store] 4:26:21 pm [vite] (client) hmr update /src/components/Hero.jsx
+[server] [nodemon] restarting due to changes...
+[store] 4:26:21 pm [vite] (client) hmr update /src/styles/main.css
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+[server] MongoDB connected: ac-4xpykde-shard-00-00.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[server] [nodemon] restarting due to changes...
+[store] 4:26:30 pm [vite] (client) hmr update /src/App.jsx
+[store] 4:26:30 pm [vite] (client) hmr update /src/App.jsx
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+[server] MongoDB connected: ac-4xpykde-shard-00-01.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[store] 4:26:41 pm [vite] (client) hmr update /src/components/ProductsSection.jsx
+[store] 4:26:41 pm [vite] (client) hmr update /src/pages/Products.jsx
+[store] 4:26:41 pm [vite] (client) hmr update /src/styles/main.css
+[store] 4:26:42 pm [vite] (client) hmr update /src/pages/Products.jsx
+[store] 4:29:56 pm [vite] (client) hmr update /src/components/ProductsSection.jsx
+[store] 4:29:56 pm [vite] (client) hmr update /src/styles/main.css
+[store] 4:33:57 pm [vite] (client) hmr update /src/components/Hero.jsx
+[store] 4:33:57 pm [vite] (client) hmr update /src/styles/main.css
+[store] 4:33:57 pm [vite] (client) hmr update /src/styles/main.css
+[store] 4:37:26 pm [vite] (client) hmr update /src/components/Hero.jsx
+[store] 4:37:26 pm [vite] (client) hmr update /src/styles/main.css
+[store] 4:37:26 pm [vite] (client) hmr update /src/styles/main.css
+[store] 4:39:07 pm [vite] (client) hmr update /src/styles/main.css
+[store] 4:39:07 pm [vite] (client) hmr update /src/components/Hero.jsx
+[server] [nodemon] restarting due to changes...
+[store] 4:48:11 pm [vite] (client) hmr update /src/components/ProductsSection.jsx
+[store] 4:48:11 pm [vite] (client) hmr update /src/pages/Products.jsx
+[store] 4:48:11 pm [vite] (client) hmr update /src/pages/ProductDetail.jsx
+[server] [nodemon] restarting due to changes...
+[store] 4:48:11 pm [vite] (client) hmr update /src/components/ProductsSection.jsx
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+[server] MongoDB connected: ac-4xpykde-shard-00-00.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[store] 4:48:18 pm [vite] (client) hmr update /src/styles/main.css
+[store] 4:48:18 pm [vite] (client) hmr update /src/styles/main.css
+[store] 4:48:23 pm [vite] (client) hmr update /src/styles/main.css
+[store] 4:48:24 pm [vite] (client) hmr update /src/styles/main.css
+[store] 4:48:37 pm [vite] (client) hmr update /src/styles/main.css
+[store] 4:48:37 pm [vite] (client) hmr update /src/styles/main.css
+[server] [nodemon] restarting due to changes...
+[store] 4:50:21 pm [vite] (client) hmr update /src/components/ProductsSection.jsx
+[store] 4:50:21 pm [vite] (client) hmr update /src/styles/main.css
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+[server] MongoDB connected: ac-4xpykde-shard-00-01.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[store] 4:58:26 pm [vite] (client) hmr update /src/components/Footer.jsx
+[store] 4:58:26 pm [vite] (client) hmr update /src/styles/main.css
+[store] 5:00:27 pm [vite] (client) page reload index.html
+[store] 5:00:27 pm [vite] (client) page reload index.html
+[store] 5:01:00 pm [vite] (client) page reload admin/index.html
+[admin] 5:01:00 pm [vite] (client) page reload index.html
+[store] 5:01:08 pm [vite] (client) page reload admin/dist/index.html
+[store] 5:01:08 pm [vite] (client) page reload admin/dist/index.html
+[server] [nodemon] restarting due to changes...
+[store] 5:04:20 pm [vite] (client) hmr update /src/pages/Products.jsx, /src/pages/Contact.jsx, /src/context/AuthContext.jsx, /src/components/Checkout.jsx, /src/components/Distributor.jsx, /src/pages/MyOrders.jsx, /src/pages/ProductDetail.jsx, /src/components/ProductsSection.jsx
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌘ override existing { override: true }
+[store] 5:04:22 pm [vite] (client) hmr invalidate /src/context/AuthContext.jsx Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[store] 5:04:22 pm [vite] (client) hmr update /src/App.jsx, /src/components/Checkout.jsx, /src/components/PaymentAuth.jsx, /src/components/Navbar.jsx, /src/pages/MyOrders.jsx
+[store] 5:04:23 pm [vite] http proxy error: /api/products
+[store] AggregateError [ECONNREFUSED]: 
+[store]     at internalConnectMultiple (node:net:1134:18)
+[store]     at afterConnectMultiple (node:net:1715:7)
+[store] 5:04:23 pm [vite] http proxy error: /api/products
+[store] AggregateError [ECONNREFUSED]: 
+[store]     at internalConnectMultiple (node:net:1134:18)
+[store]     at afterConnectMultiple (node:net:1715:7)
+[server] MongoDB connected: ac-4xpykde-shard-00-02.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[admin] 5:04:37 pm [vite] (client) hmr update /src/pages/AdminDistributors.jsx
+[store] 5:04:37 pm [vite] (client) hmr update /src/components/Distributor.jsx
+[server] [nodemon] restarting due to changes...
+[store] 5:04:43 pm [vite] (client) hmr update /src/components/Distributor.jsx
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+[server] MongoDB connected: ac-4xpykde-shard-00-02.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[store] 5:04:49 pm [vite] (client) page reload admin/dist/index.html
+[store] 5:04:49 pm [vite] (client) page reload admin/dist/index.html
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+[server] MongoDB connected: ac-4xpykde-shard-00-01.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[store] 5:08:55 pm [vite] (client) hmr update /src/pages/Products.jsx, /src/pages/Contact.jsx, /src/context/AuthContext.jsx, /src/components/Checkout.jsx, /src/components/Distributor.jsx, /src/pages/MyOrders.jsx, /src/pages/ProductDetail.jsx, /src/components/ProductsSection.jsx
+[store] 5:08:55 pm [vite] (client) hmr update /src/context/AuthContext.jsx
+[store] 5:08:55 pm [vite] (client) hmr invalidate /src/context/AuthContext.jsx Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[store] 5:08:55 pm [vite] (client) hmr update /src/App.jsx, /src/components/Checkout.jsx, /src/components/PaymentAuth.jsx, /src/components/Navbar.jsx, /src/pages/MyOrders.jsx
+[store] 5:09:07 pm [vite] (client) hmr update /src/components/Checkout.jsx
+[store] 5:09:07 pm [vite] (client) hmr update /src/App.jsx
+[store] 5:09:07 pm [vite] (client) hmr update /src/pages/MyOrders.jsx
+[store] 5:09:07 pm [vite] (client) hmr update /src/components/PaymentAuth.jsx
+[store] 5:09:07 pm [vite] (client) hmr update /src/components/Navbar.jsx
+[store] 5:09:08 pm [vite] (client) hmr update /src/App.jsx
+[store] 5:09:08 pm [vite] (client) hmr update /src/components/Checkout.jsx
+[store] 5:09:08 pm [vite] (client) hmr update /src/components/Checkout.jsx
+[store] 5:09:13 pm [vite] (client) hmr update /src/components/Checkout.jsx
+[server] [nodemon] restarting due to changes...
+[admin] 5:11:55 pm [vite] (client) hmr update /src/context/AuthContext.jsx, /src/pages/AdminOrders.jsx, /src/pages/AdminProducts.jsx, /src/pages/AdminContacts.jsx, /src/pages/AdminDistributors.jsx, /src/pages/AdminDashboard.jsx
+[admin] 5:11:55 pm [vite] (client) hmr update /src/App.jsx
+[server] [nodemon] restarting due to changes...
+[admin] 5:11:55 pm [vite] (client) hmr update /src/components/AdminLayout.jsx
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[admin] 5:11:55 pm [vite] (client) hmr update /src/App.jsx
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+[admin] 5:11:58 pm [vite] (client) hmr invalidate /src/context/AuthContext.jsx Could not Fast Refresh ("useAuth" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[admin] 5:11:58 pm [vite] (client) hmr update /src/App.jsx, /src/components/AdminRoute.jsx, /src/components/AdminLayout.jsx, /src/pages/AdminLogin.jsx
+[admin] 5:11:59 pm [vite] http proxy error: /api/admin/distributors
+[admin] AggregateError [ECONNREFUSED]: 
+[admin]     at internalConnectMultiple (node:net:1134:18)
+[admin]     at afterConnectMultiple (node:net:1715:7)
+[admin] 5:11:59 pm [vite] http proxy error: /api/admin/distributors
+[admin] AggregateError [ECONNREFUSED]: 
+[admin]     at internalConnectMultiple (node:net:1134:18)
+[admin]     at afterConnectMultiple (node:net:1715:7)
+[server] MongoDB connected: ac-4xpykde-shard-00-00.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[admin] 5:12:03 pm [vite] (client) hmr update /src/pages/AdminUsers.jsx
+[admin] 5:12:03 pm [vite] (client) hmr update /src/pages/AdminUsers.jsx
+[admin] 5:12:03 pm [vite] Internal server error: Transform failed with 1 error:
+[admin] 
+[admin] [PARSE_ERROR] Expected corresponding JSX closing tag for 'Fragment'.
+[admin]      ╭─[ src/pages/AdminUsers.jsx:154:17 ]
+[admin]      │
+[admin]   87 │                 <Fragment key={user.id}>
+[admin]      │                  ────┬───  
+[admin]      │                      ╰───── Opened here
+[admin]      │ 
+[admin]  154 │                 </>
+[admin]      │                 ─┬─  
+[admin]      │                  ╰─── Expected `</Fragment>`
+[admin] ─────╯
+[admin] 
+[admin]   Plugin: vite:oxc
+[admin]   File: D:/Programming/Viz_Official_01/Mustard-oil/admin/src/pages/AdminUsers.jsx
+[admin]       at transformWithOxc (file:///D:/Programming/Viz_Official_01/Mustard-oil/admin/node_modules/vite/dist/node/chunks/node.js:3344:19)
+[admin]       at TransformPluginContext.transform (file:///D:/Programming/Viz_Official_01/Mustard-oil/admin/node_modules/vite/dist/node/chunks/node.js:3415:26)
+[admin]       at EnvironmentPluginContainer.transform (file:///D:/Programming/Viz_Official_01/Mustard-oil/admin/node_modules/vite/dist/node/chunks/node.js:30387:51)
+[admin]       at async loadAndTransform (file:///D:/Programming/Viz_Official_01/Mustard-oil/admin/node_modules/vite/dist/node/chunks/node.js:24646:26)
+[admin]       at async viteTransformMiddleware (file:///D:/Programming/Viz_Official_01/Mustard-oil/admin/node_modules/vite/dist/node/chunks/node.js:24440:20)
+[admin] 5:12:03 pm [vite] (client) hmr update /src/pages/AdminUsers.jsx
+[store] 5:12:06 pm [vite] (client) page reload admin/dist/index.html
+[store] 5:12:07 pm [vite] (client) page reload admin/dist/index.html
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌘ suppress logs { quiet: true }
+[server] MongoDB connected: ac-4xpykde-shard-00-01.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[admin] 5:15:21 pm [vite] (client) hmr update /src/pages/AdminDistributors.jsx
+[server] [nodemon] restarting due to changes...
+[store] 5:15:21 pm [vite] (client) hmr update /src/components/PaymentAuth.jsx
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌘ enable debugging { debug: true }
+[server] MongoDB connected: ac-4xpykde-shard-00-01.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[admin] 5:15:29 pm [vite] (client) hmr update /src/pages/AdminDistributors.jsx
+[store] 5:15:35 pm [vite] (client) page reload admin/dist/index.html
+[store] 5:15:35 pm [vite] (client) page reload admin/dist/index.html
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌘ enable debugging { debug: true }
+[server] MongoDB connected: ac-4xpykde-shard-00-01.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[admin] 5:31:00 pm [vite] (client) hmr update /src/styles/admin.css
+[store] 5:31:00 pm [vite] (client) hmr update /src/components/ProductsSection.jsx
+[admin] 5:31:00 pm [vite] (client) hmr update /src/pages/AdminProducts.jsx
+[store] 5:31:00 pm [vite] (client) hmr update /src/pages/Products.jsx
+[store] 5:31:04 pm [vite] (client) hmr update /src/pages/ProductDetail.jsx
+[admin] 5:31:08 pm [vite] (client) hmr update /src/styles/admin.css
+[store] 5:31:08 pm [vite] (client) hmr update /src/components/AddCart.jsx
+[store] 5:31:17 pm [vite] (client) page reload admin/dist/index.html
+[store] 5:31:17 pm [vite] (client) page reload admin/dist/index.html
+[server] {
+[server]   message: 'Unknown API key your_api_key',
+[server]   name: 'Error',
+[server]   http_code: 401
+[server] }
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+[server] MongoDB connected: ac-4xpykde-shard-00-01.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[server] [nodemon] restarting due to changes...
+[admin] 5:37:02 pm [vite] (client) hmr update /src/pages/AdminProducts.jsx
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+[server] MongoDB connected: ac-4xpykde-shard-00-01.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[admin] 5:37:13 pm [vite] (client) hmr update /src/styles/admin.css
+[store] 5:37:13 pm [vite] (client) hmr update /src/components/ProductsSection.jsx
+[server] [nodemon] restarting due to changes...
+[admin] 5:37:13 pm [vite] (client) hmr update /src/styles/admin.css
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+[server] MongoDB connected: ac-4xpykde-shard-00-02.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[admin] 5:37:18 pm [vite] (client) hmr update /src/styles/admin.css
+[server] [nodemon] restarting due to changes...
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+[server] MongoDB connected: ac-4xpykde-shard-00-00.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[store] 5:37:23 pm [vite] (client) page reload admin/dist/index.html
+[store] 5:37:23 pm [vite] (client) page reload admin/dist/index.html
+[server] [nodemon] restarting due to changes...
+[admin] 5:38:33 pm [vite] (client) hmr update /src/pages/AdminProducts.jsx
+[server] [nodemon] restarting due to changes...
+[admin] 5:38:33 pm [vite] (client) hmr update /src/pages/AdminProducts.jsx
+[server] [nodemon] starting `node src/server.js`
+[server] ◇ injected env (14) from .env // tip: ⌘ suppress logs { quiet: true }
+[server] MongoDB connected: ac-4xpykde-shard-00-01.n6ebgdj.mongodb.net
+[server] Server running on port 3000 [development]
+[admin] 5:41:35 pm [vite] vite.config.js changed, restarting server...
+[store] 5:41:35 pm [vite] (client) hmr update /src/components/ProductsSection.jsx, /src/pages/Products.jsx, /src/pages/ProductDetail.jsx, /src/components/AddCart.jsx
+[store] 5:41:35 pm [vite] vite.config.js changed, restarting server...
+[admin] 5:41:35 pm [vite] (client) hmr update /src/pages/AdminProducts.jsx
+[admin] 5:41:35 pm [vite] (client) hmr update /src/pages/AdminProducts.jsx
+[admin] 5:41:35 pm [vite] server restarted.
+[store] 5:41:35 pm [vite] server restarted.
+[admin] 5:41:41 pm [vite] (client) hmr update /src/pages/AdminProducts.jsx
+[admin] 5:41:41 pm [vite] (client) hmr update /src/styles/admin.css
+[store] 5:41:42 pm [vite] (client) page reload admin/dist/index.html
+[store] 5:41:42 pm [vite] (client) page reload admin/dist/index.html
+[store] 5:57:32 pm [vite] (client) hmr update /src/components/Footer.jsx
+[store] 5:57:32 pm [vite] (client) hmr update /src/components/Navbar.jsx
+[store] 5:57:32 pm [vite] (client) hmr update /src/App.jsx
+[store] 5:57:38 pm [vite] (client) hmr update /src/pages/About.jsx
+[store] 5:57:38 pm [vite] (client) hmr update /src/pages/ProductDetail.jsx
+[store] 5:57:38 pm [vite] (client) hmr update /src/pages/Products.jsx
+[store] 5:57:38 pm [vite] (client) hmr update /src/pages/Contact.jsx
+[store] 5:57:38 pm [vite] (client) hmr update /src/pages/Home.jsx
+[store] 5:57:45 pm [vite] (client) hmr update /src/pages/Profile.jsx
+[store] 5:57:45 pm [vite] (client) hmr update /src/components/AboutSection.jsx
+[store] 5:57:45 pm [vite] (client) hmr update /src/pages/Contact.jsx
+[store] 5:57:45 pm [vite] (client) hmr update /src/pages/MyOrders.jsx
+[store] 5:57:45 pm [vite] (client) hmr update /src/pages/Profile.jsx
+[store] 5:57:45 pm [vite] (client) hmr update /src/pages/MyOrders.jsx
+[store] 5:57:59 pm [vite] (client) hmr update /src/styles/main.css

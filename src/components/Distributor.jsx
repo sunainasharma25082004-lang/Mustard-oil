@@ -1,16 +1,48 @@
-import React, { useState } from "react";
+import { useEffect, useState } from 'react';
+import { distributorApi } from '../utils/api';
 
 function Distributor() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [statusPhone, setStatusPhone] = useState('');
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [statusResult, setStatusResult] = useState(null);
+  const [statusError, setStatusError] = useState('');
   const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    city: "",
-    state: "",
-    business: "",
-    experience: "",
-    investment: "",
+    name: '',
+    phone: '',
+    email: '',
+    city: '',
+    state: '',
+    business: '',
+    experience: '',
+    investment: '',
   });
+
+  const checkStatus = async (phone) => {
+    if (!phone?.trim()) return;
+    setStatusLoading(true);
+    setStatusError('');
+    setStatusResult(null);
+    try {
+      const res = await distributorApi.getStatus(phone.trim());
+      setStatusResult(res.data);
+      localStorage.setItem('karyor_distributor_phone', phone.trim());
+    } catch (err) {
+      setStatusError(err.message);
+    } finally {
+      setStatusLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const savedPhone = localStorage.getItem('karyor_distributor_phone');
+    if (savedPhone) {
+      setStatusPhone(savedPhone);
+      checkStatus(savedPhone);
+    }
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -19,44 +51,47 @@ function Distributor() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
+    setLoading(true);
 
-    const message = `
-*New Distributor Request*
+    try {
+      const submittedPhone = formData.phone;
+      const res = await distributorApi.apply(formData);
+      localStorage.setItem('karyor_distributor_phone', submittedPhone);
+      setStatusPhone(submittedPhone);
+      setSuccess(res.message);
 
-Name: ${formData.name}
-Phone: ${formData.phone}
-Email: ${formData.email}
+      setFormData({
+        name: '',
+        phone: '',
+        email: '',
+        city: '',
+        state: '',
+        business: '',
+        experience: '',
+        investment: '',
+      });
 
-City: ${formData.city}
-State: ${formData.state}
+      await checkStatus(submittedPhone);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-Business Name: ${formData.business}
-
-Experience:
-${formData.experience}
-
-Investment Capacity:
-${formData.investment}
-
-I want to become a Karyor Distributor.
-`;
-
-    const whatsappUrl = `https://wa.me/919999999999?text=${encodeURIComponent(
-      message
-    )}`;
-
-    window.open(whatsappUrl, "_blank");
+  const handleStatusCheck = (e) => {
+    e.preventDefault();
+    checkStatus(statusPhone);
   };
 
   return (
     <>
       <style>{`
-
-      *{
-        box-sizing:border-box;
-      }
+      *{ box-sizing:border-box; }
 
       .distributor-page{
         min-height:100vh;
@@ -78,15 +113,9 @@ I want to become a Karyor Distributor.
         filter:blur(120px);
       }
 
-      .dist-container{
-        max-width:1200px;
-        margin:auto;
-      }
+      .dist-container{ max-width:1200px; margin:auto; }
 
-      .dist-header{
-        text-align:center;
-        margin-bottom:60px;
-      }
+      .dist-header{ text-align:center; margin-bottom:60px; }
 
       .dist-badge{
         display:inline-block;
@@ -117,62 +146,35 @@ I want to become a Karyor Distributor.
         gap:30px;
       }
 
-      .dist-info{
+      .dist-info,
+      .dist-form,
+      .dist-status-card{
         background:#141414;
         border:1px solid rgba(212,175,55,.15);
         border-radius:30px;
         padding:35px;
       }
 
-      .dist-info h2{
+      .dist-info h2,
+      .dist-form h2,
+      .dist-status-card h2{
         color:#d4af37;
         margin-bottom:25px;
       }
 
-      .feature{
-        display:flex;
-        gap:15px;
-        margin-bottom:25px;
-      }
+      .feature{ display:flex; gap:15px; margin-bottom:25px; }
 
       .feature-icon{
-        width:55px;
-        height:55px;
-        border-radius:50%;
+        width:55px; height:55px; border-radius:50%;
         background:rgba(212,175,55,.12);
-        display:flex;
-        align-items:center;
-        justify-content:center;
+        display:flex; align-items:center; justify-content:center;
         font-size:24px;
       }
 
-      .feature h4{
-        color:#fff;
-        margin-bottom:5px;
-      }
+      .feature h4{ color:#fff; margin-bottom:5px; }
+      .feature p{ color:#bdbdbd; margin:0; }
 
-      .feature p{
-        color:#bdbdbd;
-        margin:0;
-      }
-
-      .dist-form{
-        background:#141414;
-        border:1px solid rgba(212,175,55,.15);
-        border-radius:30px;
-        padding:35px;
-      }
-
-      .dist-form h2{
-        color:#d4af37;
-        margin-bottom:25px;
-      }
-
-      .form-grid{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:15px;
-      }
+      .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:15px; }
 
       .dist-input,
       .dist-textarea{
@@ -187,15 +189,12 @@ I want to become a Karyor Distributor.
       }
 
       .dist-input:focus,
-      .dist-textarea:focus{
-        border-color:#d4af37;
-      }
+      .dist-textarea:focus{ border-color:#d4af37; }
 
-      .dist-textarea{
-        resize:none;
-      }
+      .dist-textarea{ resize:none; }
 
-      .submit-btn{
+      .submit-btn,
+      .status-btn{
         width:100%;
         border:none;
         padding:16px;
@@ -203,66 +202,81 @@ I want to become a Karyor Distributor.
         font-weight:700;
         font-size:16px;
         cursor:pointer;
-        background:linear-gradient(
-          135deg,
-          #f7d76a,
-          #d4af37
-        );
+        background:linear-gradient(135deg,#f7d76a,#d4af37);
         color:#000;
         transition:.3s;
       }
 
-      .submit-btn:hover{
+      .submit-btn:hover,
+      .status-btn:hover{
         transform:translateY(-4px);
         box-shadow:0 12px 30px rgba(212,175,55,.35);
       }
 
-      .note{
-        text-align:center;
-        color:#999;
-        margin-top:15px;
-        font-size:14px;
+      .submit-btn:disabled,
+      .status-btn:disabled{ opacity:.6; cursor:not-allowed; transform:none; }
+
+      .note{ text-align:center; color:#999; margin-top:15px; font-size:14px; }
+
+      .dist-alert{
+        padding:14px 16px;
+        border-radius:14px;
+        margin-bottom:18px;
+        font-size:0.92rem;
+        line-height:1.5;
       }
 
+      .dist-alert-success{
+        background:rgba(74,222,128,.12);
+        border:1px solid rgba(74,222,128,.35);
+        color:#8ef0b2;
+      }
+
+      .dist-alert-error{
+        background:rgba(255,107,107,.12);
+        border:1px solid rgba(255,107,107,.35);
+        color:#ff9b9b;
+      }
+
+      .dist-alert-approved{
+        background:linear-gradient(135deg,rgba(212,175,55,.18),rgba(74,222,128,.1));
+        border:1px solid rgba(212,175,55,.4);
+        color:#f7e7a3;
+      }
+
+      .dist-status-card{ margin-top:30px; }
+
+      .status-badge{
+        display:inline-block;
+        padding:6px 14px;
+        border-radius:50px;
+        font-size:0.75rem;
+        font-weight:700;
+        text-transform:uppercase;
+        margin-bottom:12px;
+      }
+
+      .status-pending{ background:rgba(255,193,7,.15); color:#ffc107; }
+      .status-reviewed{ background:rgba(13,202,240,.15); color:#0dcaf0; }
+      .status-approved{ background:rgba(74,222,128,.15); color:#4ade80; }
+      .status-rejected{ background:rgba(255,107,107,.15); color:#ff8a8a; }
+
       @media(max-width:992px){
-
-        .dist-wrapper{
-          grid-template-columns:1fr;
-        }
-
-        .dist-header h1{
-          font-size:2.7rem;
-        }
-
+        .dist-wrapper{ grid-template-columns:1fr; }
+        .dist-header h1{ font-size:2.7rem; }
       }
 
       @media(max-width:768px){
-
-        .form-grid{
-          grid-template-columns:1fr;
-        }
-
-        .dist-header h1{
-          font-size:2.2rem;
-        }
-
+        .form-grid{ grid-template-columns:1fr; }
+        .dist-header h1{ font-size:2.2rem; }
       }
-
       `}</style>
-      
 
       <div className="distributor-page">
-
-
         <div className="dist-container">
-
           <div className="dist-header">
-            <div className="dist-badge">
-              BECOME A DISTRIBUTOR
-            </div>
-
+            <div className="dist-badge">BECOME A DISTRIBUTOR</div>
             <h1>Join The Karyor Network</h1>
-
             <p>
               Become an authorized Karyor Mustard Oil distributor and
               grow your business with a trusted premium brand.
@@ -270,11 +284,8 @@ I want to become a Karyor Distributor.
           </div>
 
           <div className="dist-wrapper">
-
             <div className="dist-info">
-
               <h2>Why Join Us?</h2>
-
               <div className="feature">
                 <div className="feature-icon">🏆</div>
                 <div>
@@ -282,7 +293,6 @@ I want to become a Karyor Distributor.
                   <p>High quality mustard oil with strong market demand.</p>
                 </div>
               </div>
-
               <div className="feature">
                 <div className="feature-icon">📈</div>
                 <div>
@@ -290,7 +300,6 @@ I want to become a Karyor Distributor.
                   <p>Expand your distribution network and profits.</p>
                 </div>
               </div>
-
               <div className="feature">
                 <div className="feature-icon">🤝</div>
                 <div>
@@ -298,7 +307,6 @@ I want to become a Karyor Distributor.
                   <p>Marketing and business assistance from our team.</p>
                 </div>
               </div>
-
               <div className="feature">
                 <div className="feature-icon">🚚</div>
                 <div>
@@ -306,108 +314,78 @@ I want to become a Karyor Distributor.
                   <p>Consistent stock and fast delivery support.</p>
                 </div>
               </div>
-
             </div>
 
             <form className="dist-form" onSubmit={handleSubmit}>
-
               <h2>Distributor Application Form</h2>
 
+              {error && <div className="dist-alert dist-alert-error">{error}</div>}
+              {success && <div className="dist-alert dist-alert-success">{success}</div>}
+
               <div className="form-grid">
-
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Full Name"
-                  className="dist-input"
-                  onChange={handleChange}
-                  required
-                />
-
-                <input
-                  type="text"
-                  name="phone"
-                  placeholder="Phone Number"
-                  className="dist-input"
-                  onChange={handleChange}
-                  required
-                />
-
+                <input type="text" name="name" placeholder="Full Name" className="dist-input" value={formData.name} onChange={handleChange} required />
+                <input type="text" name="phone" placeholder="Phone Number" className="dist-input" value={formData.phone} onChange={handleChange} required />
               </div>
 
               <div className="form-grid">
-
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email Address"
-                  className="dist-input"
-                  onChange={handleChange}
-                />
-
-                <input
-                  type="text"
-                  name="business"
-                  placeholder="Business Name"
-                  className="dist-input"
-                  onChange={handleChange}
-                />
-
+                <input type="email" name="email" placeholder="Email Address" className="dist-input" value={formData.email} onChange={handleChange} />
+                <input type="text" name="business" placeholder="Business Name" className="dist-input" value={formData.business} onChange={handleChange} />
               </div>
 
               <div className="form-grid">
-
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="City"
-                  className="dist-input"
-                  onChange={handleChange}
-                />
-
-                <input
-                  type="text"
-                  name="state"
-                  placeholder="State"
-                  className="dist-input"
-                  onChange={handleChange}
-                />
-
+                <input type="text" name="city" placeholder="City" className="dist-input" value={formData.city} onChange={handleChange} />
+                <input type="text" name="state" placeholder="State" className="dist-input" value={formData.state} onChange={handleChange} />
               </div>
 
-              <textarea
-                rows="4"
-                name="experience"
-                placeholder="Business Experience"
-                className="dist-textarea"
-                onChange={handleChange}
-              />
+              <textarea rows="4" name="experience" placeholder="Business Experience" className="dist-textarea" value={formData.experience} onChange={handleChange} />
+              <textarea rows="4" name="investment" placeholder="Investment Capacity" className="dist-textarea" value={formData.investment} onChange={handleChange} />
 
-              <textarea
-                rows="4"
-                name="investment"
-                placeholder="Investment Capacity"
-                className="dist-textarea"
-                onChange={handleChange}
-              />
-
-              <button
-                type="submit"
-                className="submit-btn"
-              >
-                Apply For Distributorship
+              <button type="submit" className="submit-btn" disabled={loading}>
+                {loading ? 'Submitting...' : 'Apply For Distributorship'}
               </button>
 
               <div className="note">
-                You will be redirected to WhatsApp after submission.
+                After applying, your request will appear in the admin panel for review.
               </div>
-
             </form>
-
           </div>
 
-        </div>
+          <div className="dist-status-card">
+            <h2>Check Application Status</h2>
+            <p style={{ color: '#aaa', marginBottom: 20, fontSize: '0.92rem' }}>
+              Enter your phone number to see if you have been added as a Karyor distributor.
+            </p>
 
+            <form onSubmit={handleStatusCheck} style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <input
+                type="text"
+                placeholder="Your phone number"
+                className="dist-input"
+                style={{ flex: 1, minWidth: 200, marginBottom: 0 }}
+                value={statusPhone}
+                onChange={(e) => setStatusPhone(e.target.value)}
+                required
+              />
+              <button type="submit" className="status-btn" style={{ width: 'auto', minWidth: 160, padding: '16px 28px' }} disabled={statusLoading}>
+                {statusLoading ? 'Checking...' : 'Check Status'}
+              </button>
+            </form>
+
+            {statusError && <div className="dist-alert dist-alert-error" style={{ marginTop: 18 }}>{statusError}</div>}
+
+            {statusResult && (
+              <div className={`dist-alert ${statusResult.isApproved ? 'dist-alert-approved' : 'dist-alert-success'}`} style={{ marginTop: 18 }}>
+                <span className={`status-badge status-${statusResult.status}`}>{statusResult.status}</span>
+                <p style={{ margin: '10px 0 0', fontSize: '1rem' }}>{statusResult.message}</p>
+                {statusResult.isApproved && statusResult.approvedAt && (
+                  <p style={{ margin: '8px 0 0', fontSize: '0.85rem', color: '#ccc' }}>
+                    Approved on {new Date(statusResult.approvedAt).toLocaleDateString('en-IN')}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </>
   );

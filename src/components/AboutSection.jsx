@@ -1,13 +1,9 @@
-import Navbar from "../components/Navbar";
 import "../styles/main.css";
 
-function About() {
+function AboutSection() {
   return (
     <>
-      <Navbar />
-
-
-       <section className="about-features">
+      <section className="about-features">
         <div className="container">
 
           <div className="section-title">
@@ -63,10 +59,6 @@ function About() {
               traditional cold pressed methods to preserve its natural
               nutrients, rich aroma, and authentic taste.
             </p>
-
-            {/* <button className="about-btn">
-              Explore Products
-            </button> */}
           </div>
 
           <div className="about-right">
@@ -77,53 +69,49 @@ function About() {
           </div>
 
         </div>
-
-        
       </section>
 
       <section className="about-story">
-       <div className="story-card">
+        <div className="story-card">
 
-  <div className="story-icon">🌿</div>
+          <div className="story-icon">🌿</div>
 
-  <p>
-    For generations, mustard oil has been an essential part of
-    Indian kitchens and traditions. At <strong>Karyor</strong>,
-    we proudly carry forward this heritage by producing premium
-    cold-pressed mustard oil using traditional methods.
-  </p>
+          <p>
+            For generations, mustard oil has been an essential part of
+            Indian kitchens and traditions. At <strong>Karyor</strong>,
+            we proudly carry forward this heritage by producing premium
+            cold-pressed mustard oil using traditional methods.
+          </p>
 
-  <p>
-    Every drop is carefully extracted to retain its natural aroma,
-    rich flavor, and nutritional goodness, ensuring purity in
-    every meal and wellness in every home.
-  </p>
+          <p>
+            Every drop is carefully extracted to retain its natural aroma,
+            rich flavor, and nutritional goodness, ensuring purity in
+            every meal and wellness in every home.
+          </p>
 
-  <div className="story-stats">
+          <div className="story-stats">
 
-    <div className="stat-box">
-      <h3>100%</h3>
-      <span>Natural Oil</span>
-    </div>
+            <div className="stat-box">
+              <h3>100%</h3>
+              <span>Natural Oil</span>
+            </div>
 
-    <div className="stat-box">
-      <h3>Pure</h3>
-      <span>Cold Pressed</span>
-    </div>
+            <div className="stat-box">
+              <h3>Pure</h3>
+              <span>Cold Pressed</span>
+            </div>
 
-    <div className="stat-box">
-      <h3>Fresh</h3>
-      <span>Every Batch</span>
-    </div>
+            <div className="stat-box">
+              <h3>Fresh</h3>
+              <span>Every Batch</span>
+            </div>
 
-  </div>
+          </div>
 
-</div>
+        </div>
       </section>
-
-     
     </>
   );
 }
 
-export default About;
+export default AboutSection;
