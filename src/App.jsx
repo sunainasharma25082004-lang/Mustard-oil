@@ -11,6 +11,7 @@ import Checkout from "./components/Checkout";
 import Distributor from "./components/Distributor";
 import MyOrders from "./pages/MyOrders";
 import Profile from "./pages/Profile";
+import SignIn from "./components/SignIn";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 
@@ -32,7 +33,7 @@ function App() {
               <Route path="/my-orders" element={<MyOrders />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
-            <Route path="/signin" element={<Navigate to="/checkout" replace />} />
+            <Route path="/signin" element={<SignIn />} />
             <Route path="/admin/*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

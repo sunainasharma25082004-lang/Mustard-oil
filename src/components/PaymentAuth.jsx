@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
+// NOTE: This component is deprecated.
+// New professional flow uses AuthModal + separate "Sign in required" card in Checkout.
+// Kept for reference / possible future use.
+
 function PaymentAuth({ prefill = {}, onAuthenticated }) {
   const { login, register, updateProfile } = useAuth();
   const [isLogin, setIsLogin] = useState(true);

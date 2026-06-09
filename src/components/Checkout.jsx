@@ -1,21 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DELIVERY_CHARGE, useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { orderApi, paymentApi, settingsApi } from '../utils/api';
 import { loadRazorpayScript, openRazorpayCheckout } from '../utils/razorpay';
-import PaymentAuth from './PaymentAuth';
+import AuthModal from './AuthModal';
 import OrderTracking, { formatOrderDateLong } from './OrderTracking';
 
 function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const authSectionRef = useRef(null);
   const { user } = useAuth();
   const { items, subtotal, total, clearCart } = useCart();
 
   const [step, setStep] = useState(location.state?.step === 2 ? 2 : 1);
   const [paymentMethod, setPaymentMethod] = useState('cod');
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -118,16 +118,12 @@ function Checkout() {
     });
   };
 
-  const scrollToAuth = () => {
-    authSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  };
-
   const handlePlaceOrder = async () => {
     setError('');
 
     if (!user) {
-      setError('Please sign in or register below to continue with payment.');
-      scrollToAuth();
+      // Safety net – UI should prevent this
+      setShowAuthModal(true);
       return;
     }
 
@@ -459,36 +455,6 @@ function Checkout() {
         font-size:0.9rem;
       }
 
-      .payment-auth-note{
-        color:#bdbdbd;
-        margin-bottom:16px;
-        font-size:0.9rem;
-      }
-
-      .payment-auth-tabs{
-        display:flex;
-        background:#1b1b1b;
-        border-radius:50px;
-        padding:4px;
-        margin-bottom:20px;
-      }
-
-      .payment-auth-tabs button{
-        flex:1;
-        border:none;
-        background:transparent;
-        color:#fff;
-        padding:10px;
-        border-radius:50px;
-        cursor:pointer;
-      }
-
-      .payment-auth-tabs button.active{
-        background:linear-gradient(135deg,#f7d76a,#d4af37);
-        color:#000;
-        font-weight:700;
-      }
-
       @media(max-width:900px){
         .checkout-container{ grid-template-columns:1fr; }
         .form-row{ grid-template-columns:1fr; }
@@ -548,7 +514,7 @@ function Checkout() {
                 </div>
 
                 <p style={{ color: '#888', fontSize: '0.85rem', marginBottom: 16 }}>
-                  No sign-in required yet. You will sign in on the next step before payment.
+                  No sign-in required for shipping details. You will be asked to sign in securely before completing payment.
                 </p>
                 <button type="submit" className="place-order-btn" disabled={items.length === 0}>
                   Continue to Payment
@@ -581,49 +547,85 @@ function Checkout() {
                   </button>
                 </div>
 
-                {user ? (
-                  <div className="logged-in-badge">
-                    Signed in as <strong>{user.name}</strong> ({user.email})
+                {/* === AUTH REQUIRED (Professional separate flow) === */}
+                {!user ? (
+                  <div
+                    style={{
+                      background: '#1b1b1b',
+                      border: '1px solid rgba(212,175,55,.25)',
+                      borderRadius: 18,
+                      padding: '28px 24px',
+                      textAlign: 'center',
+                      marginBottom: 12,
+                    }}
+                  >
+                    <div style={{ fontSize: '2rem', marginBottom: 10 }}>🔒</div>
+                    <h4 style={{ color: '#d4af37', margin: '0 0 8px', fontSize: '1.1rem' }}>
+                      Sign in Required
+                    </h4>
+                    <p style={{ color: '#bdbdbd', fontSize: '0.93rem', lineHeight: 1.45, margin: '0 0 20px' }}>
+                      To place an order and track your purchase, please sign in or create an account.<br />
+                      Your shipping details are already saved for this checkout.
+                    </p>
+
                     <button
                       type="button"
-                      onClick={() => navigate('/profile')}
+                      onClick={() => setShowAuthModal(true)}
                       style={{
-                        marginLeft: 12, background: 'transparent', border: '1px solid rgba(212,175,55,.4)',
-                        color: '#d4af37', borderRadius: 50, padding: '4px 12px', fontSize: '0.78rem', cursor: 'pointer',
+                        width: '100%',
+                        maxWidth: 320,
+                        padding: '15px 24px',
+                        borderRadius: 50,
+                        border: 'none',
+                        background: 'linear-gradient(135deg, #f7d76a, #d4af37)',
+                        color: '#000',
+                        fontWeight: 800,
+                        fontSize: '1rem',
+                        cursor: 'pointer',
                       }}
                     >
-                      My Profile
+                      Sign In or Create Account
                     </button>
+
+                    <div style={{ marginTop: 16, fontSize: '0.8rem', color: '#777' }}>
+                      You will be able to complete payment right after signing in.
+                    </div>
                   </div>
                 ) : (
-                  <div ref={authSectionRef}>
-                    <PaymentAuth
-                      prefill={{
-                        name: formData.fullName,
-                        email: formData.email,
-                        phone: formData.phone,
-                        address: formData.address,
-                        city: formData.city,
-                        pincode: formData.pincode,
-                      }}
-                      onAuthenticated={() => setError('')}
-                    />
-                  </div>
-                )}
+                  <>
+                    <div className="logged-in-badge">
+                      Signed in as <strong>{user.name}</strong> ({user.email})
+                      <button
+                        type="button"
+                        onClick={() => navigate('/profile')}
+                        style={{
+                          marginLeft: 12,
+                          background: 'transparent',
+                          border: '1px solid rgba(212,175,55,.4)',
+                          color: '#d4af37',
+                          borderRadius: 50,
+                          padding: '4px 12px',
+                          fontSize: '0.78rem',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        My Profile
+                      </button>
+                    </div>
 
-                <button
-                  className="place-order-btn"
-                  onClick={handlePlaceOrder}
-                  disabled={loading || items.length === 0}
-                >
-                  {loading
-                    ? 'Processing...'
-                    : !user
-                      ? 'Sign In to Continue Payment'
-                      : paymentMethod === 'online'
-                        ? `Pay Online — ₹${total}`
-                        : `Place Order — ₹${total}`}
-                </button>
+                    <button
+                      className="place-order-btn"
+                      onClick={handlePlaceOrder}
+                      disabled={loading || items.length === 0}
+                    >
+                      {loading
+                        ? 'Processing...'
+                        : paymentMethod === 'online'
+                          ? `Pay Online — ₹${total}`
+                          : `Place Order (COD) — ₹${total}`}
+                    </button>
+                  </>
+                )}
 
                 <button className="back-btn" onClick={() => setStep(1)}>
                   ← Back to Shipping
@@ -663,6 +665,13 @@ function Checkout() {
 
         </div>
       </div>
+
+      {/* Auth Modal - clean separate signin flow for checkout */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        title="Sign in to complete your order"
+      />
     </>
   );
 }

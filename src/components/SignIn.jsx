@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function SignIn() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, register } = useAuth();
 
   const [isLogin, setIsLogin] = useState(true);
@@ -26,7 +27,8 @@ function SignIn() {
 
     try {
       await login(loginData.email, loginData.password);
-      navigate('/');
+      const redirectTo = location.state?.from || '/';
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -52,7 +54,8 @@ function SignIn() {
         phone: registerData.phone,
         password: registerData.password,
       });
-      navigate('/');
+      const redirectTo = location.state?.from || '/';
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {

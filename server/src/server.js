@@ -91,7 +91,26 @@ const startServer = async () => {
   await seedSettings();
 
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+    const env = process.env.NODE_ENV || 'development';
+    console.log('\n' + '═'.repeat(58));
+    console.log(`🚀  KARYOR API SERVER RUNNING  [${env.toUpperCase()}]`);
+    console.log('═'.repeat(58));
+    console.log('');
+    console.log(`   📡  API Server:     http://localhost:${PORT}`);
+    console.log('');
+    console.log('   ⚠️  Admin Panel aur Store alag-alag apps hain.');
+    console.log('');
+    console.log('   🛠️   Admin Panel (http://localhost:5174) ke liye:');
+    console.log('        npm run dev:admin');
+    console.log('');
+    console.log('   🛒  Store Frontend (http://localhost:5173) ke liye:');
+    console.log('        npm run dev');
+    console.log('');
+    console.log('   ✅  Sab ek saath start karne ke liye (recommended):');
+    console.log('        npm run dev:all');
+    console.log('');
+    console.log('   Press CTRL+C to stop this API server');
+    console.log('═'.repeat(58) + '\n');
   });
 };
 

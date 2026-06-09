@@ -112,8 +112,13 @@ function Navbar() {
                 </>
               ) : (
                 <li className="nav-item">
-                  <NavLink className="nav-link site-nav-cta" to="/checkout">
-                    Checkout
+                  <NavLink
+                    className={({ isActive }) =>
+                      `nav-link custom-link site-nav-link site-nav-cta${isActive ? ' active' : ''}`
+                    }
+                    to="/signin"
+                  >
+                    Sign In
                   </NavLink>
                 </li>
               )}

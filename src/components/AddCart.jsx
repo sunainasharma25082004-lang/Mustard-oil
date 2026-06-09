@@ -286,6 +286,9 @@ function AddCart() {
                 >
                   Proceed to Checkout
                 </button>
+                <p style={{ textAlign: 'center', fontSize: '0.75rem', color: '#777', marginTop: 10 }}>
+                  You'll sign in securely before payment to track your order
+                </p>
 
                 <button onClick={() => navigate('/products')} className="continue-btn">
                   Continue Shopping
