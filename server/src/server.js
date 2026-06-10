@@ -70,6 +70,17 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Friendly root route (prevents 404 spam when visiting base URL)
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Karyor API is running 🚀',
+    environment: process.env.NODE_ENV || 'production',
+    healthCheck: '/api/health',
+    note: 'This is the backend API. Frontend is served separately.'
+  });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
