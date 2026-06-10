@@ -16,6 +16,10 @@ function Navbar() {
   const { itemCount } = useCart();
   const { user, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const closeMenu = () => setMenuOpen(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -23,6 +27,17 @@ function Navbar() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Close menu on route change / outside clicks (simple)
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuOpen && !e.target.closest('.site-navbar')) {
+        closeMenu();
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [menuOpen]);
 
   return (
     <header className={`site-navbar ${scrolled ? 'site-navbar-scrolled' : ''}`}>
@@ -36,12 +51,11 @@ function Navbar() {
           </Link>
 
           <button
-            className="navbar-toggler custom-toggler"
+            className={`navbar-toggler custom-toggler ${menuOpen ? 'is-open' : ''}`}
             type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navMenu"
+            onClick={toggleMenu}
             aria-controls="navMenu"
-            aria-expanded="false"
+            aria-expanded={menuOpen}
             aria-label="Toggle navigation"
           >
             <span />
@@ -49,7 +63,7 @@ function Navbar() {
             <span />
           </button>
 
-          <div className="collapse navbar-collapse" id="navMenu">
+          <div className={`collapse navbar-collapse ${menuOpen ? 'show' : ''}`} id="navMenu">
             <ul className="navbar-nav ms-auto align-items-lg-center site-nav-list">
               {NAV_LINKS.map((link) => (
                 <li className="nav-item" key={link.to}>
@@ -59,6 +73,7 @@ function Navbar() {
                     }
                     to={link.to}
                     end={link.end}
+                    onClick={closeMenu}
                   >
                     {link.label}
                   </NavLink>
@@ -71,6 +86,7 @@ function Navbar() {
                     `nav-link custom-link site-nav-link site-nav-cart${isActive ? ' active' : ''}`
                   }
                   to="/addcart"
+                  onClick={closeMenu}
                 >
                   <i className="bi bi-bag" aria-hidden="true" />
                   Cart
@@ -86,6 +102,7 @@ function Navbar() {
                         `nav-link custom-link site-nav-link${isActive ? ' active' : ''}`
                       }
                       to="/my-orders"
+                      onClick={closeMenu}
                     >
                       My Orders
                     </NavLink>
@@ -96,6 +113,7 @@ function Navbar() {
                         `nav-link custom-link site-nav-link${isActive ? ' active' : ''}`
                       }
                       to="/profile"
+                      onClick={closeMenu}
                     >
                       Profile
                     </NavLink>
@@ -104,7 +122,10 @@ function Navbar() {
                     <button
                       type="button"
                       className="nav-link custom-link site-nav-link site-nav-logout"
-                      onClick={logout}
+                      onClick={() => {
+                        closeMenu();
+                        logout();
+                      }}
                     >
                       Logout
                     </button>
@@ -117,6 +138,7 @@ function Navbar() {
                       `nav-link custom-link site-nav-link site-nav-cta${isActive ? ' active' : ''}`
                     }
                     to="/signin"
+                    onClick={closeMenu}
                   >
                     Sign In
                   </NavLink>

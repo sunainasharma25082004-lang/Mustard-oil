@@ -1,27 +1,54 @@
+/* === Global Reset for Dark Admin === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  background: #0b0b0b;
+  color: #fff;
+  min-height: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Remove any default browser focus outlines that can look like white lines */
+:focus-visible {
+  outline: 2px solid #d4af37;
+  outline-offset: 2px;
+}
+
 .admin-layout {
   display: flex;
   min-height: 100vh;
+  width: 100%;
   background: #0b0b0b;
   color: #fff;
 }
 
 .admin-sidebar {
   width: 260px;
+  flex-shrink: 0;
   background: #111;
   border-right: 1px solid rgba(212, 175, 55, 0.15);
-  padding: 24px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
+  padding: 0;
   overflow-y: auto;
   z-index: 100;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-brand {
-  padding: 0 24px 24px;
+  padding: 24px 24px 20px;
   border-bottom: 1px solid rgba(212, 175, 55, 0.1);
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .admin-brand h2 {
@@ -46,7 +73,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 24px;
+  padding: 13px 24px;
   color: #bbb;
   text-decoration: none;
   transition: 0.2s;
@@ -62,8 +89,10 @@
 
 .admin-main {
   flex: 1;
-  margin-left: 260px;
   padding: 32px;
+  background: #0b0b0b;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .admin-header {
@@ -880,9 +909,12 @@
 @media (max-width: 900px) {
   .admin-sidebar {
     width: 100%;
+    height: auto;
+    max-height: none;
     position: relative;
     border-right: none;
     border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    flex-shrink: 0;
   }
 
   .admin-layout {
@@ -890,8 +922,8 @@
   }
 
   .admin-main {
-    margin-left: 0;
     padding: 20px;
+    min-height: auto;
   }
 
   .admin-form-grid {

@@ -409,8 +409,8 @@ font-size:24px;
 =================================== */
 
 .custom-toggler {
-  width: 54px;
-  height: 54px;
+  width: 40px;
+  height: 40px;
 
   border: 1px solid rgba(255,255,255,0.08) !important;
 
@@ -418,14 +418,14 @@ font-size:24px;
 
   backdrop-filter: blur(12px);
 
-  border-radius: 16px;
+  border-radius: 10px;
 
-  display: flex;
+  display: none; /* controlled by modern rules below */
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  gap: 5px;
+  gap: 4.5px;
 
   padding: 0;
 }
@@ -435,10 +435,10 @@ font-size:24px;
 }
 
 .custom-toggler span {
-  width: 24px;
-  height: 2.5px;
+  width: 18px;
+  height: 2px;
 
-  border-radius: 30px;
+  border-radius: 10px;
 
   background: linear-gradient(
     90deg,
@@ -454,15 +454,15 @@ font-size:24px;
 }
 
 .custom-toggler:hover span:nth-child(1) {
-  width: 16px;
+  width: 15px;
 }
 
 .custom-toggler:hover span:nth-child(2) {
-  width: 30px;
+  width: 20px;
 }
 
 .custom-toggler:hover span:nth-child(3) {
-  width: 20px;
+  width: 15px;
 }
 
 /* ===================================
@@ -505,8 +505,9 @@ font-size:24px;
   }
 
   .custom-toggler {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
+    display: flex;
   }
 }
 
@@ -708,7 +709,8 @@ font-size:24px;
   max-height:100%;
   max-width:100%;
   width:100%;
-  object-fit:cover;
+  object-fit:contain;
+  object-position:center bottom;
   border-radius:14px;
   transition:.5s ease;
   filter:
@@ -796,11 +798,12 @@ font-size:24px;
   }
 
   .product-image{
-    height:250px;
+    height:270px;
   }
 
   .product-image-inner{
-    max-height:220px;
+    max-height:245px;
+    padding:16px 12px;
   }
 
 }
@@ -820,11 +823,13 @@ font-size:24px;
   }
 
   .product-image{
-    height:230px;
+    height:250px;
+    padding:10px 14px 2px;
   }
 
   .product-image-inner{
-    max-height:200px;
+    max-height:225px;
+    padding:10px 8px;
   }
 
 }
@@ -1464,6 +1469,8 @@ width:100%;
 
 .product-image-box .product-showcase-img{
   max-height:300px;
+  object-fit: contain;
+  object-position: center bottom;
 }
 
 .premium-product-card:hover .product-showcase-img{
@@ -1611,6 +1618,8 @@ width:100%;
 
 .product-detail-image-wrap .product-showcase-img {
   max-height: 360px;
+  object-fit: contain;
+  object-position: center bottom;
 }
 
 .product-detail-info h1 {
@@ -1799,7 +1808,9 @@ width:100%;
   }
 
   .product-image-box .product-showcase-img {
-    max-height: 250px;
+    max-height: 280px;
+    object-fit: contain;
+    object-position: center bottom;
   }
 
   .product-detail-page {
@@ -1817,7 +1828,9 @@ width:100%;
   }
 
   .product-detail-image-wrap .product-showcase-img {
-    max-height: 300px;
+    max-height: 320px;
+    object-fit: contain;
+    object-position: center bottom;
   }
 
   .product-detail-info h1 {
@@ -1885,11 +1898,12 @@ width:100%;
   color:#d4af37 !important;
 }
 
-/* HAMBURGER */
+/* HAMBURGER (legacy styles - overridden by modern) */
 .custom-toggler{
   border:none;
   box-shadow:none !important;
   padding:0;
+  display: none;
 }
 
 .custom-toggler span{
@@ -1922,6 +1936,12 @@ width:100%;
 
   .custom-link{
     margin:10px 0;
+  }
+
+  .custom-toggler {
+    width: 40px;
+    height: 40px;
+    display: flex;
   }
 }
 
@@ -2059,15 +2079,74 @@ width:100%;
 }
 
 .site-navbar .custom-toggler {
-  width: 46px;
-  height: 46px;
+  width: 40px;
+  height: 40px;
   border: 1px solid rgba(212, 175, 55, 0.25) !important;
   background: rgba(255, 255, 255, 0.04);
-  border-radius: 12px;
+  border-radius: 10px;
+  display: none; /* hidden on desktop by default */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4.5px;
+  padding: 0;
+  transition: background 0.2s ease;
 }
 
 .site-navbar .custom-toggler span {
+  display: block;
+  width: 18px;
+  height: 2px;
   background: linear-gradient(90deg, #ffe07a, #d4af37);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+/* Hover effect on desktop/mobile */
+.site-navbar .custom-toggler:hover {
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.site-navbar .custom-toggler:hover span:nth-child(1) { width: 16px; }
+.site-navbar .custom-toggler:hover span:nth-child(2) { width: 20px; }
+.site-navbar .custom-toggler:hover span:nth-child(3) { width: 16px; }
+
+/* Show hamburger only on mobile */
+/* Desktop: always hide */
+@media (min-width: 992px) {
+  .site-navbar .custom-toggler {
+    display: none !important;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .site-navbar .custom-toggler {
+    display: flex;
+  }
+}
+
+/* Hamburger -> Close (X) animation when menu is open */
+.site-navbar .custom-toggler.is-open {
+  background: rgba(212, 175, 55, 0.12);
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+.site-navbar .custom-toggler.is-open span {
+  background: #d4af37;
+}
+
+.site-navbar .custom-toggler.is-open span:nth-child(1) {
+  transform: rotate(45deg) translate(2.5px, 2.5px);
+  width: 18px;
+}
+
+.site-navbar .custom-toggler.is-open span:nth-child(2) {
+  opacity: 0;
+}
+
+.site-navbar .custom-toggler.is-open span:nth-child(3) {
+  transform: rotate(-45deg) translate(2.5px, -2.5px);
+  width: 18px;
 }
 
 @media (max-width: 991px) {

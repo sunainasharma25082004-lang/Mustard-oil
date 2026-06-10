@@ -1,0 +1,93 @@
+# Render Blueprint - Karyor (Mustard Oil) Deployment
+# Same folder structure preserved
+#
+# Deploy steps:
+# 1. Push this file + code to GitHub
+# 2. In Render Dashboard → New → Blueprint
+# 3. Connect your repo → it will auto-detect render.yaml
+# 4. Fill the environment variables marked as sync: false in the dashboard
+
+services:
+  # ============================================
+  # 1. BACKEND API (Node.js + Express + MongoDB)
+  # ============================================
+  - type: web
+    name: karyor-api
+    env: node
+    region: oregon # change to frankfurt/singapore if closer to users
+    plan: free # change to starter if you need always-on + disk
+    rootDir: .
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000 # Render default, can be ignored
+      # --- REQUIRED: Set these in Render Dashboard (not committed) ---
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      # --- CORS: Will be updated after frontend URLs are known ---
+      - key: CLIENT_URL
+        value: https://karyor-store.onrender.com,https://karyor-admin.onrender.com
+      # Optional
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: ADMIN_NAME
+        value: Karyor Admin
+
+    # IMPORTANT for file uploads (product images from admin)
+    # Free plan does NOT support disk. Use "starter" plan + uncomment below.
+    # disk:
+    #   name: karyor-uploads
+    #   mountPath: /opt/render/project/src/server/uploads
+    #   sizeGB: 1
+
+  # ============================================
+  # 2. MAIN STORE FRONTEND (Customer facing)
+  # ============================================
+  - type: static_site
+    name: karyor-store
+    rootDir: .
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      # IMPORTANT: Update this to your actual backend URL after first deploy
+      - key: VITE_API_URL
+        value: https://karyor-api.onrender.com
+      # Public Razorpay key (safe to commit or set in dashboard)
+      - key: VITE_RAZORPAY_KEY_ID
+        sync: false
+      # Optional: helps admin links if needed
+      - key: VITE_STORE_URL
+        value: https://karyor-store.onrender.com
+
+  # ============================================
+  # 3. ADMIN PANEL (Separate from store)
+  # ============================================
+  - type: static_site
+    name: karyor-admin
+    rootDir: .
+    buildCommand: npm install && cd admin && npm install && npm run build
+    staticPublishPath: ./admin/dist
+    envVars:
+      # Must point to the backend
+      - key: VITE_API_URL
+        value: https://karyor-api.onrender.com
+      # This is critical so admin can show product images correctly
+      - key: VITE_STORE_URL
+        value: https://karyor-store.onrender.com
+      # Optional: expose public razorpay key in admin too if needed
+      - key: VITE_RAZORPAY_KEY_ID
+        sync: false
