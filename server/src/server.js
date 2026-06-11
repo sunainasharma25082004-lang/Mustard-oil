@@ -26,7 +26,8 @@ dns.setServers(['8.8.8.8', '1.1.1.1']);
 const app = express();
 
 const allowedOrigins = (
-  process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:5174'
+  process.env.CLIENT_URL ||  "https://mustard-oil-frontend.onrender.com",
+  "https://mustard-oil-admin-9itt.onrender.com"
 )
   .split(',')
   .map((origin) => origin.trim())
