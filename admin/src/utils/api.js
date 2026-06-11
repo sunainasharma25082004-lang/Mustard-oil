@@ -1,6 +1,10 @@
 const API_URL = import.meta.env.VITE_API_URL || '';
 const TOKEN_KEY = 'karyor_admin_token';
 
+if (typeof window !== 'undefined') {
+  console.log('%c[Karyor Admin API] Base URL configured as:', 'color:#666', API_URL || '(empty → wrong in production)');
+}
+
 export async function apiFetch(path, options = {}) {
   const token = localStorage.getItem(TOKEN_KEY);
 

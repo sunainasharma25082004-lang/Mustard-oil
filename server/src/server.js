@@ -29,21 +29,32 @@ const allowedOrigins = (
   process.env.CLIENT_URL || 'http://localhost:5173,http://localhost:5174'
 )
   .split(',')
-  .map((origin) => origin.trim());
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   })
 );
+
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(null, false);
+      // Allow requests with no origin (mobile apps, curl, server-to-server, etc.)
+      if (!origin) {
+        return callback(null, true);
       }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Log blocked origins — very useful for debugging deploys
+      console.warn(`[CORS] Blocked request from origin: ${origin}`);
+      console.warn(`[CORS] Allowed origins: ${allowedOrigins.join(', ') || '(none set)'}`);
+
+      return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
   })
@@ -67,6 +78,7 @@ app.get('/api/health', (req, res) => {
     message: 'Karyor API is running',
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString(),
+    allowedOrigins: allowedOrigins,
   });
 });
 
@@ -77,7 +89,8 @@ app.get('/', (req, res) => {
     message: 'Karyor API is running 🚀',
     environment: process.env.NODE_ENV || 'production',
     healthCheck: '/api/health',
-    note: 'This is the backend API. Frontend is served separately.'
+    allowedOrigins,
+    note: 'This is the backend API. Frontend is served separately. Check /api/health for more info.'
   });
 });
 

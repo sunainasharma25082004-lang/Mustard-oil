@@ -1,5 +1,9 @@
 const API_URL = import.meta.env.VITE_API_URL || '';
 
+if (typeof window !== 'undefined') {
+  console.log('%c[Karyor API] Base URL configured as:', 'color:#666', API_URL || '(empty → will use relative path, likely wrong in production)');
+}
+
 export async function apiFetch(path, options = {}) {
   const token = localStorage.getItem('karyor_token');
 

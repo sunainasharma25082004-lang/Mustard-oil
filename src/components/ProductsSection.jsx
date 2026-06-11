@@ -13,14 +13,25 @@ const FALLBACK_PRODUCTS = [
 
 function ProductsSection() {
   const [products, setProducts] = useState(FALLBACK_PRODUCTS);
+  const [apiFailed, setApiFailed] = useState(false);
 
   useEffect(() => {
+    const apiBase = import.meta.env.VITE_API_URL || '(not set - calling relative)';
+    console.log('[ProductsSection] Using API base:', apiBase);
+
     productApi
       .getAll()
       .then((res) => {
-        if (res.data?.length) setProducts(res.data);
+        if (res.data?.length) {
+          setProducts(res.data);
+          setApiFailed(false);
+        }
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error('[ProductsSection] Failed to load live products from API:', err);
+        setApiFailed(true);
+        // keep fallback products visible
+      });
   }, []);
 
   return (
@@ -33,6 +44,11 @@ function ProductsSection() {
             Crafted from carefully selected mustard seeds,
             delivering purity, aroma and authentic taste.
           </p>
+          {apiFailed && (
+            <p style={{ color: '#b45309', fontSize: '13px', marginTop: '8px' }}>
+              ⚠️ Live data nahi aa raha — yeh demo products hain (backend connect nahi ho raha)
+            </p>
+          )}
         </div>
 
         <div className="row g-4 align-items-stretch">
