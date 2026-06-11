@@ -25,13 +25,10 @@ dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const app = express();
 
-const allowedOrigins = (
-  process.env.CLIENT_URL ||  "https://mustard-oil-frontend.onrender.com",
+const allowedOrigins = [
+  "https://mustard-oil-frontend.onrender.com",
   "https://mustard-oil-admin-9itt.onrender.com"
-)
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+];
 
 app.use(
   helmet({
@@ -41,25 +38,24 @@ app.use(
 
 app.use(
   cors({
-    origin(origin, callback) {
-      // Allow requests with no origin (mobile apps, curl, server-to-server, etc.)
-      if (!origin) {
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      const cleanOrigin = origin.replace(/\/$/, "");
+
+      if (allowedOrigins.includes(cleanOrigin)) {
         return callback(null, true);
       }
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      // Log blocked origins — very useful for debugging deploys
-      console.warn(`[CORS] Blocked request from origin: ${origin}`);
-      console.warn(`[CORS] Allowed origins: ${allowedOrigins.join(', ') || '(none set)'}`);
-
-      return callback(new Error('Not allowed by CORS'));
+      console.log("[CORS BLOCKED]", origin);
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
+
+app.options("*", cors());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
