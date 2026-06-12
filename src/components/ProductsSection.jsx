@@ -4,16 +4,11 @@ import '../styles/main.css';
 import { productApi } from '../utils/api';
 import { resolveImageUrl } from '../utils/imageUrl';
 
-const FALLBACK_PRODUCTS = [
-  { slug: '500ml-mustard-oil', size: '500 ML', description: 'Pure Kachi Ghani Mustard Oil', image: '/product-500ml.jpg', badge: 'Best Seller' },
-  { slug: '1-litre-mustard-oil', size: '1 Litre', description: 'Rich Aroma & Natural Purity', image: '/product-1l.jpg', badge: 'Popular' },
-  { slug: '2-litre-mustard-oil', size: '2 Litre', description: 'Traditional Cold Pressed Process', image: '/product-2l.jpg', badge: 'Family Pack' },
-  { slug: '5-litre-mustard-oil', size: '5 Litre', description: 'Premium Economy Pack', image: '/product-5l.jpg', badge: 'Premium' },
-];
-
 function ProductsSection() {
-  const [products, setProducts] = useState(FALLBACK_PRODUCTS);
-  const [apiFailed, setApiFailed] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     const apiBase = import.meta.env.VITE_API_URL || '(not set - calling relative)';
@@ -22,17 +17,16 @@ function ProductsSection() {
     productApi
       .getAll()
       .then((res) => {
-        if (res.data?.length) {
-          setProducts(res.data);
-          setApiFailed(false);
-        }
+        setProducts(res.data || []);
       })
       .catch((err) => {
         console.error('[ProductsSection] Failed to load live products from API:', err);
-        setApiFailed(true);
-        // keep fallback products visible
+        setError(err.message || 'Failed to load products');
+      })
+      .finally(() => {
+        setLoading(false);
       });
-  }, []);
+  }, [retryKey]);
 
   return (
     <section className="premium-products">
@@ -44,44 +38,70 @@ function ProductsSection() {
             Crafted from carefully selected mustard seeds,
             delivering purity, aroma and authentic taste.
           </p>
-          {apiFailed && (
-            <p style={{ color: '#b45309', fontSize: '13px', marginTop: '8px' }}>
-              ⚠️ Live data nahi aa raha — yeh demo products hain (backend connect nahi ho raha)
+
+          {loading && (
+            <p style={{ color: '#d4af37', fontSize: '14px', marginTop: '8px' }}>
+              Loading products...
+            </p>
+          )}
+
+          {error && !loading && (
+            <p style={{ color: '#ff6b6b', fontSize: '13px', marginTop: '8px' }}>
+              {error}.{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setLoading(true);
+                  setError('');
+                  setRetryKey((k) => k + 1);
+                }}
+                style={{ background: 'none', border: 'none', color: '#b45309', textDecoration: 'underline', cursor: 'pointer', padding: 0 }}
+              >
+                Retry
+              </button>
+            </p>
+          )}
+
+          {!loading && !error && products.length === 0 && (
+            <p style={{ color: '#666', fontSize: '14px', marginTop: '8px' }}>
+              No products available at the moment.
             </p>
           )}
         </div>
 
-        <div className="row g-4 align-items-stretch">
-          {products.map((product) => (
-            <div className="col-lg-3 col-md-6" key={product._id || product.slug}>
-              <Link
-                to={`/products/${product.slug || product._id}`}
-                className="premium-card premium-card-link"
-                aria-label={`View ${product.size || product.name}`}
-              >
-                <div className="premium-card-bg" />
+        {!loading && !error && products.length > 0 && (
+          <div className="row g-4 align-items-stretch">
+            {products.map((product) => (
+              <div className="col-lg-3 col-md-6" key={product._id || product.slug}>
+                <Link
+                  to={`/products/${product.slug || product._id}`}
+                  className="premium-card premium-card-link"
+                  aria-label={`View ${product.size || product.name}`}
+                >
+                  <div className="premium-card-bg" />
 
-                <div className="premium-tag">{product.badge || product.tag}</div>
+                  <div className="premium-tag">{product.badge || product.tag}</div>
 
-                <div className="product-image">
-                  <div className="product-image-inner">
-                    <img src={resolveImageUrl(product.image)} alt={product.size || product.name} className="product-showcase-img" />
+                  <div className="product-image">
+                    <div className="product-image-inner">
+                      <img src={resolveImageUrl(product.image)} alt={product.size || product.name} className="product-showcase-img" />
+                    </div>
                   </div>
-                </div>
 
-                <div className="product-content">
-                  <h4>{product.size || product.name || product.title}</h4>
-                  <p>{product.description}</p>
-                  {product.price && (
-                    <p className="premium-card-price">₹{product.price}</p>
-                  )}
+                  <div className="product-content">
+                    <h4>{product.size || product.name || product.title}</h4>
+                    <p>{product.description}</p>
+                    {product.price && (
+                      <p className="premium-card-price">₹{product.price}</p>
+                    )}
 
-                  <span className="premium-btn">View Product</span>
-                </div>
-              </Link>
-            </div>
-          ))}
-        </div>
+                    <span className="premium-btn">View Product</span>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -11,14 +11,15 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     productApi
       .getAll()
-      .then((res) => setProducts(res.data))
-      .catch((err) => setError(err.message))
+      .then((res) => setProducts(res.data || []))
+      .catch((err) => setError(err.message || 'Failed to load products'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [retryKey]);
 
   const handleAddToCart = (product) => {
     addToCart(product);
@@ -44,57 +45,76 @@ function Products() {
           )}
 
           {error && (
-            <p style={{ textAlign: 'center', color: '#ff6b6b' }}>{error}</p>
+            <p style={{ textAlign: 'center', color: '#ff6b6b' }}>
+              {error}.{' '}
+              <button
+                type="button"
+                onClick={() => {
+                  setLoading(true);
+                  setError('');
+                  setRetryKey((k) => k + 1);
+                }}
+                style={{ background: 'none', border: 'none', color: '#d4af37', textDecoration: 'underline', cursor: 'pointer', padding: 0, fontSize: 'inherit' }}
+              >
+                Retry
+              </button>
+            </p>
           )}
 
-          <div className="row g-4 justify-content-center">
+          {!loading && !error && products.length === 0 && (
+            <p style={{ textAlign: 'center', color: '#666' }}>
+              No products available at the moment. Please check back later.
+            </p>
+          )}
 
-            {products.map((item) => (
-              <div className="col-lg-5 col-md-6" key={item._id}>
-                <div className="premium-product-card">
+          {!loading && !error && products.length > 0 && (
+            <div className="row g-4 justify-content-center">
+              {products.map((item) => (
+                <div className="col-lg-5 col-md-6" key={item._id}>
+                  <div className="premium-product-card">
 
-                  <div className="product-badge">
-                    {item.badge}
-                  </div>
-
-                  <div className="product-image-box">
-                    <div className="product-image-inner product-image-inner-lg">
-                      <img
-                        src={resolveImageUrl(item.image)}
-                        alt={item.name}
-                        className="img-fluid product-showcase-img"
-                      />
+                    <div className="product-badge">
+                      {item.badge}
                     </div>
-                  </div>
 
-                  <div className="product-content">
-                    <h3>{item.size || item.name}</h3>
-                    <p>{item.description}</p>
-                    <p style={{ color: '#d4af37', fontWeight: 700, fontSize: '1.2rem' }}>
-                      ₹{item.price}
-                    </p>
-
-                    <div className="product-card-actions">
-                      <Link
-                        to={`/products/${item.slug || item._id}`}
-                        className="product-view-btn"
-                      >
-                        View Details
-                      </Link>
-                      <button
-                        onClick={() => handleAddToCart(item)}
-                        className="golden-btn"
-                      >
-                        Add to Cart
-                      </button>
+                    <div className="product-image-box">
+                      <div className="product-image-inner product-image-inner-lg">
+                        <img
+                          src={resolveImageUrl(item.image)}
+                          alt={item.name}
+                          className="img-fluid product-showcase-img"
+                        />
+                      </div>
                     </div>
-                  </div>
 
+                    <div className="product-content">
+                      <h3>{item.size || item.name}</h3>
+                      <p>{item.description}</p>
+                      <p style={{ color: '#d4af37', fontWeight: 700, fontSize: '1.2rem' }}>
+                        ₹{item.price}
+                      </p>
+
+                      <div className="product-card-actions">
+                        <Link
+                          to={`/products/${item.slug || item._id}`}
+                          className="product-view-btn"
+                        >
+                          View Details
+                        </Link>
+                        <button
+                          onClick={() => handleAddToCart(item)}
+                          className="golden-btn"
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
                 </div>
-              </div>
-            ))}
-
-          </div>
+              ))}
+            </div>
+          )}
 
         </div>
       </section>
