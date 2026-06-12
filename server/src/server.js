@@ -25,10 +25,28 @@ dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const app = express();
 
-const allowedOrigins = [
-  "https://mustard-oil-frontend.onrender.com",
-  "https://mustard-oil-admin-9itt.onrender.com"
+// CORS allowed origins - supports CLIENT_URL env (comma separated) + sensible defaults
+const envOrigins = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((o) => o.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+
+const defaultOrigins = [
+  'https://mustard-oil-frontend.onrender.com',
+  'https://mustard-oil-admin-9itt.onrender.com',
+  'https://karyor.com',
+  'https://www.karyor.com',
+  'https://karyor-store.onrender.com',
+  'https://karyor-admin.onrender.com',
+  // Dev / local
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+  'http://localhost:3000',
 ];
+
+const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
 
 app.use(
   helmet({
@@ -44,6 +62,11 @@ app.use(
       const cleanOrigin = origin.replace(/\/$/, "");
 
       if (allowedOrigins.includes(cleanOrigin)) {
+        return callback(null, true);
+      }
+
+      // Allow any localhost / 127.0.0.1 for local development (any port)
+      if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(cleanOrigin)) {
         return callback(null, true);
       }
 

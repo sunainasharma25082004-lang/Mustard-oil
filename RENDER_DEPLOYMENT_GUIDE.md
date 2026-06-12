@@ -31,7 +31,7 @@ Yeh sab **same folder structure** ke saath deploy hoga using `render.yaml`.
 | `RAZORPAY_KEY_SECRET` | `xxxxxxxxxxxx` | ✅ |
 | `ADMIN_EMAIL` | `admin@yourdomain.com` | ✅ |
 | `ADMIN_PASSWORD` | strong password | ✅ |
-| `CLIENT_URL` | `https://karyor-store.onrender.com,https://karyor-admin.onrender.com` | ✅ |
+| `CLIENT_URL` | `https://karyor.com,https://www.karyor.com,https://karyor-store.onrender.com,https://karyor-admin.onrender.com` | ✅ |
 | `NODE_ENV` | `production` | ✅ |
 | `ADMIN_NAME` | `Karyor Admin` | Optional |
 
@@ -138,11 +138,11 @@ Yeh sab **same folder structure** ke saath deploy hoga using `render.yaml`.
 
 Jab sab deploy ho jaye:
 
-1. Backend settings mein `CLIENT_URL` update karo:
+1. Backend settings mein `CLIENT_URL` update karo (include custom domain + all frontends):
    ```
-   https://karyor-store.onrender.com,https://karyor-admin.onrender.com
+   https://karyor.com,https://www.karyor.com,https://karyor-store.onrender.com,https://karyor-admin.onrender.com
    ```
-   (Manual deploy karna padega backend ka)
+   (Manual deploy/restart karna padega backend ka taaki env apply ho)
 
 2. Agar frontend mein galat API URL hai to:
    - Static Site settings → Environment → update `VITE_API_URL`
@@ -187,7 +187,7 @@ Agar abhi jaldi chahiye to Option 1 use karo.
 
 | Issue | Solution |
 |-------|----------|
-| CORS error | `CLIENT_URL` mein dono frontend URLs daalo (comma separated) |
+| CORS error | `CLIENT_URL` mein sab frontend URLs daalo including https://karyor.com (comma separated). Phir backend restart/deploy. |
 | Images nahi dikh rahe (admin mein) | `VITE_STORE_URL` set karo admin ke liye |
 | `/uploads` wali images nahi aa rahi | `VITE_API_URL` backend ka URL hona chahiye |
 | Admin login nahi ho raha | `ADMIN_EMAIL` / `ADMIN_PASSWORD` sahi daala? Backend restart kiya? |

@@ -40,7 +40,7 @@ services:
         sync: false
       # --- CORS: Will be updated after frontend URLs are known ---
       - key: CLIENT_URL
-        value: https://karyor-store.onrender.com,https://karyor-admin.onrender.com
+        value: https://karyor.com,https://www.karyor.com,https://karyor-store.onrender.com,https://karyor-admin.onrender.com
       # Optional
       - key: JWT_EXPIRES_IN
         value: 7d
