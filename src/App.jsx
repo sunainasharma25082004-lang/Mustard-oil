@@ -35,6 +35,17 @@ function App() {
             </Route>
             <Route path="/signin" element={<SignIn />} />
             <Route path="/admin/*" element={<Navigate to="/" replace />} />
+            {/* SPA catch-all: after the static site rewrite serves index.html, React Router shows this for truly unknown paths */}
+            <Route
+              path="*"
+              element={
+                <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '2rem' }}>
+                  <h2>404 — Page Not Found</h2>
+                  <p>The page you’re looking for doesn’t exist or has been moved.</p>
+                  <a href="/" style={{ marginTop: '1rem', color: '#d4af37', textDecoration: 'underline' }}>Go back to Home</a>
+                </div>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </CartProvider>

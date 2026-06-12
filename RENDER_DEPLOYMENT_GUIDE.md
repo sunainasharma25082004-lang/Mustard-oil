@@ -180,6 +180,7 @@ Agar abhi jaldi chahiye to Option 1 use karo.
 - Pehli baar admin seed hoga (`.env` wale credentials se)
 - Free services 15 min inactivity ke baad **spin down** ho jaate hain (cold start lagta hai)
 - Custom domain add karna ho to Static Site / Web Service settings mein jaake "Custom Domain" add karo
+- **Important for SPA (React Router)**: Page refresh on any route other than `/` (e.g. /products, /dashboard) will 404 unless you have rewrite rule (we have added in render.yaml under both static sites: `routes` → rewrite `/*` to `/index.html`). After any change to render.yaml, re-deploy the static sites.
 
 ---
 
@@ -192,6 +193,7 @@ Agar abhi jaldi chahiye to Option 1 use karo.
 | `/uploads` wali images nahi aa rahi | `VITE_API_URL` backend ka URL hona chahiye |
 | Admin login nahi ho raha | `ADMIN_EMAIL` / `ADMIN_PASSWORD` sahi daala? Backend restart kiya? |
 | Build fail ho raha | `npm install` command sahi hai kya? Node version check karo (Render default 18/20 hota hai) |
+| Page refresh (F5) on /products, /about, /dashboard etc. gives 404 or "not found" | This is normal for React SPA. We added `routes` rewrite in `render.yaml` (SPA fallback to index.html). Re-deploy the static sites (karyor-store and karyor-admin) after updating render.yaml or add the rewrite manually in Render dashboard under the static site → "Redirects and Rewrites". |
 
 ---
 
