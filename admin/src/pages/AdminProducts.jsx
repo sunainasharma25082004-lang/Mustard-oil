@@ -260,29 +260,12 @@ function AdminProducts() {
             <tbody>
               {products.map((p) => (
                 <tr key={p._id}>
-                  <td style={{ position: 'relative' }}>
+                  <td>
                     <img
                       src={resolveImageUrl(p.image)}
                       alt={p.name}
                       className="admin-product-img"
                     />
-                    {p.originalPrice && p.originalPrice > p.price && (
-                      <div style={{
-                        position: 'absolute',
-                        top: '4px',
-                        right: '4px',
-                        background: '#d4af37',
-                        color: '#111',
-                        fontSize: '0.6rem',
-                        fontWeight: 900,
-                        padding: '2px 5px',
-                        borderRadius: '2px',
-                        border: '1px solid #111',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
-                      }}>
-                        {Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)}% OFF
-                      </div>
-                    )}
                   </td>
                   <td>
                     <strong style={{ color: '#fff' }}>{p.name}</strong>
@@ -552,17 +535,6 @@ function AdminProducts() {
                               Discounted
                             </span>
                             <span style={{ color: '#d4af37', fontWeight: 700, fontSize: '1.05rem' }}>₹{curr}</span>
-                            <span style={{ 
-                              fontSize: '0.6rem', 
-                              background: 'rgba(212,175,55,0.15)', 
-                              color: '#d4af37', 
-                              padding: '1px 5px', 
-                              borderRadius: '3px',
-                              fontWeight: 600,
-                              border: '1px solid rgba(212,175,55,0.35)'
-                            }}>
-                              {disc}% OFF
-                            </span>
                           </div>
                         </div>
                       );

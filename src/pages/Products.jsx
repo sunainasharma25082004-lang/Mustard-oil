@@ -85,35 +85,6 @@ function Products() {
                           className="img-fluid product-showcase-img"
                         />
                       </div>
-
-                      {/* Discount badge on top of the card image */}
-                      {(() => {
-                        const orig = Number(item.originalPrice);
-                        const curr = Number(item.price);
-                        if (orig && orig > curr) {
-                          const discount = Math.round(((orig - curr) / orig) * 100);
-                          return (
-                            <div style={{
-                              position: 'absolute',
-                              top: '8px',
-                              right: '8px',
-                              background: '#d4af37',
-                              color: '#111',
-                              fontSize: '0.75rem',
-                              fontWeight: 900,
-                              padding: '5px 12px',
-                              borderRadius: '6px',
-                              boxShadow: '0 3px 10px rgba(212,175,55,0.45)',
-                              zIndex: 10,
-                              whiteSpace: 'nowrap',
-                              border: '2px solid #111'
-                            }}>
-                              {discount}% OFF
-                            </div>
-                          );
-                        }
-                        return null;
-                      })()}
                     </div>
 
                     <div className="product-content">
@@ -153,18 +124,6 @@ function Products() {
                                   lineHeight: 1
                                 }}>
                                   ₹{curr}
-                                </span>
-                                <span style={{ 
-                                  fontSize: '0.65rem', 
-                                  background: 'rgba(212,175,55,0.15)', 
-                                  color: '#d4af37', 
-                                  padding: '1px 5px', 
-                                  borderRadius: '3px',
-                                  fontWeight: 600,
-                                  whiteSpace: 'nowrap',
-                                  border: '1px solid rgba(212,175,55,0.35)'
-                                }}>
-                                  {discount}% OFF
                                 </span>
                               </div>
                             </div>

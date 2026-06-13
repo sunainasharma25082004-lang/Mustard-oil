@@ -77,35 +77,6 @@ function ProductDetail() {
                   <div className="product-image-inner product-image-inner-xl">
                     <img src={resolveImageUrl(product.image)} alt={product.name} className="product-showcase-img" />
                   </div>
-
-                  {/* Discount badge on product image (same as cards) */}
-                  {(() => {
-                    const orig = Number(product.originalPrice);
-                    const curr = Number(product.price);
-                    if (orig && orig > curr) {
-                      const discount = Math.round(((orig - curr) / orig) * 100);
-                      return (
-                        <div style={{
-                          position: 'absolute',
-                          top: '58px',
-                          right: '12px',
-                          background: '#d4af37',
-                          color: '#111',
-                          fontSize: '0.8rem',
-                          fontWeight: 900,
-                          padding: '6px 12px',
-                          borderRadius: '4px',
-                          boxShadow: '0 4px 14px rgba(212,175,55,0.45)',
-                          zIndex: 10,
-                          whiteSpace: 'nowrap',
-                          border: '2px solid #111'
-                        }}>
-                          {discount}% OFF
-                        </div>
-                      );
-                    }
-                    return null;
-                  })()}
                 </div>
               </div>
 
@@ -123,47 +94,33 @@ function ProductDetail() {
                       const savings = orig - curr;
                       return (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                              <span style={{ 
-                                textDecoration: 'line-through', 
-                                color: '#d4af37', 
-                                fontSize: '1.1rem',
-                                fontWeight: 500,
-                                opacity: 0.75
-                              }}>
-                                ₹{orig}
-                              </span>
-                              <span style={{ 
-                                fontSize: '0.68rem', 
-                                color: '#b89c5e', 
-                                fontWeight: 700,
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.6px'
-                              }}>
-                                Discounted
-                              </span>
-                              <span className="product-detail-price" style={{ fontSize: '1.65rem' }}>₹{curr}</span>
-                              <span style={{ 
-                                fontSize: '0.75rem', 
-                                background: 'rgba(212,175,55,0.15)', 
-                                color: '#d4af37', 
-                                padding: '3px 9px', 
-                                borderRadius: 4,
-                                fontWeight: 700,
-                                letterSpacing: '0.3px',
-                                border: '1px solid rgba(212,175,55,0.4)'
-                              }}>
-                                {discount}% OFF
-                              </span>
-                            </div>
-                            <div style={{ 
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                            <span style={{ 
+                              textDecoration: 'line-through', 
                               color: '#d4af37', 
-                              fontSize: '0.85rem', 
-                              fontWeight: 600 
+                              fontSize: '1.1rem',
+                              fontWeight: 500,
+                              opacity: 0.75
                             }}>
-                              You save ₹{savings}
-                            </div>
+                              ₹{orig}
+                            </span>
+                            <span style={{ 
+                              fontSize: '0.68rem', 
+                              color: '#b89c5e', 
+                              fontWeight: 700,
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.6px'
+                            }}>
+                              Discounted
+                            </span>
+                            <span className="product-detail-price" style={{ fontSize: '1.65rem' }}>₹{curr}</span>
+                          </div>
+                          <div style={{ 
+                            color: '#d4af37', 
+                            fontSize: '0.85rem', 
+                            fontWeight: 600 
+                          }}>
+                            You save ₹{savings}
                           </div>
                         </div>
                       );
