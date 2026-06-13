@@ -57,7 +57,7 @@ export default function Testimonials() {
   ];
 
   const [reviews, setReviews] = useState([]);
-  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [newReview, setNewReview] = useState({
     name: user?.name || "",
     location: "",
@@ -121,7 +121,7 @@ export default function Testimonials() {
       rating: 5,
       text: ""
     });
-    setShowReviewForm(false);
+    setShowModal(false);
     setSubmitMessage("Thank you! Your review has been added.");
 
     // Clear success message after 4 seconds
@@ -224,13 +224,13 @@ export default function Testimonials() {
             <h2>What Our Customers Say</h2>
             <button
               onClick={() => {
-                setShowReviewForm(!showReviewForm);
+                setShowModal(true);
                 setSubmitMessage("");
               }}
               className="golden-btn"
               style={{ fontSize: "0.9rem", padding: "10px 20px" }}
             >
-              {showReviewForm ? "Close" : "✍️ Write a Review"}
+              ✍️ Write a Review
             </button>
           </div>
 
@@ -261,109 +261,169 @@ export default function Testimonials() {
             ))}
           </div>
 
-          {/* ADD REVIEW FORM */}
-          {showReviewForm && (
-            <div style={{
-              marginTop: "32px",
-              background: "linear-gradient(180deg, #1a1a1a, #101010)",
-              border: "1px solid rgba(212,175,55,0.2)",
-              borderRadius: "20px",
-              padding: "28px",
-              maxWidth: "620px",
-              marginLeft: "auto",
-              marginRight: "auto"
-            }}>
-              <h3 style={{ color: "#d4af37", marginBottom: "8px", fontSize: "1.3rem" }}>
-                Share Your Experience
-              </h3>
-              <p style={{ color: "#888", marginBottom: "20px", fontSize: "0.95rem" }}>
-                Your feedback helps other families discover pure Karyor oil.
-              </p>
-
-              <form onSubmit={submitReview}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
+          {/* REVIEW POPUP / MODAL */}
+          {showModal && (
+            <div
+              onClick={() => setShowModal(false)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0, 0, 0, 0.75)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 2000,
+                padding: "20px"
+              }}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  background: "linear-gradient(180deg, #1a1a1a, #101010)",
+                  border: "1px solid rgba(212,175,55,0.3)",
+                  borderRadius: "20px",
+                  width: "100%",
+                  maxWidth: "520px",
+                  maxHeight: "90vh",
+                  overflowY: "auto",
+                  boxShadow: "0 25px 60px rgba(0,0,0,0.6)"
+                }}
+              >
+                {/* Modal Header */}
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "20px 24px",
+                  borderBottom: "1px solid rgba(212,175,55,0.15)"
+                }}>
                   <div>
-                    <label style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", color: "#aaa" }}>Your Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={newReview.name}
-                      onChange={handleReviewChange}
-                      placeholder="Your name"
-                      style={{
-                        width: "100%",
-                        padding: "12px 14px",
-                        background: "#111",
-                        border: "1px solid rgba(212,175,55,0.25)",
-                        borderRadius: "10px",
-                        color: "#fff",
-                        fontSize: "1rem"
-                      }}
-                    />
+                    <h3 style={{ color: "#d4af37", margin: 0, fontSize: "1.35rem" }}>
+                      Write a Review
+                    </h3>
+                    <p style={{ color: "#888", fontSize: "0.85rem", margin: "4px 0 0" }}>
+                      Share your experience with Karyor
+                    </p>
                   </div>
-                  <div>
-                    <label style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", color: "#aaa" }}>City / Location</label>
-                    <input
-                      type="text"
-                      name="location"
-                      value={newReview.location}
-                      onChange={handleReviewChange}
-                      placeholder="e.g. Mumbai"
-                      style={{
-                        width: "100%",
-                        padding: "12px 14px",
-                        background: "#111",
-                        border: "1px solid rgba(212,175,55,0.25)",
-                        borderRadius: "10px",
-                        color: "#fff",
-                        fontSize: "1rem"
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ marginBottom: "16px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontSize: "0.85rem", color: "#aaa" }}>Your Rating</label>
-                  <div style={{ display: "flex", gap: "2px" }}>
-                    {renderStars(newReview.rating, true)}
-                  </div>
-                  <div style={{ fontSize: "0.75rem", color: "#888", marginTop: "4px" }}>Click to rate (1-5)</div>
-                </div>
-
-                <div style={{ marginBottom: "20px" }}>
-                  <label style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", color: "#aaa" }}>Your Review</label>
-                  <textarea
-                    name="text"
-                    value={newReview.text}
-                    onChange={handleReviewChange}
-                    placeholder="Tell us about the taste, aroma, or how you use the oil..."
-                    rows={4}
-                    required
+                  <button
+                    onClick={() => setShowModal(false)}
                     style={{
-                      width: "100%",
-                      padding: "14px",
-                      background: "#111",
-                      border: "1px solid rgba(212,175,55,0.25)",
-                      borderRadius: "12px",
-                      color: "#fff",
-                      fontSize: "1rem",
-                      resize: "vertical"
+                      background: "transparent",
+                      border: "none",
+                      color: "#888",
+                      fontSize: "28px",
+                      cursor: "pointer",
+                      lineHeight: 1,
+                      padding: "0 8px"
                     }}
-                  />
+                  >
+                    ×
+                  </button>
                 </div>
 
-                <button
-                  type="submit"
-                  className="golden-btn"
-                  style={{ width: "100%", padding: "14px", fontSize: "1.05rem" }}
-                >
-                  Submit Review
-                </button>
+                {/* Modal Body */}
+                <div style={{ padding: "24px" }}>
+                  {submitMessage && (
+                    <div style={{
+                      background: "rgba(212,175,55,0.15)",
+                      color: "#d4af37",
+                      padding: "12px 16px",
+                      borderRadius: "10px",
+                      marginBottom: "20px",
+                      textAlign: "center",
+                      fontWeight: 600
+                    }}>
+                      {submitMessage}
+                    </div>
+                  )}
 
-                <p style={{ fontSize: "0.75rem", color: "#666", marginTop: "12px", textAlign: "center" }}>
-                  Reviews are added instantly for everyone to see (demo mode).
-                </p>
-              </form>
+                  <form onSubmit={submitReview}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "18px" }}>
+                      <div>
+                        <label style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", color: "#aaa" }}>Your Name</label>
+                        <input
+                          type="text"
+                          name="name"
+                          value={newReview.name}
+                          onChange={handleReviewChange}
+                          placeholder="Your name"
+                          style={{
+                            width: "100%",
+                            padding: "11px 14px",
+                            background: "#111",
+                            border: "1px solid rgba(212,175,55,0.25)",
+                            borderRadius: "10px",
+                            color: "#fff",
+                            fontSize: "1rem"
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", color: "#aaa" }}>City / Location</label>
+                        <input
+                          type="text"
+                          name="location"
+                          value={newReview.location}
+                          onChange={handleReviewChange}
+                          placeholder="e.g. Mumbai"
+                          style={{
+                            width: "100%",
+                            padding: "11px 14px",
+                            background: "#111",
+                            border: "1px solid rgba(212,175,55,0.25)",
+                            borderRadius: "10px",
+                            color: "#fff",
+                            fontSize: "1rem"
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ marginBottom: "18px" }}>
+                      <label style={{ display: "block", marginBottom: "8px", fontSize: "0.85rem", color: "#aaa" }}>Your Rating</label>
+                      <div style={{ display: "flex", gap: "4px" }}>
+                        {renderStars(newReview.rating, true)}
+                      </div>
+                      <div style={{ fontSize: "0.75rem", color: "#888", marginTop: "4px" }}>Click to rate (1-5)</div>
+                    </div>
+
+                    <div style={{ marginBottom: "22px" }}>
+                      <label style={{ display: "block", marginBottom: "6px", fontSize: "0.85rem", color: "#aaa" }}>Your Review</label>
+                      <textarea
+                        name="text"
+                        value={newReview.text}
+                        onChange={handleReviewChange}
+                        placeholder="Tell us about the taste, aroma, or how you use the oil..."
+                        rows={4}
+                        required
+                        style={{
+                          width: "100%",
+                          padding: "14px",
+                          background: "#111",
+                          border: "1px solid rgba(212,175,55,0.25)",
+                          borderRadius: "12px",
+                          color: "#fff",
+                          fontSize: "1rem",
+                          resize: "vertical",
+                          minHeight: "110px"
+                        }}
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="golden-btn"
+                      style={{ width: "100%", padding: "14px", fontSize: "1.05rem", marginBottom: "12px" }}
+                    >
+                      Submit Review
+                    </button>
+
+                    <p style={{ fontSize: "0.75rem", color: "#666", textAlign: "center", margin: 0 }}>
+                      Your review will be added instantly (demo mode)
+                    </p>
+                  </form>
+                </div>
+              </div>
             </div>
           )}
         </div>
