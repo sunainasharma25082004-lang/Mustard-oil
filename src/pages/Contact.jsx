@@ -16,10 +16,23 @@ function Contact() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const containsLink = (text) => {
+    if (!text) return false;
+    // Block common URLs, www, domains, etc.
+    const linkRegex = /(https?:\/\/|www\.|[\w-]+\.(com|in|org|net|co|io|gov|edu|uk|us|biz|info))/i;
+    return linkRegex.test(text);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess(false);
+
+    if (containsLink(formData.message)) {
+      setError("Links, URLs or website addresses are not allowed in the message.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -212,7 +225,7 @@ function Contact() {
                   <div className="contact-icon">📞</div>
                   <div>
                     <h5>Phone</h5>
-                    <p>+91 9999999999</p>
+                    <p>+91 87086 21377</p>
                   </div>
                 </div>
 
@@ -220,7 +233,7 @@ function Contact() {
                   <div className="contact-icon">✉️</div>
                   <div>
                     <h5>Email</h5>
-                    <p>info@karyor.com</p>
+                    <p>karyorfarms@gmail.com</p>
                   </div>
                 </div>
 
@@ -228,7 +241,7 @@ function Contact() {
                   <div className="contact-icon">📍</div>
                   <div>
                     <h5>Location</h5>
-                    <p>India</p>
+                    <p>Hisar, Haryana</p>
                   </div>
                 </div>
 
@@ -300,6 +313,9 @@ function Contact() {
                     onChange={handleChange}
                     required
                   ></textarea>
+                  <p style={{ fontSize: '0.8rem', color: '#888', margin: '-8px 0 14px 4px' }}>
+                    No links or URLs allowed. We will get back to you soon.
+                  </p>
 
                   <button
                     type="submit"

@@ -77,7 +77,7 @@ function Products() {
                       {item.badge}
                     </div>
 
-                    <div className="product-image-box">
+                    <div className="product-image-box" style={{ position: 'relative' }}>
                       <div className="product-image-inner product-image-inner-lg">
                         <img
                           src={resolveImageUrl(item.image)}
@@ -85,14 +85,97 @@ function Products() {
                           className="img-fluid product-showcase-img"
                         />
                       </div>
+
+                      {/* Discount badge on top of the card image */}
+                      {(() => {
+                        const orig = Number(item.originalPrice);
+                        const curr = Number(item.price);
+                        if (orig && orig > curr) {
+                          const discount = Math.round(((orig - curr) / orig) * 100);
+                          return (
+                            <div style={{
+                              position: 'absolute',
+                              top: '8px',
+                              right: '8px',
+                              background: '#d4af37',
+                              color: '#111',
+                              fontSize: '0.75rem',
+                              fontWeight: 900,
+                              padding: '5px 12px',
+                              borderRadius: '6px',
+                              boxShadow: '0 3px 10px rgba(212,175,55,0.45)',
+                              zIndex: 10,
+                              whiteSpace: 'nowrap',
+                              border: '2px solid #111'
+                            }}>
+                              {discount}% OFF
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
                     </div>
 
                     <div className="product-content">
                       <h3>{item.size || item.name}</h3>
+
+                      {/* Price display - Original (strikethrough) + Sale price beside it + % OFF */}
+                      {(() => {
+                        const orig = Number(item.originalPrice);
+                        const curr = Number(item.price);
+                        if (orig && orig > curr) {
+                          const discount = Math.round(((orig - curr) / orig) * 100);
+                          return (
+                            <div style={{ margin: '6px 0 4px', fontSize: '0.95rem' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                <span style={{ 
+                                  textDecoration: 'line-through', 
+                                  color: '#d4af37', 
+                                  fontSize: '0.85rem',
+                                  fontWeight: 500,
+                                  opacity: 0.75
+                                }}>
+                                  ₹{orig}
+                                </span>
+                                <span style={{ 
+                                  fontSize: '0.62rem', 
+                                  color: '#b89c5e', 
+                                  fontWeight: 700,
+                                  textTransform: 'uppercase',
+                                  letterSpacing: '0.6px'
+                                }}>
+                                  Discounted
+                                </span>
+                                <span style={{ 
+                                  color: '#d4af37', 
+                                  fontWeight: 800, 
+                                  fontSize: '1.15rem',
+                                  lineHeight: 1
+                                }}>
+                                  ₹{curr}
+                                </span>
+                                <span style={{ 
+                                  fontSize: '0.65rem', 
+                                  background: 'rgba(212,175,55,0.15)', 
+                                  color: '#d4af37', 
+                                  padding: '1px 5px', 
+                                  borderRadius: '3px',
+                                  fontWeight: 600,
+                                  whiteSpace: 'nowrap',
+                                  border: '1px solid rgba(212,175,55,0.35)'
+                                }}>
+                                  {discount}% OFF
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return <p style={{ color: '#d4af37', fontWeight: 800, fontSize: '1.1rem', margin: '6px 0 4px' }}>
+                          ₹{curr}
+                        </p>;
+                      })()}
+
                       <p>{item.description}</p>
-                      <p style={{ color: '#d4af37', fontWeight: 700, fontSize: '1.2rem' }}>
-                        ₹{item.price}
-                      </p>
 
                       <div className="product-card-actions">
                         <Link

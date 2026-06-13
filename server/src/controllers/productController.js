@@ -62,7 +62,7 @@ const getAllProductsAdmin = async (req, res, next) => {
 
 const createProduct = async (req, res, next) => {
   try {
-    const { name, description, price, image, badge, size, inStock, isActive } = req.body;
+    const { name, description, price, originalPrice, image, badge, size, inStock, isActive } = req.body;
 
     if (!name || price === undefined) {
       return res.status(400).json({
@@ -78,6 +78,7 @@ const createProduct = async (req, res, next) => {
       slug,
       description,
       price: Number(price),
+      originalPrice: originalPrice ? Number(originalPrice) : undefined,
       image: image || '',
       badge,
       size,
@@ -106,11 +107,15 @@ const updateProduct = async (req, res, next) => {
       });
     }
 
-    const fields = ['name', 'description', 'price', 'image', 'badge', 'size', 'inStock', 'isActive'];
+    const fields = ['name', 'description', 'price', 'originalPrice', 'image', 'badge', 'size', 'inStock', 'isActive'];
 
     fields.forEach((field) => {
       if (req.body[field] !== undefined) {
-        product[field] = field === 'price' ? Number(req.body[field]) : req.body[field];
+        if (field === 'price' || field === 'originalPrice') {
+          product[field] = req.body[field] === '' || req.body[field] == null ? undefined : Number(req.body[field]);
+        } else {
+          product[field] = req.body[field];
+        }
       }
     });
 

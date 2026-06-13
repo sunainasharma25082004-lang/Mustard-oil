@@ -6,6 +6,7 @@ const emptyForm = {
   name: '',
   description: '',
   price: '',
+  originalPrice: '',
   image: '',
   badge: '',
   size: '',
@@ -73,6 +74,17 @@ function AdminProducts() {
     resetUploadState();
   };
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (showModal) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev || '';
+      };
+    }
+  }, [showModal]);
+
   const openAdd = () => {
     setEditing(null);
     setForm(emptyForm);
@@ -87,6 +99,7 @@ function AdminProducts() {
       name: product.name,
       description: product.description || '',
       price: product.price,
+      originalPrice: product.originalPrice || '',
       image: product.image || '',
       badge: product.badge || '',
       size: product.size || '',
@@ -247,12 +260,29 @@ function AdminProducts() {
             <tbody>
               {products.map((p) => (
                 <tr key={p._id}>
-                  <td>
+                  <td style={{ position: 'relative' }}>
                     <img
                       src={resolveImageUrl(p.image)}
                       alt={p.name}
                       className="admin-product-img"
                     />
+                    {p.originalPrice && p.originalPrice > p.price && (
+                      <div style={{
+                        position: 'absolute',
+                        top: '4px',
+                        right: '4px',
+                        background: '#d4af37',
+                        color: '#111',
+                        fontSize: '0.6rem',
+                        fontWeight: 900,
+                        padding: '2px 5px',
+                        borderRadius: '2px',
+                        border: '1px solid #111',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
+                      }}>
+                        {Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)}% OFF
+                      </div>
+                    )}
                   </td>
                   <td>
                     <strong style={{ color: '#fff' }}>{p.name}</strong>
@@ -263,7 +293,46 @@ function AdminProducts() {
                     )}
                   </td>
                   <td>{p.size || '-'}</td>
-                  <td>₹{p.price}</td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
+                    {p.originalPrice && p.originalPrice > p.price ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <span style={{ 
+                          textDecoration: 'line-through', 
+                          color: '#d4af37', 
+                          fontSize: '0.85rem',
+                          fontWeight: 500,
+                          opacity: 0.75
+                        }}>
+                          ₹{p.originalPrice}
+                        </span>
+                        <span style={{ 
+                          fontSize: '0.62rem', 
+                          color: '#b89c5e', 
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.6px'
+                        }}>
+                          Discounted
+                        </span>
+                        <span style={{ color: '#d4af37', fontWeight: 700, fontSize: '1.05rem' }}>
+                          ₹{p.price}
+                        </span>
+                        <span style={{ 
+                          fontSize: '0.65rem', 
+                          background: 'rgba(212,175,55,0.15)', 
+                          color: '#d4af37', 
+                          padding: '1px 6px', 
+                          borderRadius: '3px',
+                          fontWeight: 600,
+                          border: '1px solid rgba(212,175,55,0.35)'
+                        }}>
+                          {Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)}% OFF
+                        </span>
+                      </div>
+                    ) : (
+                      <span style={{ color: '#d4af37', fontWeight: 700 }}>₹{p.price}</span>
+                    )}
+                  </td>
                   <td>{p.inStock ? 'In Stock' : 'Out of Stock'}</td>
                   <td>
                     <span className={`admin-badge ${p.isActive ? 'admin-badge-active' : 'admin-badge-inactive'}`}>
@@ -429,18 +498,77 @@ function AdminProducts() {
                     </div>
 
                     <div className="admin-form-group">
-                      <label>Price (₹) *</label>
+                      <label>Current Price (₹) *</label>
                       <input
                         name="price"
                         type="number"
                         min="0"
                         value={form.price}
                         onChange={handleChange}
-                        placeholder="199"
+                        placeholder="350"
                         required
                       />
                     </div>
                   </div>
+
+                  <div className="admin-form-group">
+                    <label>Original Price / MRP (optional — for strikethrough + discount)</label>
+                    <input
+                      name="originalPrice"
+                      type="number"
+                      min="0"
+                      value={form.originalPrice}
+                      onChange={handleChange}
+                      placeholder="400 (leave empty if no discount)"
+                    />
+                    <p style={{ fontSize: '0.75rem', color: '#888', marginTop: 4 }}>
+                      If set higher than current price, store will show: crossed old price (golden) + "Discounted" label + current price + % OFF badge
+                    </p>
+                  </div>
+
+                  {/* Live preview of how pricing will appear on customer site */}
+                  {(() => {
+                    const curr = Number(form.price) || 0;
+                    const orig = Number(form.originalPrice) || 0;
+                    if (orig > curr && curr > 0) {
+                      const disc = Math.round(((orig - curr) / orig) * 100);
+                      return (
+                        <div style={{
+                          marginTop: 8,
+                          padding: '10px 12px',
+                          background: 'rgba(0,0,0,0.3)',
+                          border: '1px solid rgba(212,175,55,0.2)',
+                          borderRadius: 6,
+                          fontSize: '0.9rem'
+                        }}>
+                          <div style={{ fontSize: '0.7rem', color: '#888', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            Customer preview (price row)
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                            <span style={{ textDecoration: 'line-through', color: '#d4af37', fontSize: '0.9rem', fontWeight: 500, opacity: 0.75 }}>
+                              ₹{orig}
+                            </span>
+                            <span style={{ fontSize: '0.62rem', color: '#b89c5e', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                              Discounted
+                            </span>
+                            <span style={{ color: '#d4af37', fontWeight: 700, fontSize: '1.05rem' }}>₹{curr}</span>
+                            <span style={{ 
+                              fontSize: '0.6rem', 
+                              background: 'rgba(212,175,55,0.15)', 
+                              color: '#d4af37', 
+                              padding: '1px 5px', 
+                              borderRadius: '3px',
+                              fontWeight: 600,
+                              border: '1px solid rgba(212,175,55,0.35)'
+                            }}>
+                              {disc}% OFF
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
 
                   <div className="admin-form-group">
                     <label>Badge</label>

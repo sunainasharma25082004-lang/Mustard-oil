@@ -133,7 +133,7 @@ function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
 
         <div style={{ textAlign: 'center', marginBottom: 8 }}>
           <div style={{ color: '#d4af37', fontSize: '1.05rem', fontWeight: 700, letterSpacing: '1px' }}>
-            KAR YOR
+            KARYOR
           </div>
           <h3 style={{ color: '#fff', margin: '10px 0 6px', fontSize: '1.35rem' }}>
             {title}

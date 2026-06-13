@@ -1,17 +1,17 @@
 import { Link } from 'react-router-dom';
 
 const QUICK_LINKS = [
-  { label: 'Home', to: '/' },
-  { label: 'About', to: '/about' },
-  { label: 'Products', to: '/products' },
-  { label: 'Contact', to: '/contact' },
+  { label: 'Our Oil', to: '/' },
+  { label: 'Why Pure', to: '/#why-pure' },
+  { label: 'How We Press', to: '/#how-we-press' },
+  { label: 'Reviews', to: '/#reviews' },
 ];
 
-const SUPPORT_LINKS = [
-  { label: 'Distributor', to: '/distributor' },
+const EXPLORE_LINKS = [
+  { label: 'All Products', to: '/products' },
+  { label: 'Contact Us', to: '/contact' },
+  { label: 'Become Distributor', to: '/distributor' },
   { label: 'My Orders', to: '/my-orders' },
-  { label: 'Cart', to: '/addcart' },
-  { label: 'Checkout', to: '/checkout' },
 ];
 
 function Footer() {
@@ -20,25 +20,29 @@ function Footer() {
       <div className="site-footer-glow" />
 
       <div className="container">
+        <div className="site-footer-trust">
+          <span>🌿 100% Pure Cold Pressed</span>
+          <span>🚫 No Chemicals • No Refining</span>
+          <span>🇮🇳 Made for Indian Kitchens</span>
+        </div>
+
         <div className="site-footer-grid">
           <div className="site-footer-brand">
             <Link to="/" className="site-footer-logo-wrap">
               <img src="/logo.jpeg" alt="Karyor" className="site-footer-logo" />
-              <span className="site-footer-title">
-                <span>KAR</span>YOR
-              </span>
+              <span className="site-footer-title">KARYOR</span>
             </Link>
             <p>
-              Premium black mustard oil crafted with tradition, purity and trust in every drop.
+              Pure cold-pressed mustard oil from Karyor Farms. Traditional Kachi Ghani, rich in natural goodness for your family&apos;s kitchen.
             </p>
             <div className="site-footer-social">
-              <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" aria-label="WhatsApp">
+              <a href="https://wa.me/918708621377" target="_blank" rel="noreferrer" aria-label="WhatsApp">
                 <i className="bi bi-whatsapp" />
               </a>
-              <a href="mailto:info@karyor.com" aria-label="Email">
+              <a href="mailto:karyorfarms@gmail.com" aria-label="Email">
                 <i className="bi bi-envelope" />
               </a>
-              <a href="tel:+919876543210" aria-label="Phone">
+              <a href="tel:+918708621377" aria-label="Phone">
                 <i className="bi bi-telephone" />
               </a>
             </div>
@@ -58,9 +62,9 @@ function Footer() {
           </div>
 
           <div className="site-footer-col">
-            <h4>Support</h4>
+            <h4>Explore</h4>
             <ul>
-              {SUPPORT_LINKS.map((link) => (
+              {EXPLORE_LINKS.map((link) => (
                 <li key={link.to}>
                   <Link to={link.to} className="footer-link">
                     {link.label}
@@ -75,19 +79,19 @@ function Footer() {
             <ul className="site-footer-contact">
               <li>
                 <i className="bi bi-telephone" />
-                <a href="tel:+919876543210" className="footer-link">
-                  +91 9876543210
+                <a href="tel:+918708621377" className="footer-link">
+                  +91 87086 21377
                 </a>
               </li>
               <li>
                 <i className="bi bi-envelope" />
-                <a href="mailto:info@karyor.com" className="footer-link">
-                  info@karyor.com
+                <a href="mailto:karyorfarms@gmail.com" className="footer-link">
+                  karyorfarms@gmail.com
                 </a>
               </li>
               <li>
                 <i className="bi bi-geo-alt" />
-                <span>India</span>
+                <span>Hisar, Haryana (serving Hansi, Barwala, Siwani, Rajgarh, Jind & nearby)</span>
               </li>
             </ul>
           </div>

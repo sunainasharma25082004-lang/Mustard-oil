@@ -18,20 +18,43 @@ function MyOrders() {
   const [cancelId, setCancelId] = useState(null);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelling, setCancelling] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
+  const loadMyOrders = async (isRefresh = false) => {
     if (authLoading) return;
     if (!user) {
       navigate('/checkout', { state: { step: 2 } });
       return;
     }
 
-    orderApi
-      .getMyOrders()
-      .then((res) => setOrders(res.data))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+    if (isRefresh) setRefreshing(true);
+
+    try {
+      const res = await orderApi.getMyOrders();
+      // Safety: only keep orders that belong to current user (backend already filters, this is extra assurance)
+      const userId = String(user._id);
+      const myOrders = (res.data || []).filter(o => {
+        if (!o.user) return true; // in case
+        const orderUserId = typeof o.user === 'object' ? String(o.user._id || o.user) : String(o.user);
+        return orderUserId === userId;
+      });
+      setOrders(myOrders);
+      setError('');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      if (isRefresh) setRefreshing(false);
+      else setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadMyOrders(false);
   }, [user, authLoading, navigate]);
+
+  const handleRefresh = () => {
+    loadMyOrders(true);
+  };
 
   const handleCancel = async () => {
     if (!cancelReason.trim()) return;
@@ -40,8 +63,7 @@ function MyOrders() {
       await orderApi.cancel(cancelId, cancelReason);
       setCancelId(null);
       setCancelReason('');
-      const res = await orderApi.getMyOrders();
-      setOrders(res.data);
+      await loadMyOrders(true); // re-use the loader (with extra filter)
     } catch (err) {
       setError(err.message);
     } finally {
@@ -448,6 +470,27 @@ function MyOrders() {
           <div className="my-orders-page-hero">
             <h1>My Orders</h1>
             <p>Track delivery status and estimated arrival for every order</p>
+            {user && (
+              <p style={{ marginTop: 8, fontSize: '0.85rem', color: '#d4af37' }}>
+                Showing orders placed by you — <strong>{user.name}</strong> ({user.email})
+              </p>
+            )}
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing || loading}
+              style={{
+                marginTop: 10,
+                padding: '6px 16px',
+                fontSize: '0.75rem',
+                borderRadius: 999,
+                border: '1px solid rgba(212,175,55,0.4)',
+                background: 'transparent',
+                color: '#d4af37',
+                cursor: 'pointer'
+              }}
+            >
+              {refreshing ? 'Refreshing...' : '↻ Refresh Orders'}
+            </button>
           </div>
 
           {error && <p style={{ color: '#ff6b6b', textAlign: 'center', marginBottom: 20 }}>{error}</p>}
@@ -456,12 +499,15 @@ function MyOrders() {
             <p style={{ textAlign: 'center', color: '#888' }}>Loading your orders...</p>
           ) : orders.length === 0 ? (
             <div className="order-history-card" style={{ textAlign: 'center' }}>
-              <p style={{ color: '#888' }}>No orders yet.</p>
+              <p style={{ color: '#888' }}>You haven't placed any orders with this account yet.</p>
+              <p style={{ fontSize: '0.85rem', color: '#666', margin: '8px 0 16px' }}>
+                Only orders you place after signing in will appear here.
+              </p>
               <button
                 onClick={() => navigate('/products')}
-                style={{ marginTop: 16, padding: '12px 24px', borderRadius: 50, border: 'none', background: 'linear-gradient(135deg,#f7d76a,#d4af37)', fontWeight: 700, cursor: 'pointer' }}
+                style={{ marginTop: 8, padding: '12px 24px', borderRadius: 50, border: 'none', background: 'linear-gradient(135deg,#f7d76a,#d4af37)', fontWeight: 700, cursor: 'pointer' }}
               >
-                Shop Now
+                Shop Now &amp; Place Your First Order
               </button>
             </div>
           ) : (

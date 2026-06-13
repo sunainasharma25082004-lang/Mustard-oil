@@ -643,7 +643,16 @@ function Checkout() {
               items.map((item) => (
                 <div className="order-item" key={item._id}>
                   <span>{item.name} x{item.quantity}</span>
-                  <span>₹{item.price * item.quantity}</span>
+                  <span>
+                    {item.originalPrice && item.originalPrice > item.price ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{textDecoration:'line-through', color: '#d4af37', opacity:0.75, fontSize:'0.85em'}}>₹{item.originalPrice * item.quantity}</span>
+                        <span>₹{item.price * item.quantity}</span>
+                      </span>
+                    ) : (
+                      <>₹{item.price * item.quantity}</>
+                    )}
+                  </span>
                 </div>
               ))
             )}

@@ -5,11 +5,10 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
 const NAV_LINKS = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/about', label: 'About' },
-  { to: '/products', label: 'Products' },
-  { to: '/distributor', label: 'Distributor' },
-  { to: '/contact', label: 'Contact' },
+  { to: '/', label: 'Our Oil', end: true },
+  { to: '/#why-pure', label: 'Why Pure' },
+  { to: '/#how-we-press', label: 'How We Press' },
+  { to: '/#reviews', label: 'Reviews' },
 ];
 
 function Navbar() {
@@ -45,9 +44,7 @@ function Navbar() {
         <div className="container site-navbar-inner">
           <Link className="site-navbar-brand" to="/">
             <img src="/logo.jpeg" alt="Karyor Logo" className="navbar-logo" />
-            <span className="brand-logo">
-              <span>KAR</span>YOR
-            </span>
+            <span className="brand-logo">KARYOR</span>
           </Link>
 
           <button
@@ -88,7 +85,7 @@ function Navbar() {
                   to="/addcart"
                   onClick={closeMenu}
                 >
-                  <i className="bi bi-bag" aria-hidden="true" />
+                  <i className="bi bi-cart3" aria-hidden="true" />
                   Cart
                   {itemCount > 0 && <span className="site-cart-badge">{itemCount}</span>}
                 </NavLink>
@@ -137,10 +134,10 @@ function Navbar() {
                     className={({ isActive }) =>
                       `nav-link custom-link site-nav-link site-nav-cta${isActive ? ' active' : ''}`
                     }
-                    to="/signin"
+                    to="/products"
                     onClick={closeMenu}
                   >
-                    Sign In
+                   Shop Now
                   </NavLink>
                 </li>
               )}

@@ -32,12 +32,12 @@ function ProductsSection() {
     <section className="premium-products">
       <div className="container">
         <div className="premium-heading">
-          <span>OUR COLLECTION</span>
-          <h2>Premium Mustard Oil Products</h2>
-          <p>
+          <span>Choose Your Pack</span>
+          <h2>One Oil. Two Sizes. Zero Compromise </h2>
+          {/* <p>
             Crafted from carefully selected mustard seeds,
             delivering purity, aroma and authentic taste.
-          </p>
+          </p> */}
 
           {loading && (
             <p style={{ color: '#d4af37', fontSize: '14px', marginTop: '8px' }}>
@@ -82,18 +82,102 @@ function ProductsSection() {
 
                   <div className="premium-tag">{product.badge || product.tag}</div>
 
-                  <div className="product-image">
+                  <div className="product-image" style={{ position: 'relative' }}>
                     <div className="product-image-inner">
                       <img src={resolveImageUrl(product.image)} alt={product.size || product.name} className="product-showcase-img" />
                     </div>
+
+                    {/* Discount badge on top of the card image - SUPER VISIBLE */}
+                    {(() => {
+                      const orig = Number(product.originalPrice);
+                      const curr = Number(product.price);
+                      if (orig && orig > curr) {
+                        const discount = Math.round(((orig - curr) / orig) * 100);
+                        return (
+                          <div style={{
+                            position: 'absolute',
+                            top: '4px',
+                            right: '4px',
+                            background: '#d4af37',
+                            color: '#111',
+                            fontSize: '0.85rem',
+                            fontWeight: 900,
+                            padding: '5px 10px',
+                            borderRadius: '3px',
+                            boxShadow: '0 4px 12px rgba(212,175,55,0.5)',
+                            zIndex: 10,
+                            whiteSpace: 'nowrap',
+                            border: '2px solid #111',
+                            textShadow: '0 1px 1px rgba(255,255,255,0.3)'
+                          }}>
+                            {discount}% OFF
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
                   </div>
 
                   <div className="product-content">
                     <h4>{product.size || product.name || product.title}</h4>
-                    <p>{product.description}</p>
+
+                    {/* Price display - Classic ecom style on card (upper part) */}
                     {product.price && (
-                      <p className="premium-card-price">₹{product.price}</p>
+                      <div style={{ margin: '4px 0 6px', fontSize: '0.95rem' }}>
+                        {(() => {
+                          const orig = Number(product.originalPrice);
+                          const curr = Number(product.price);
+                          if (orig && orig > curr) {
+                            const discount = Math.round(((orig - curr) / orig) * 100);
+                            return (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                <span style={{ 
+                                  textDecoration: 'line-through', 
+                                  color: '#d4af37', 
+                                  fontSize: '0.85rem',
+                                  fontWeight: 500,
+                                  opacity: 0.75
+                                }}>
+                                  ₹{orig}
+                                </span>
+                                <span style={{ 
+                                  fontSize: '0.62rem', 
+                                  color: '#b89c5e', 
+                                  fontWeight: 700,
+                                  textTransform: 'uppercase',
+                                  letterSpacing: '0.6px'
+                                }}>
+                                  Discounted
+                                </span>
+                                <span style={{ 
+                                  color: '#d4af37', 
+                                  fontWeight: 900, 
+                                  fontSize: '1.25rem',
+                                  lineHeight: 1
+                                }}>
+                                  ₹{curr}
+                                </span>
+                                <span style={{ 
+                                  fontSize: '0.65rem', 
+                                  background: 'rgba(212,175,55,0.18)', 
+                                  color: '#d4af37', 
+                                  padding: '2px 7px', 
+                                  borderRadius: '4px',
+                                  fontWeight: 700,
+                                  border: '1px solid rgba(212,175,55,0.45)',
+                                  whiteSpace: 'nowrap'
+                                }}>
+                                  {discount}% OFF
+                                </span>
+                              </div>
+                            );
+                          }
+                          return <span style={{ color: '#d4af37', fontWeight: 800, fontSize: '1.15rem' }}>₹{curr}</span>;
+                        })()}
+                      </div>
                     )}
+
+                    <p>{product.description}</p>
 
                     <span className="premium-btn">View Product</span>
                   </div>

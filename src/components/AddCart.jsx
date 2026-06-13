@@ -243,7 +243,30 @@ function AddCart() {
 
                     <div className="cart-info">
                       <h3>{item.name}</h3>
-                      <div className="cart-price">₹{item.price}</div>
+                      <div className="cart-price">
+                        {item.originalPrice && item.originalPrice > item.price ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <span style={{ textDecoration: 'line-through', color: '#d4af37', fontSize: '0.85em', opacity: 0.75 }}>₹{item.originalPrice}</span>
+                            <span>₹{item.price}</span>
+                            {(() => {
+                              const d = Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100);
+                              return (
+                                <span style={{
+                                  fontSize: '0.65rem',
+                                  background: 'rgba(212,175,55,0.15)',
+                                  color: '#d4af37',
+                                  padding: '1px 6px',
+                                  borderRadius: '3px',
+                                  fontWeight: 600,
+                                  border: '1px solid rgba(212,175,55,0.35)'
+                                }}>{d}% OFF</span>
+                              );
+                            })()}
+                          </div>
+                        ) : (
+                          <>₹{item.price}</>
+                        )}
+                      </div>
                     </div>
 
                     <div className="qty-box">

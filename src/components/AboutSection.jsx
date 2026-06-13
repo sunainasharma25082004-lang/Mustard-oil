@@ -3,113 +3,209 @@ import "../styles/main.css";
 function AboutSection() {
   return (
     <>
-      <section className="about-features">
-        <div className="container">
+      {/* PURITY SECTION */}
+      <section id="why-pure" className="purity-section">
 
-          <div className="section-title">
-            <span>WHY CHOOSE US</span>
-            <h2>Premium Quality In Every Drop</h2>
-          </div>
+        <div className="section-title">
+          <span>THE KARYOR DIFFERENCE</span>
+          <h1>Why purity is not a buzzword for us.</h1>
 
-          <div className="features-grid">
-
-            <div className="feature-card">
-              <div className="icon">🌱</div>
-              <h3>100% Natural</h3>
-              <p>No chemicals, no preservatives.</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="icon">🛡️</div>
-              <h3>Pure & Safe</h3>
-              <p>Produced with strict quality standards.</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="icon">💛</div>
-              <h3>Rich Aroma</h3>
-              <p>Authentic mustard flavor you can trust.</p>
-            </div>
-
-            <div className="feature-card">
-              <div className="icon">🏆</div>
-              <h3>Premium Quality</h3>
-              <p>Crafted using traditional cold press methods.</p>
-            </div>
-
-          </div>
-
+          <p>
+            Refined oil is cheap to produce and long-lasting.
+            But the refining process strips everything that makes
+            mustard oil beneficial. We chose the harder path.
+          </p>
         </div>
-      </section>
 
-      <section className="about-hero">
-        <div className="container about-hero-content">
 
-          <div className="about-left">
-            <span className="about-tag">🌿 Pure & Natural</span>
+        <div className="purity-grid">
 
-            <h1>
-              Bringing The Goodness Of
-              <span> Cold Pressed Mustard Oil</span>
-            </h1>
-
+          <div className="purity-card">
+            <div>❄️</div>
+            <h3>Single Cold Press</h3>
             <p>
-              At Karyor, we believe purity is not just a promise,
-              it's a tradition. Our mustard oil is extracted using
-              traditional cold pressed methods to preserve its natural
-              nutrients, rich aroma, and authentic taste.
+              Pressed only once at low temperature.
+              Heat destroys nutrients — we never use it.
             </p>
           </div>
 
-          <div className="about-right">
-            <img
-              src="/mustard-about.jpg"
-              alt="Mustard Oil"
-            />
+
+          <div className="purity-card active">
+            <div>🌿</div>
+            <h3>Zero Refining</h3>
+            <p>
+              No bleaching, deodorising, or chemical treatment.
+              What leaves our press is what reaches you.
+            </p>
           </div>
 
+
+          <div className="purity-card">
+            <div>💗</div>
+            <h3>Rich in Omega-3 & MUFA</h3>
+            <p>
+              Natural fatty acid profile intact —
+              supports heart health and wellness.
+            </p>
+          </div>
+
+
+          <div className="purity-card active">
+            <div>⚗️</div>
+            <h3>No Hexane Extraction</h3>
+            <p>
+              No petroleum solvents.
+              Only traditional extraction methods.
+            </p>
+          </div>
+
+
+          <div className="purity-card">
+            <div>🧂</div>
+            <h3>Full Pungency</h3>
+            <p>
+              Natural aroma and authentic mustard
+              taste preserved.
+            </p>
+          </div>
+
+
+          <div className="purity-card active">
+            <div>🏅</div>
+            <h3>Lab Tested Purity</h3>
+            <p>
+              Every batch tested before it reaches
+              your kitchen.
+            </p>
+          </div>
+
+
         </div>
+
       </section>
 
-      <section className="about-story">
-        <div className="story-card">
 
-          <div className="story-icon">🌿</div>
 
-          <p>
-            For generations, mustard oil has been an essential part of
-            Indian kitchens and traditions. At <strong>Karyor</strong>,
-            we proudly carry forward this heritage by producing premium
-            cold-pressed mustard oil using traditional methods.
-          </p>
 
-          <p>
-            Every drop is carefully extracted to retain its natural aroma,
-            rich flavor, and nutritional goodness, ensuring purity in
-            every meal and wellness in every home.
-          </p>
+      {/* PROCESS SECTION */}
 
-          <div className="story-stats">
+      <section id="how-we-press" className="process-section">
 
-            <div className="stat-box">
-              <h3>100%</h3>
-              <span>Natural Oil</span>
+        <div className="process-container">
+
+          <span className="process-tag">
+            FARM TO KITCHEN
+          </span>
+
+
+          <h1>
+            From field to your kitchen.
+            <br/>
+            No shortcuts.
+          </h1>
+
+
+
+          <div className="process-list">
+
+
+            <div className="process-item">
+              <span>🌱</span>
+
+              <div>
+                <h3>Sourcing</h3>
+                <p>
+                  We source bold mustard seeds directly from
+                  farmers known for high oil content and strong pungency.
+                </p>
+              </div>
+
             </div>
 
-            <div className="stat-box">
-              <h3>Pure</h3>
-              <span>Cold Pressed</span>
+
+
+            <div className="process-item">
+              <span>⚙️</span>
+
+              <div>
+                <h3>Cold Pressing</h3>
+                <p>
+                  Seeds are pressed slowly at low temperature.
+                  One press only, keeping natural nutrients intact.
+                </p>
+              </div>
+
             </div>
 
-            <div className="stat-box">
-              <h3>Fresh</h3>
-              <span>Every Batch</span>
+
+
+
+            <div className="process-item">
+
+              <span>🫙</span>
+
+              <div>
+
+                <h3>Natural Settling</h3>
+
+                <p>
+                  Oil is naturally settled and clarified.
+                  No chemicals, no unnecessary processing.
+                </p>
+
+              </div>
+
             </div>
+
+
+
+
+            <div className="process-item">
+
+              <span>🧪</span>
+
+              <div>
+
+                <h3>Lab Testing</h3>
+
+                <p>
+                  Every batch is tested for purity and quality
+                  before bottling.
+                </p>
+
+              </div>
+
+            </div>
+
+
+
+            <div className="process-item">
+
+              <span>📦</span>
+
+              <div>
+
+                <h3>Sealed & Shipped</h3>
+
+                <p>
+                  Packed carefully and delivered fresh
+                  to your home.
+                </p>
+
+              </div>
+
+            </div>
+
+
 
           </div>
 
+
         </div>
+
       </section>
+
+
     </>
   );
 }
