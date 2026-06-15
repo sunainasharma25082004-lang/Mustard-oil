@@ -7,7 +7,7 @@ const defaultProducts = [
     description: 'Rich aroma and natural purity in every drop. Perfect for everyday cooking with the authentic taste of tradition.',
     price: 349,
     originalPrice: 500,   // Attractive crossed old price for discount display (first product)
-    image: '/product-1l.jpg',
+    image: '/uploads/products/mustard1ml.jpg',
     badge: 'Popular',
     size: '1 Litre',
   },
@@ -17,7 +17,7 @@ const defaultProducts = [
     description: 'Premium economy pack for households and small businesses. Maximum value without compromising on purity.',
     price: 899,
     originalPrice: 1299,  // Attractive crossed old price (good ~31% discount)
-    image: '/product-5l.jpg',
+    image: '/uploads/products/mustard5ml.jpg',
     badge: 'Premium',
     size: '5 Litre',
   },
@@ -49,6 +49,7 @@ const seedProducts = async () => {
       // reflect on UI after server restart — without touching any other products admin may have added.
       exists.price = product.price;
       exists.originalPrice = product.originalPrice;
+      exists.image = product.image;
       exists.isActive = true;
 
       await exists.save();

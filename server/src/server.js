@@ -91,6 +91,9 @@ const limiter = rateLimit({
 
 app.use('/api', limiter);
 app.use(express.json({ limit: '1mb' }));
+// Default product images (committed in repo — always available on deploy)
+app.use('/uploads/products', express.static(path.join(__dirname, '../seed-assets/products')));
+// Admin-uploaded images (runtime uploads directory)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.get('/api/health', (req, res) => {
