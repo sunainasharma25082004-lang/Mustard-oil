@@ -156,7 +156,7 @@ export default function Testimonials() {
             PURE VS REFINED
           </span>
 
-          <h2>Karyor vs Refined Mustard Oil</h2>
+          <h2>Karyor vs Refined Oil</h2>
 
           <div className="comparison-table">
             <div className="table-head">
