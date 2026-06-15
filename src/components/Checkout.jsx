@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DELIVERY_CHARGE, useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { orderApi, paymentApi, settingsApi } from '../utils/api';
+import { paymentApi, settingsApi } from '../utils/api';
 import { loadRazorpayScript, openRazorpayCheckout } from '../utils/razorpay';
 import AuthModal from './AuthModal';
 import OrderTracking, { formatOrderDateLong } from './OrderTracking';
@@ -14,7 +14,6 @@ function Checkout() {
   const { items, subtotal, total, clearCart } = useCart();
 
   const [step, setStep] = useState(location.state?.step === 2 ? 2 : 1);
-  const [paymentMethod, setPaymentMethod] = useState('cod');
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -72,15 +71,6 @@ function Checkout() {
     })),
   };
 
-  const handleCodOrder = async () => {
-    const response = await orderApi.create({
-      ...orderPayload,
-      paymentMethod: 'cod',
-    });
-    clearCart();
-    setSuccess(response.data);
-  };
-
   const handleOnlinePayment = async () => {
     const scriptLoaded = await loadRazorpayScript();
     if (!scriptLoaded) {
@@ -129,19 +119,10 @@ function Checkout() {
 
     try {
       setLoading(true);
-
-      if (paymentMethod === 'online') {
-        await handleOnlinePayment();
-        return;
-      }
-
-      await handleCodOrder();
+      await handleOnlinePayment();
     } catch (err) {
       setError(err.message);
-    } finally {
-      if (paymentMethod !== 'online') {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   };
 
@@ -529,22 +510,10 @@ function Checkout() {
                 </div>
 
                 <div className="payment-methods">
-                  <button
-                    type="button"
-                    className={`payment-method ${paymentMethod === 'cod' ? 'active' : ''}`}
-                    onClick={() => setPaymentMethod('cod')}
-                  >
-                    Cash on Delivery
-                    <small>Pay when you receive</small>
-                  </button>
-                  <button
-                    type="button"
-                    className={`payment-method ${paymentMethod === 'online' ? 'active' : ''}`}
-                    onClick={() => setPaymentMethod('online')}
-                  >
+                  <div className="payment-method active" style={{ cursor: 'default' }}>
                     Online Payment
-                    <small>UPI, Card, Netbanking</small>
-                  </button>
+                    <small>UPI, Card, Netbanking via Razorpay</small>
+                  </div>
                 </div>
 
                 {/* === AUTH REQUIRED (Professional separate flow) === */}
@@ -618,11 +587,7 @@ function Checkout() {
                       onClick={handlePlaceOrder}
                       disabled={loading || items.length === 0}
                     >
-                      {loading
-                        ? 'Processing...'
-                        : paymentMethod === 'online'
-                          ? `Pay Online — ₹${total}`
-                          : `Place Order (COD) — ₹${total}`}
+                      {loading ? 'Processing...' : `Pay Online — ₹${total}`}
                     </button>
                   </>
                 )}

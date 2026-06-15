@@ -1,26 +1,8 @@
 const Order = require('../models/Order');
-const { syncUserProfileFromCustomer } = require('../utils/userProfileHelpers');
 const {
-  generateOrderNumber,
-  buildOrderFromItems,
-  validateCustomer,
-} = require('../utils/orderHelpers');
-const {
-  getDefaultDeliveryDays,
   calculateExpectedDeliveryDate,
   canCancelOrder,
 } = require('../utils/deliveryHelpers');
-
-const applyDeliveryToOrder = async (orderData) => {
-  const deliveryDays = await getDefaultDeliveryDays();
-  const expectedDeliveryDate = calculateExpectedDeliveryDate(new Date(), deliveryDays);
-
-  return {
-    ...orderData,
-    deliveryDays,
-    expectedDeliveryDate,
-  };
-};
 
 const createOrder = async (req, res, next) => {
   try {
@@ -31,41 +13,9 @@ const createOrder = async (req, res, next) => {
       });
     }
 
-    const { customer, items, paymentMethod = 'cod' } = req.body;
-
-    if (paymentMethod === 'online') {
-      return res.status(400).json({
-        success: false,
-        message: 'Use online payment flow for card/UPI payments',
-      });
-    }
-
-    validateCustomer(customer);
-
-    const { orderItems, subtotal, deliveryCharge, totalAmount } =
-      await buildOrderFromItems(items);
-
-    const order = await Order.create(
-      await applyDeliveryToOrder({
-        orderNumber: generateOrderNumber(),
-        user: req.user._id,
-        customer,
-        items: orderItems,
-        subtotal,
-        deliveryCharge,
-        totalAmount,
-        paymentMethod: 'cod',
-        paymentStatus: 'pending',
-        status: 'pending',
-      })
-    );
-
-    await syncUserProfileFromCustomer(req.user._id, customer);
-
-    res.status(201).json({
-      success: true,
-      message: 'Order placed successfully',
-      data: order,
+    return res.status(400).json({
+      success: false,
+      message: 'Cash on Delivery is not available. Please pay online to place your order.',
     });
   } catch (error) {
     const msg = error.message || 'Order creation failed';

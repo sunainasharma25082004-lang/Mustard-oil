@@ -25,7 +25,7 @@ const createRazorpayOrder = async (req, res, next) => {
     if (!razorpay) {
       return res.status(503).json({
         success: false,
-        message: 'Online payment is not configured. Please use Cash on Delivery.',
+        message: 'Online payment is not available right now. Please try again later.',
       });
     }
 

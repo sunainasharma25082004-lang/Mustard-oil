@@ -175,7 +175,7 @@ function ProductDetail() {
 
                 <div className="product-detail-trust">
                   <p><i className="bi bi-truck" /> Delivery in 5–7 business days</p>
-                  <p><i className="bi bi-shield-lock" /> Secure checkout · COD & Online payment</p>
+                  <p><i className="bi bi-shield-lock" /> Secure online checkout · UPI, Card, Netbanking</p>
                 </div>
               </div>
             </div>
