@@ -2294,10 +2294,14 @@ body {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.site-nav-cta:hover {
+.site-nav-cta:hover,
+.site-nav-cta.active,
+.site-nav-cta.active:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 22px rgba(212, 175, 55, 0.35);
   color: #111 !important;
+  background: linear-gradient(135deg, #ffe07a, #d4af37) !important;
+  font-weight: 700 !important;
 }
 
 .site-nav-logout {
