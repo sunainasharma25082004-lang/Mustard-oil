@@ -2288,7 +2288,7 @@ body {
   padding: 10px 22px !important;
   border-radius: 999px !important;
   background: linear-gradient(135deg, #ffe07a, #d4af37) !important;
-  color: #111 !important;
+  color: #ffffff !important;
   font-weight: 700 !important;
   border: none;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -2299,7 +2299,7 @@ body {
 .site-nav-cta.active:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 22px rgba(212, 175, 55, 0.35);
-  color: #111 !important;
+  color: #ffffff !important;
   background: linear-gradient(135deg, #ffe07a, #d4af37) !important;
   font-weight: 700 !important;
 }
