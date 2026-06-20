@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import GoogleSignInButton, { GOOGLE_CLIENT_ID } from './GoogleSignInButton';
 
 function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
-  const { login, register } = useAuth();
+  const { login, register, loginWithGoogle } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -81,6 +82,19 @@ function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
   const closeModal = () => {
     if (!loading) {
       onClose?.();
+    }
+  };
+
+  const handleGoogleSignIn = async (credential) => {
+    setError('');
+    setLoading(true);
+    try {
+      await loginWithGoogle(credential);
+      onClose?.();
+    } catch (err) {
+      setError(err.message || 'Google sign-in failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -267,6 +281,13 @@ function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
             >
               {loading ? 'Signing in...' : 'Sign In & Continue'}
             </button>
+
+            <GoogleSignInButton
+              onSuccess={handleGoogleSignIn}
+              onError={setError}
+              disabled={loading}
+              loading={loading}
+            />
           </form>
         ) : (
           <form onSubmit={handleRegister}>
@@ -346,7 +367,20 @@ function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
             >
               {loading ? 'Creating account...' : 'Create Account & Continue'}
             </button>
+
+            <GoogleSignInButton
+              onSuccess={handleGoogleSignIn}
+              onError={setError}
+              disabled={loading}
+              loading={loading}
+            />
           </form>
+        )}
+
+        {!GOOGLE_CLIENT_ID && import.meta.env.DEV && (
+          <p style={{ marginTop: 14, textAlign: 'center', fontSize: '0.78rem', color: '#666' }}>
+            Dev: add VITE_GOOGLE_CLIENT_ID to enable Google sign-in
+          </p>
         )}
 
         <div style={{ marginTop: 18, textAlign: 'center', fontSize: '0.82rem', color: '#777' }}>

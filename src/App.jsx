@@ -16,9 +16,11 @@ import RecipeDetail from "./pages/RecipeDetail";
 import SignIn from "./components/SignIn";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
+import GoogleAuthProvider from "./components/GoogleAuthProvider";
 
 function App() {
   return (
+    <GoogleAuthProvider>
     <AuthProvider>
       <CartProvider>
         <BrowserRouter>
@@ -54,6 +56,7 @@ function App() {
         </BrowserRouter>
       </CartProvider>
     </AuthProvider>
+    </GoogleAuthProvider>
   );
 }
 

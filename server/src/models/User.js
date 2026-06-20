@@ -34,9 +34,19 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
       minlength: 6,
       select: false,
+    },
+    googleId: {
+      type: String,
+      sparse: true,
+      unique: true,
+      index: true,
+    },
+    authProvider: {
+      type: String,
+      enum: ['local', 'google', 'both'],
+      default: 'local',
     },
     role: {
       type: String,
@@ -52,8 +62,14 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre('save', async function hashPassword() {
-  if (!this.isModified('password')) return;
+  if (!this.isModified('password') || !this.password) return;
   this.password = await bcrypt.hash(this.password, 12);
+});
+
+userSchema.pre('validate', function validatePasswordForLocal() {
+  if (!this.googleId && !this.password) {
+    this.invalidate('password', 'Password is required');
+  }
 });
 
 userSchema.methods.comparePassword = function comparePassword(candidate) {

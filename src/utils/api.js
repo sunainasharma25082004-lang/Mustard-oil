@@ -41,6 +41,9 @@ export async function apiFetch(path, options = {}) {
 export const authApi = {
   register: (body) => apiFetch('/api/auth/register', { method: 'POST', body: JSON.stringify(body) }),
   login: (body) => apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify(body) }),
+  googleLogin: (credential) =>
+    apiFetch('/api/auth/google', { method: 'POST', body: JSON.stringify({ credential }) }),
+  getGoogleConfig: () => apiFetch('/api/auth/google/config'),
   getMe: () => apiFetch('/api/auth/me'),
   updateProfile: (body) => apiFetch('/api/auth/profile', { method: 'PATCH', body: JSON.stringify(body) }),
   changePassword: (body) => apiFetch('/api/auth/password', { method: 'PATCH', body: JSON.stringify(body) }),

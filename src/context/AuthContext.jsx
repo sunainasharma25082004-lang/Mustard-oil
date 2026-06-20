@@ -41,6 +41,13 @@ export function AuthProvider({ children }) {
     return res;
   };
 
+  const loginWithGoogle = async (credential) => {
+    const res = await authApi.googleLogin(credential);
+    localStorage.setItem('karyor_token', res.data.token);
+    setUser(res.data.user);
+    return res;
+  };
+
   const updateProfile = async (payload) => {
     const res = await authApi.updateProfile(payload);
     setUser(res.data.user);
@@ -53,7 +60,9 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, updateProfile, refreshUser, logout }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, register, loginWithGoogle, updateProfile, refreshUser, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

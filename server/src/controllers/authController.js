@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
+const { isGoogleAuthConfigured, verifyGoogleIdToken } = require('../utils/googleAuth');
 
 const register = async (req, res, next) => {
   try {
@@ -42,16 +43,7 @@ const register = async (req, res, next) => {
       success: true,
       message: 'Account created successfully',
       data: {
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          address: user.address,
-          city: user.city,
-          pincode: user.pincode,
-          role: user.role,
-        },
+        user: formatUser(user),
         token,
       },
     });
@@ -73,7 +65,21 @@ const login = async (req, res, next) => {
 
     const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
 
-    if (!user || !(await user.comparePassword(password))) {
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password',
+      });
+    }
+
+    if (!user.password) {
+      return res.status(401).json({
+        success: false,
+        message: 'This account uses Google sign-in. Please continue with Google.',
+      });
+    }
+
+    if (!(await user.comparePassword(password))) {
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password',
@@ -105,9 +111,99 @@ const formatUser = (user) => ({
   pincode: user.pincode || '',
   role: user.role,
   isSuperAdmin: Boolean(user.isSuperAdmin),
+  authProvider: user.authProvider || 'local',
+  hasGoogle: Boolean(user.googleId),
   createdAt: user.createdAt,
   updatedAt: user.updatedAt,
 });
+
+const getGoogleConfig = (req, res) => {
+  res.json({
+    success: true,
+    data: {
+      enabled: isGoogleAuthConfigured(),
+      clientId: process.env.GOOGLE_CLIENT_ID?.trim() || null,
+    },
+  });
+};
+
+const googleAuth = async (req, res, next) => {
+  try {
+    if (!isGoogleAuthConfigured()) {
+      return res.status(503).json({
+        success: false,
+        message: 'Google sign-in is not configured yet',
+      });
+    }
+
+    const { credential } = req.body;
+    if (!credential?.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Google credential is required',
+      });
+    }
+
+    let profile;
+    try {
+      profile = await verifyGoogleIdToken(credential.trim());
+    } catch (err) {
+      return res.status(401).json({
+        success: false,
+        message: err.message || 'Google sign-in verification failed',
+      });
+    }
+
+    if (!profile.emailVerified) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please verify your Google email address first',
+      });
+    }
+
+    let user = await User.findOne({
+      $or: [{ googleId: profile.googleId }, { email: profile.email }],
+    }).select('+password');
+
+    if (user?.role === 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Admin accounts must use the admin panel login',
+      });
+    }
+
+    if (user) {
+      if (!user.googleId) {
+        user.googleId = profile.googleId;
+        user.authProvider = user.password ? 'both' : 'google';
+      }
+      if (profile.name && (!user.name || user.name === user.email.split('@')[0])) {
+        user.name = profile.name;
+      }
+      await user.save();
+    } else {
+      user = await User.create({
+        name: profile.name,
+        email: profile.email,
+        googleId: profile.googleId,
+        authProvider: 'google',
+      });
+    }
+
+    const token = generateToken(user._id);
+
+    res.json({
+      success: true,
+      message: 'Signed in with Google',
+      data: {
+        user: formatUser(user),
+        token,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const getMe = async (req, res) => {
   res.json({
@@ -164,6 +260,14 @@ const changePassword = async (req, res, next) => {
     }
 
     const user = await User.findById(req.user._id).select('+password');
+
+    if (!user.password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Google sign-in accounts cannot change password here',
+      });
+    }
+
     const isMatch = await user.comparePassword(currentPassword);
 
     if (!isMatch) {
@@ -185,4 +289,12 @@ const changePassword = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, getMe, updateProfile, changePassword };
+module.exports = {
+  register,
+  login,
+  getMe,
+  updateProfile,
+  changePassword,
+  googleAuth,
+  getGoogleConfig,
+};

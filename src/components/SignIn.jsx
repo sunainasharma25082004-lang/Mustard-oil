@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import GoogleSignInButton from './GoogleSignInButton';
 
 function SignIn() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, register } = useAuth();
+  const { login, register, loginWithGoogle } = useAuth();
 
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -27,6 +28,20 @@ function SignIn() {
 
     try {
       await login(loginData.email, loginData.password);
+      const redirectTo = location.state?.from || '/';
+      navigate(redirectTo, { replace: true });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async (credential) => {
+    setError('');
+    setLoading(true);
+    try {
+      await loginWithGoogle(credential);
       const redirectTo = location.state?.from || '/';
       navigate(redirectTo, { replace: true });
     } catch (err) {
@@ -278,6 +293,13 @@ function SignIn() {
                 {loading ? 'Signing In...' : 'Sign In'}
               </button>
 
+              <GoogleSignInButton
+                onSuccess={handleGoogleSignIn}
+                onError={setError}
+                disabled={loading}
+                loading={loading}
+              />
+
             </form>
           ) : (
             <form onSubmit={handleRegister}>
@@ -330,6 +352,13 @@ function SignIn() {
               <button className="auth-btn" disabled={loading}>
                 {loading ? 'Creating Account...' : 'Create Account'}
               </button>
+
+              <GoogleSignInButton
+                onSuccess={handleGoogleSignIn}
+                onError={setError}
+                disabled={loading}
+                loading={loading}
+              />
 
             </form>
           )}
