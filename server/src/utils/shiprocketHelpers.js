@@ -175,10 +175,9 @@ const markConnectionFailed = async (settings) => {
   return settings;
 };
 
-const getWebhookUrlForAdmin = () => {
-  const base = (process.env.API_PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || '').trim().replace(/\/$/, '');
-  return base ? `${base}/api/webhooks/shiprocket` : null;
-};
+const { getShiprocketWebhookUrl, isLocalApiUrl, getPublicApiBaseUrl } = require('./publicUrl');
+
+const getWebhookUrlForAdmin = () => getShiprocketWebhookUrl();
 
 const formatSettingsForAdmin = (settings) => ({
   enabled: settings.enabled,
@@ -189,6 +188,7 @@ const formatSettingsForAdmin = (settings) => ({
   lastTestedAt: settings.lastTestedAt || null,
   updatedAt: settings.updatedAt,
   webhookUrl: getWebhookUrlForAdmin(),
+  webhookUrlIsLocal: isLocalApiUrl(getPublicApiBaseUrl({ preferPublic: true })),
   webhookSecretConfigured: Boolean(process.env.SHIPROCKET_WEBHOOK_SECRET?.trim()),
   pickupLocation: settings.pickupLocation || 'Primary',
   pickupPincode: settings.pickupPincode || '',

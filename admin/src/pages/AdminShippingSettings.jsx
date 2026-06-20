@@ -290,6 +290,12 @@ function AdminShippingSettings() {
                 <p style={{ margin: '8px 0 0', wordBreak: 'break-all', fontSize: '0.88rem' }}>
                   <code style={{ color: '#d4af37' }}>{status.webhookUrl}</code>
                 </p>
+                {status.webhookUrlIsLocal && (
+                  <p style={{ margin: '8px 0 0', fontSize: '0.82rem', color: '#f87171' }}>
+                    Localhost URL Shiprocket pe kaam nahi karega. Server env mein{' '}
+                    <code>API_PUBLIC_URL=https://karyor-api.onrender.com</code> set karo.
+                  </p>
+                )}
                 <p style={{ margin: '8px 0 0', fontSize: '0.82rem', color: '#888' }}>
                   Shiprocket panel → Settings → Webhooks → paste this URL.
                   {status.webhookSecretConfigured

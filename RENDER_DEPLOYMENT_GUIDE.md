@@ -247,6 +247,7 @@ Agar abhi jaldi chahiye to Option 1 use karo.
 | Shiprocket shipment nahi banta | `SHIPROCKET_*` env vars + Admin → Shipping → Enabled; pickup location name match karo |
 | Webhook status update nahi | `SHIPROCKET_WEBHOOK_SECRET` + URL Shiprocket panel mein sahi? |
 | Build fail ho raha | `npm install` command sahi hai kya? Node version check karo (Render default 18/20 hota hai) |
+| `ERR_ERL_UNEXPECTED_X_FORWARDED_FOR` in logs | Backend env: `TRUST_PROXY=true` + `NODE_ENV=production` (code auto-detects Render too). Redeploy API. |
 | Page refresh (F5) on /products, /about, /dashboard etc. gives 404 or "not found" | This is normal for React SPA. We added `routes` rewrite in `render.yaml` (SPA fallback to index.html). Re-deploy the static sites (karyor-store and karyor-admin) after updating render.yaml or add the rewrite manually in Render dashboard under the static site → "Redirects and Rewrites". |
 
 ---

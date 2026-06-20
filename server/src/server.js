@@ -31,12 +31,21 @@ const seedReviews = require('./utils/seedReviews');
 const seedShiprocket = require('./utils/seedShiprocket');
 const seedPaymentGateways = require('./utils/seedPaymentGateways');
 const { getIntegrationStatus } = require('./utils/integrationStatus');
+const { getPublicApiBaseUrl } = require('./utils/publicUrl');
 
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const app = express();
 
-if (process.env.NODE_ENV === 'production' || process.env.TRUST_PROXY === 'true') {
+// Render / nginx send X-Forwarded-For — required for express-rate-limit on hosted deploys
+const isRenderHost = process.env.RENDER === 'true' || Boolean(process.env.RENDER_EXTERNAL_URL?.trim());
+const shouldTrustProxy =
+  process.env.TRUST_PROXY !== 'false' &&
+  (process.env.TRUST_PROXY === 'true' ||
+    process.env.NODE_ENV === 'production' ||
+    isRenderHost);
+
+if (shouldTrustProxy) {
   app.set('trust proxy', 1);
 }
 
@@ -105,6 +114,9 @@ const limiter = rateLimit({
   legacyHeaders: false,
   message: { success: false, message: 'Too many requests, please try again later' },
   skip: (req) => req.path.startsWith('/webhooks'),
+  validate: {
+    xForwardedForHeader: false,
+  },
 });
 
 app.use(express.json({ limit: '1mb' }));
@@ -208,7 +220,7 @@ const startServer = async () => {
 
   app.listen(PORT, () => {
     const env = process.env.NODE_ENV || 'development';
-    const publicUrl = (process.env.API_PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || '').trim();
+    const publicUrl = getPublicApiBaseUrl({ preferPublic: true });
 
     console.log('\n' + '═'.repeat(58));
     console.log(`🚀  KARYOR API SERVER RUNNING  [${env.toUpperCase()}]`);

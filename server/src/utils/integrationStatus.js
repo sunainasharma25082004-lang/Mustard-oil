@@ -1,15 +1,8 @@
 const { isShiprocketEnabled, getShiprocketSettings } = require('./shiprocketHelpers');
 const { getPublicPaymentConfig } = require('./paymentGatewayHelpers');
+const { getPublicApiBaseUrl, getShiprocketWebhookUrl } = require('./publicUrl');
 
-const getPublicApiBaseUrl = () => {
-  const url = (process.env.API_PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || '').trim();
-  return url.replace(/\/$/, '');
-};
-
-const getWebhookUrl = () => {
-  const base = getPublicApiBaseUrl();
-  return base ? `${base}/api/webhooks/shiprocket` : null;
-};
+const getWebhookUrl = () => getShiprocketWebhookUrl();
 
 const getIntegrationStatus = async () => {
   const [shiprocketEnabled, paymentConfig, shiprocketSettings] = await Promise.all([
