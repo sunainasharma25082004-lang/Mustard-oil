@@ -279,10 +279,12 @@ function AddCart() {
                   <span>₹{subtotal}</span>
                 </div>
 
-                <div className="summary-row">
-                  <span>Delivery</span>
-                  <span>₹{DELIVERY_CHARGE}</span>
-                </div>
+                {DELIVERY_CHARGE > 0 && (
+                  <div className="summary-row">
+                    <span>Delivery</span>
+                    <span>₹{DELIVERY_CHARGE}</span>
+                  </div>
+                )}
 
                 <div className="summary-row summary-total">
                   <span>Total</span>

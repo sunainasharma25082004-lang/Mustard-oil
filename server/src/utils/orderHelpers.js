@@ -1,6 +1,6 @@
 const Product = require('../models/Product');
 
-const DELIVERY_CHARGE = 50;
+const DELIVERY_CHARGE = 0;
 
 const generateOrderNumber = () => {
   const timestamp = Date.now().toString(36).toUpperCase();

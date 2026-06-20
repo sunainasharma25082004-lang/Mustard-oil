@@ -56,10 +56,7 @@ const getServiceability = async (req, res, next) => {
       cod: false,
     });
 
-    const deliveryCharge =
-      result.freightCharge && result.freightCharge > 0
-        ? Math.ceil(result.freightCharge)
-        : DELIVERY_CHARGE;
+    const deliveryCharge = DELIVERY_CHARGE;
 
     res.json({
       success: true,

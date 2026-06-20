@@ -37,7 +37,7 @@ const orderSchema = new mongoose.Schema(
       validate: [(v) => v.length > 0, 'Order must have at least one item'],
     },
     subtotal: { type: Number, required: true, min: 0 },
-    deliveryCharge: { type: Number, required: true, min: 0, default: 50 },
+    deliveryCharge: { type: Number, required: true, min: 0, default: 0 },
     totalAmount: { type: Number, required: true, min: 0 },
     status: {
       type: String,

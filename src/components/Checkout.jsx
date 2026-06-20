@@ -693,10 +693,12 @@ function Checkout() {
                   <span>Subtotal</span>
                   <span>₹{subtotal}</span>
                 </div>
-                <div className="order-item">
-                  <span>Delivery</span>
-                  <span>₹{DELIVERY_CHARGE}</span>
-                </div>
+                {DELIVERY_CHARGE > 0 && (
+                  <div className="order-item">
+                    <span>Delivery</span>
+                    <span>₹{DELIVERY_CHARGE}</span>
+                  </div>
+                )}
                 <div className="total">Total : ₹{total}</div>
               </>
             )}
