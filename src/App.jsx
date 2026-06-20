@@ -11,6 +11,8 @@ import Checkout from "./components/Checkout";
 import Distributor from "./components/Distributor";
 import MyOrders from "./pages/MyOrders";
 import Profile from "./pages/Profile";
+import Recipes from "./pages/Recipes";
+import RecipeDetail from "./pages/RecipeDetail";
 import SignIn from "./components/SignIn";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
@@ -32,6 +34,8 @@ function App() {
               <Route path="/distributor" element={<Distributor />} />
               <Route path="/my-orders" element={<MyOrders />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/recipes" element={<Recipes />} />
+              <Route path="/recipes/:slug" element={<RecipeDetail />} />
             </Route>
             <Route path="/signin" element={<SignIn />} />
             <Route path="/admin/*" element={<Navigate to="/" replace />} />

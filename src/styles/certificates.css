@@ -1,0 +1,117 @@
+/* =====================================
+   CERTIFICATIONS SECTION
+===================================== */
+
+.certificates-section {
+  padding: 72px 0;
+  background: #0d0d0d;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.certificates-section .section-title {
+  margin-bottom: 36px;
+}
+
+.certificates-section .section-title h2 {
+  color: #fff;
+  font-family: Georgia, serif;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 400;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.certificates-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.certificate-card {
+  background: #141414;
+  border: 1px solid rgba(212, 175, 55, 0.14);
+  border-radius: 14px;
+  padding: 20px 18px 18px;
+  text-align: center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.certificate-card:hover {
+  border-color: rgba(212, 175, 55, 0.32);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+}
+
+.certificate-image-wrap {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 14px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1a1a1a;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.certificate-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.certificate-card h3 {
+  color: #f5d76e;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 8px;
+  line-height: 1.35;
+}
+
+.certificate-card p {
+  color: #888;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+@media (max-width: 991px) {
+  .certificates-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 575px) {
+  .certificates-section {
+    padding: 56px 0;
+  }
+
+  .certificates-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .certificate-card {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 14px;
+    text-align: left;
+    align-items: center;
+    padding: 16px;
+  }
+
+  .certificate-image-wrap {
+    width: 72px;
+    height: 72px;
+    margin: 0;
+  }
+
+  .certificate-card h3 {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+}

@@ -575,6 +575,26 @@ function MyOrders() {
                         </div>
                       )}
 
+                      {order.shiprocket?.awb && (
+                        <div className="delivery-hero" style={{ marginBottom: 12, padding: '14px 16px' }}>
+                          <p style={{ margin: 0, fontSize: '0.82rem', color: '#d4af37', textTransform: 'uppercase' }}>
+                            Courier Tracking
+                          </p>
+                          <p style={{ margin: '6px 0 0', fontSize: '0.95rem' }}>
+                            AWB:{' '}
+                            <a
+                              href={order.shiprocket.trackingUrl || `https://shiprocket.co/tracking/${order.shiprocket.awb}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{ color: '#fff', fontWeight: 700 }}
+                            >
+                              {order.shiprocket.awb}
+                            </a>
+                            {order.shiprocket.courierName ? ` · ${order.shiprocket.courierName}` : ''}
+                          </p>
+                        </div>
+                      )}
+
                       <div className="tracking-panel">
                         <p className="tracking-panel-title">Order Tracking</p>
                         <OrderTracking status={order.status} />

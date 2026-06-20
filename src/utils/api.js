@@ -1,7 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL || '';
 
-if (typeof window !== 'undefined') {
-  console.log('%c[Karyor API] Base URL configured as:', 'color:#666', API_URL || '(empty → will use relative path, likely wrong in production)');
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+  console.log('%c[Karyor API] Base URL:', 'color:#666', API_URL || '(relative → Vite proxy)');
 }
 
 export async function apiFetch(path, options = {}) {
@@ -16,9 +16,17 @@ export async function apiFetch(path, options = {}) {
     headers.Authorization = `Bearer ${token}`;
   }
 
+  const isGet = !options.method || options.method === 'GET';
+  const isStoreDataGet =
+    path.startsWith('/api/content') ||
+    path.startsWith('/api/products') ||
+    path.startsWith('/api/reviews');
+
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
     headers,
+    // Never cache admin-managed store data in the browser
+    cache: options.cache ?? (isGet && isStoreDataGet ? 'no-store' : 'default'),
   });
 
   const data = await response.json().catch(() => ({}));
@@ -54,6 +62,12 @@ export const settingsApi = {
   getDelivery: () => apiFetch('/api/settings/delivery'),
 };
 
+export const shippingApi = {
+  getConfig: () => apiFetch('/api/shipping/config'),
+  checkServiceability: (pincode, quantity) =>
+    apiFetch(`/api/shipping/serviceability?pincode=${encodeURIComponent(pincode)}&quantity=${quantity || 1}`),
+};
+
 export const paymentApi = {
   createRazorpayOrder: (body) =>
     apiFetch('/api/payments/razorpay/create', { method: 'POST', body: JSON.stringify(body) }),
@@ -68,4 +82,24 @@ export const contactApi = {
 export const distributorApi = {
   apply: (body) => apiFetch('/api/distributor', { method: 'POST', body: JSON.stringify(body) }),
   getStatus: (phone) => apiFetch(`/api/distributor/status/${encodeURIComponent(phone)}`),
+};
+
+export const reviewApi = {
+  getAll: () => apiFetch('/api/reviews'),
+  create: (body) => apiFetch('/api/reviews', { method: 'POST', body: JSON.stringify(body) }),
+  update: (id, body) => apiFetch(`/api/reviews/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  delete: (id) => apiFetch(`/api/reviews/${id}`, { method: 'DELETE' }),
+};
+
+export const contentApi = {
+  getHomeBundle: () => apiFetch('/api/content/home'),
+  getYouTubeVideos: () => apiFetch('/api/content/youtube'),
+  getRecipes: () => apiFetch('/api/content/recipes'),
+  getRecipe: (slug) => apiFetch(`/api/content/recipes/${slug}`),
+  getCertificates: () => apiFetch('/api/content/certificates'),
+  getTestimonials: () => apiFetch('/api/content/testimonials'),
+};
+
+export const paymentConfigApi = {
+  getConfig: () => apiFetch('/api/payments/config'),
 };

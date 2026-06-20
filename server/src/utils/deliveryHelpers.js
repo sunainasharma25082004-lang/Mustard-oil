@@ -15,11 +15,15 @@ const calculateExpectedDeliveryDate = (orderDate, deliveryDays) => {
 };
 
 const seedSettings = async () => {
-  const exists = await Settings.findOne({ key: SETTINGS_KEY });
-  if (exists) return;
+  const result = await Settings.updateOne(
+    { key: SETTINGS_KEY },
+    { $setOnInsert: { key: SETTINGS_KEY, defaultDeliveryDays: 5 } },
+    { upsert: true }
+  );
 
-  await Settings.create({ key: SETTINGS_KEY, defaultDeliveryDays: 5 });
-  console.log('Default delivery settings seeded (5 days)');
+  if (result.upsertedCount > 0) {
+    console.log('Default delivery settings seeded (5 days)');
+  }
 };
 
 const CANCELLABLE_STATUSES = ['pending'];

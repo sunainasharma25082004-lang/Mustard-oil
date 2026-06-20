@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { productApi } from '../utils/api';
 import { resolveImageUrl } from '../utils/imageUrl';
+import { useLiveData } from '../hooks/useLiveData';
 
 function Products() {
   const navigate = useNavigate();
@@ -13,13 +14,17 @@ function Products() {
   const [error, setError] = useState('');
   const [retryKey, setRetryKey] = useState(0);
 
-  useEffect(() => {
+  const loadProducts = useCallback(() => {
+    setLoading(true);
+    setError('');
     productApi
       .getAll()
       .then((res) => setProducts(res.data || []))
       .catch((err) => setError(err.message || 'Failed to load products'))
       .finally(() => setLoading(false));
   }, [retryKey]);
+
+  useLiveData(loadProducts, [retryKey]);
 
   const handleAddToCart = (product) => {
     addToCart(product);
@@ -35,7 +40,7 @@ function Products() {
             <span>PREMIUM COLLECTION</span>
             <h1>Our Products</h1>
             <p>
-              Experience the purity of traditional Kachi Ghani Mustard Oil
+              Experience the purity of Cold Pressed & Single Pressed Mustard Oil
               crafted with quality, nutrition and trust.
             </p>
           </div>

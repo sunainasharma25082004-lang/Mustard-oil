@@ -86,16 +86,7 @@ const login = async (req, res, next) => {
       success: true,
       message: 'Login successful',
       data: {
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          address: user.address,
-          city: user.city,
-          pincode: user.pincode,
-          role: user.role,
-        },
+        user: formatUser(user),
         token,
       },
     });
@@ -113,6 +104,7 @@ const formatUser = (user) => ({
   city: user.city || '',
   pincode: user.pincode || '',
   role: user.role,
+  isSuperAdmin: Boolean(user.isSuperAdmin),
   createdAt: user.createdAt,
   updatedAt: user.updatedAt,
 });

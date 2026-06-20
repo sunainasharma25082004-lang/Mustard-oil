@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DELIVERY_CHARGE, useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { paymentApi, settingsApi } from '../utils/api';
+import { paymentApi, paymentConfigApi, settingsApi, shippingApi } from '../utils/api';
 import { loadRazorpayScript, openRazorpayCheckout } from '../utils/razorpay';
 import AuthModal from './AuthModal';
 import OrderTracking, { formatOrderDateLong } from './OrderTracking';
@@ -29,9 +29,12 @@ function Checkout() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(null);
   const [deliveryDays, setDeliveryDays] = useState(5);
+  const [paymentConfig, setPaymentConfig] = useState({ activeGateway: 'razorpay', enabled: true, label: 'Razorpay' });
+  const [pincodeStatus, setPincodeStatus] = useState(null);
 
   useEffect(() => {
     settingsApi.getDelivery().then((res) => setDeliveryDays(res.data.defaultDeliveryDays)).catch(() => {});
+    paymentConfigApi.getConfig().then((res) => setPaymentConfig(res.data)).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -48,7 +51,20 @@ function Checkout() {
   }, [user]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    if (name === 'pincode') setPincodeStatus(null);
+  };
+
+  const checkPincodeDelivery = async (pincode) => {
+    if (!/^\d{6}$/.test(pincode)) return;
+    try {
+      const qty = items.reduce((sum, item) => sum + item.quantity, 0);
+      const res = await shippingApi.checkServiceability(pincode, qty);
+      setPincodeStatus(res.data);
+    } catch {
+      setPincodeStatus(null);
+    }
   };
 
   const goToPayment = (e) => {
@@ -442,6 +458,29 @@ function Checkout() {
         .payment-methods{ flex-direction:column; }
       }
 
+      @media(max-width:768px){
+        .checkout-page{
+          padding:96px 14px 40px;
+          padding-top:calc(96px + env(safe-area-inset-top, 0));
+        }
+        .checkout-card,
+        .order-card{
+          padding:22px 18px;
+          border-radius:18px;
+        }
+        .checkout-steps{
+          flex-direction:column;
+          gap:10px;
+        }
+        .checkout-title{
+          font-size:1.35rem;
+        }
+        .place-order-btn,
+        .back-btn{
+          min-height:48px;
+        }
+      }
+
       `}</style>
 
       <div className="checkout-page">
@@ -490,7 +529,29 @@ function Checkout() {
                   </div>
                   <div className="form-group">
                     <label>Pincode</label>
-                    <input type="text" name="pincode" value={formData.pincode} onChange={handleChange} required />
+                    <input
+                      type="text"
+                      name="pincode"
+                      value={formData.pincode}
+                      onChange={handleChange}
+                      onBlur={(e) => checkPincodeDelivery(e.target.value.trim())}
+                      required
+                      maxLength={6}
+                    />
+                    {pincodeStatus && (
+                      <p
+                        style={{
+                          marginTop: 6,
+                          fontSize: '0.82rem',
+                          color: pincodeStatus.serviceable ? '#4ade80' : '#f87171',
+                        }}
+                      >
+                        {pincodeStatus.message}
+                        {pincodeStatus.estimatedDeliveryDays
+                          ? ` · Est. ${pincodeStatus.estimatedDeliveryDays} days`
+                          : ''}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -512,7 +573,11 @@ function Checkout() {
                 <div className="payment-methods">
                   <div className="payment-method active" style={{ cursor: 'default' }}>
                     Online Payment
-                    <small>UPI, Card, Netbanking via Razorpay</small>
+                    <small>
+                      {paymentConfig.enabled && paymentConfig.label
+                        ? `UPI, Card, Netbanking via ${paymentConfig.label}`
+                        : 'Online payment is currently unavailable'}
+                    </small>
                   </div>
                 </div>
 
@@ -585,9 +650,9 @@ function Checkout() {
                     <button
                       className="place-order-btn"
                       onClick={handlePlaceOrder}
-                      disabled={loading || items.length === 0}
+                      disabled={loading || items.length === 0 || !paymentConfig.enabled}
                     >
-                      {loading ? 'Processing...' : `Pay Online — ₹${total}`}
+                      {loading ? 'Processing...' : paymentConfig.enabled ? `Pay Online — ₹${total}` : 'Payment Unavailable'}
                     </button>
                   </>
                 )}

@@ -11,13 +11,13 @@ function About() {
 
             <h1>
               Bringing The Goodness Of
-              <span> Cold Pressed Mustard Oil</span>
+              <span> Cold Pressed & Single Pressed Mustard Oil</span>
             </h1>
 
             <p>
               At Karyor, we believe purity is not just a promise,
               it's a tradition. Our mustard oil is extracted using
-              traditional cold pressed methods to preserve its natural
+              traditional Cold Pressed & Single Pressed methods to preserve its natural
               nutrients, rich aroma, and authentic taste.
             </p>
 
@@ -47,7 +47,7 @@ function About() {
     For generations, mustard oil has been an essential part of
     Indian kitchens and traditions. At <strong>Karyor</strong>,
     we proudly carry forward this heritage by producing premium
-    cold-pressed mustard oil using traditional methods.
+    Cold Pressed & Single Pressed Mustard Oil using traditional methods.
   </p>
 
   <p>
@@ -65,7 +65,7 @@ function About() {
 
     <div className="stat-box">
       <h3>Pure</h3>
-      <span>Cold Pressed</span>
+      <span>Cold Pressed & Single Pressed</span>
     </div>
 
     <div className="stat-box">

@@ -3,13 +3,20 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "vite",
     "dev:server": "npm run dev --prefix server",
     "dev:admin": "npm run dev --prefix admin",
-    "dev:all": "concurrently -n server,store,admin -c blue,green,yellow \"npm run dev:server\" \"npm run dev\" \"npm run dev:admin\"",
+    "kill-ports": "node scripts/kill-dev-ports.cjs",
+    "dev:local": "node scripts/kill-dev-ports.cjs && concurrently -k -n server,store,admin -c blue,green,yellow \"npm run dev:server\" \"npm run dev\" \"npm run dev:admin\"",
+    "dev:all": "npm run dev:local",
     "build": "vite build",
     "build:admin": "npm run build --prefix admin",
+    "build:all": "npm run build && npm run build:admin",
+    "verify:deploy": "node scripts/verify-deploy.cjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "start:server": "npm start --prefix server"

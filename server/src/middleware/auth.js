@@ -33,4 +33,11 @@ const admin = (req, res, next) => {
   next();
 };
 
-module.exports = { protect, admin };
+const superAdmin = (req, res, next) => {
+  if (req.user?.role !== 'admin' || !req.user?.isSuperAdmin) {
+    return res.status(403).json({ success: false, message: 'Super Admin access required' });
+  }
+  next();
+};
+
+module.exports = { protect, admin, superAdmin };

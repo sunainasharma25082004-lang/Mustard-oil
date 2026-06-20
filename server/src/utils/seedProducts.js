@@ -50,15 +50,19 @@ const seedProducts = async () => {
 
   // One-time pricing update — runs once on deploy, then admin edits stay permanent.
   const PRICING_MIGRATION_KEY = 'product-pricing-jun-2026';
-  const pricingDone = await Settings.findOne({ key: PRICING_MIGRATION_KEY });
-  if (!pricingDone) {
+  const migrationFlag = await Settings.updateOne(
+    { key: PRICING_MIGRATION_KEY },
+    { $setOnInsert: { key: PRICING_MIGRATION_KEY, defaultDeliveryDays: 1 } },
+    { upsert: true }
+  );
+
+  if (migrationFlag.upsertedCount > 0) {
     for (const product of defaultProducts) {
       await Product.updateOne(
         { slug: product.slug },
         { $set: { price: product.price, originalPrice: product.originalPrice } }
       );
     }
-    await Settings.create({ key: PRICING_MIGRATION_KEY, defaultDeliveryDays: 1 });
     console.log('Product pricing updated: 1L MRP ₹422 → ₹350 | 5L MRP ₹2110 → ₹1700');
   }
 };

@@ -61,6 +61,20 @@ const orderSchema = new mongoose.Schema(
     cancellationReason: { type: String, trim: true },
     cancelledBy: { type: String, enum: ['user', 'admin'] },
     cancelledAt: { type: Date },
+    shiprocket: {
+      shipmentId: { type: Number },
+      shiprocketOrderId: { type: Number },
+      channelOrderId: { type: String, trim: true },
+      verified: { type: Boolean, default: false },
+      awb: { type: String, trim: true },
+      courierName: { type: String, trim: true },
+      trackingUrl: { type: String, trim: true },
+      status: { type: String, trim: true },
+      statusLabel: { type: String, trim: true },
+      lastSyncedAt: { type: Date },
+      error: { type: String, trim: true },
+      createdAt: { type: Date },
+    },
   },
   { timestamps: true }
 );

@@ -1,6 +1,10 @@
 const crypto = require('crypto');
 const Order = require('../models/Order');
-const getRazorpayInstance = require('../config/razorpay');
+const {
+  getRazorpayFromSettings,
+  getPublicPaymentConfig,
+  getActiveGatewayCredentials,
+} = require('../utils/paymentGatewayHelpers');
 const {
   generateOrderNumber,
   buildOrderFromItems,
@@ -11,6 +15,7 @@ const {
   calculateExpectedDeliveryDate,
 } = require('../utils/deliveryHelpers');
 const { syncUserProfileFromCustomer } = require('../utils/userProfileHelpers');
+const { scheduleShiprocketShipment } = require('../utils/shipmentQueue');
 
 const createRazorpayOrder = async (req, res, next) => {
   try {
@@ -21,7 +26,22 @@ const createRazorpayOrder = async (req, res, next) => {
       });
     }
 
-    const razorpay = getRazorpayInstance();
+    const { gateway: activeGateway, enabled } = await getActiveGatewayCredentials();
+    if (!enabled || activeGateway === 'none') {
+      return res.status(503).json({
+        success: false,
+        message: 'Online payment is currently disabled. Please contact support.',
+      });
+    }
+
+    if (activeGateway !== 'razorpay') {
+      return res.status(503).json({
+        success: false,
+        message: `${activeGateway} checkout is configured but not yet supported on the storefront. Switch to Razorpay in admin or contact support.`,
+      });
+    }
+
+    const razorpay = await getRazorpayFromSettings();
     if (!razorpay) {
       return res.status(503).json({
         success: false,
@@ -68,6 +88,8 @@ const createRazorpayOrder = async (req, res, next) => {
 
     await syncUserProfileFromCustomer(req.user._id, customer);
 
+    const paymentConfig = await getPublicPaymentConfig();
+
     res.status(201).json({
       success: true,
       message: 'Payment order created',
@@ -77,8 +99,9 @@ const createRazorpayOrder = async (req, res, next) => {
           orderId: razorpayOrder.id,
           amount: razorpayOrder.amount,
           currency: razorpayOrder.currency,
-          keyId: process.env.RAZORPAY_KEY_ID,
+          keyId: paymentConfig.keyId || process.env.RAZORPAY_KEY_ID,
         },
+        paymentConfig,
       },
     });
   } catch (error) {
@@ -101,9 +124,20 @@ const verifyRazorpayPayment = async (req, res, next) => {
       });
     }
 
+    const { credentials } = await getActiveGatewayCredentials();
+    const keySecret =
+      credentials?.keySecret || process.env.RAZORPAY_KEY_SECRET;
+
+    if (!keySecret) {
+      return res.status(503).json({
+        success: false,
+        message: 'Payment verification unavailable',
+      });
+    }
+
     const body = `${razorpay_order_id}|${razorpay_payment_id}`;
     const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .createHmac('sha256', keySecret)
       .update(body)
       .digest('hex');
 
@@ -137,6 +171,8 @@ const verifyRazorpayPayment = async (req, res, next) => {
 
     await syncUserProfileFromCustomer(req.user._id, order.customer);
 
+    scheduleShiprocketShipment(order._id);
+
     res.json({
       success: true,
       message: 'Payment successful! Order confirmed.',
@@ -147,4 +183,13 @@ const verifyRazorpayPayment = async (req, res, next) => {
   }
 };
 
-module.exports = { createRazorpayOrder, verifyRazorpayPayment };
+const getPaymentConfig = async (req, res, next) => {
+  try {
+    const config = await getPublicPaymentConfig();
+    res.json({ success: true, data: config });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createRazorpayOrder, verifyRazorpayPayment, getPaymentConfig };

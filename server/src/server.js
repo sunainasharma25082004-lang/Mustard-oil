@@ -2,9 +2,11 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
+const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const dns = require('dns');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+require('dotenv').config({ path: path.join(__dirname, '../.env.local'), override: true });
 
 const connectDB = require('./config/database');
 const seedProducts = require('./utils/seedProducts');
@@ -20,10 +22,23 @@ const distributorRoutes = require('./routes/distributorRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
+const contentRoutes = require('./routes/contentRoutes');
+const shippingRoutes = require('./routes/shippingRoutes');
+const webhookRoutes = require('./routes/webhookRoutes');
+const seedContent = require('./utils/seedContent');
+const seedReviews = require('./utils/seedReviews');
+const seedShiprocket = require('./utils/seedShiprocket');
+const seedPaymentGateways = require('./utils/seedPaymentGateways');
+const { getIntegrationStatus } = require('./utils/integrationStatus');
 
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const app = express();
+
+if (process.env.NODE_ENV === 'production' || process.env.TRUST_PROXY === 'true') {
+  app.set('trust proxy', 1);
+}
 
 // CORS allowed origins - supports CLIENT_URL env (comma separated) + sensible defaults
 const envOrigins = (process.env.CLIENT_URL || '')
@@ -47,6 +62,8 @@ const defaultOrigins = [
 ];
 
 const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
+
+app.use(compression());
 
 app.use(
   helmet({
@@ -74,7 +91,7 @@ app.use(
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   })
 );
 
@@ -83,27 +100,41 @@ app.options(/.*/
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: Number(process.env.RATE_LIMIT_MAX) || 200,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many requests, please try again later' },
+  skip: (req) => req.path.startsWith('/webhooks'),
 });
 
-app.use('/api', limiter);
 app.use(express.json({ limit: '1mb' }));
+app.use('/api/webhooks', webhookRoutes);
+app.use('/api', limiter);
 // Default product images (committed in repo — always available on deploy)
-app.use('/uploads/products', express.static(path.join(__dirname, '../seed-assets/products')));
-// Admin-uploaded images (runtime uploads directory)
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+const staticCache = { maxAge: '7d', immutable: false };
 
-app.get('/api/health', (req, res) => {
-  res.json({
-    success: true,
-    message: 'Karyor API is running',
-    environment: process.env.NODE_ENV || 'development',
-    timestamp: new Date().toISOString(),
-    allowedOrigins: allowedOrigins,
-  });
+app.use('/uploads/products', express.static(path.join(__dirname, '../seed-assets/products'), staticCache));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads'), staticCache));
+
+app.get('/api/health', async (req, res) => {
+  try {
+    const integrations = await getIntegrationStatus();
+    res.json({
+      success: true,
+      message: 'Karyor API is running',
+      environment: process.env.NODE_ENV || 'development',
+      timestamp: new Date().toISOString(),
+      integrations,
+    });
+  } catch (err) {
+    res.json({
+      success: true,
+      message: 'Karyor API is running',
+      environment: process.env.NODE_ENV || 'development',
+      timestamp: new Date().toISOString(),
+      integrationsError: err.message,
+    });
+  }
 });
 
 // Friendly root route (prevents 404 spam when visiting base URL)
@@ -126,38 +157,73 @@ app.use('/api/distributor', distributorRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/content', contentRoutes);
+app.use('/api/shipping', shippingRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
+const runSeed = async (label, fn) => {
+  try {
+    await fn();
+  } catch (err) {
+    console.warn(`[Seed] ${label} skipped:`, err.message);
+  }
+};
+
+const logProductionEnvCheck = () => {
+  if (process.env.NODE_ENV !== 'production') return;
+
+  const required = [
+    'MONGO_URI',
+    'JWT_SECRET',
+    'SETTINGS_ENCRYPTION_KEY',
+    'ADMIN_EMAIL',
+    'ADMIN_PASSWORD',
+    'RAZORPAY_KEY_ID',
+    'RAZORPAY_KEY_SECRET',
+    'SHIPROCKET_EMAIL',
+    'SHIPROCKET_PASSWORD',
+    'API_PUBLIC_URL',
+  ];
+  const missing = required.filter((key) => !process.env[key]?.trim());
+  if (missing.length) {
+    console.warn('⚠️  Missing production env vars:', missing.join(', '));
+  }
+};
+
 const startServer = async () => {
+  logProductionEnvCheck();
   await connectDB();
-  await seedProducts();
-  await seedAdmin();
-  await seedSettings();
+  await runSeed('products', seedProducts);
+  await runSeed('admin', seedAdmin);
+  await runSeed('settings', seedSettings);
+  await runSeed('content', seedContent);
+  await runSeed('reviews', seedReviews);
+  await runSeed('shiprocket', seedShiprocket);
+  await runSeed('payment-gateways', seedPaymentGateways);
 
   app.listen(PORT, () => {
     const env = process.env.NODE_ENV || 'development';
+    const publicUrl = (process.env.API_PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || '').trim();
+
     console.log('\n' + '═'.repeat(58));
     console.log(`🚀  KARYOR API SERVER RUNNING  [${env.toUpperCase()}]`);
     console.log('═'.repeat(58));
-    console.log('');
-    console.log(`   📡  API Server:     http://localhost:${PORT}`);
-    console.log('');
-    console.log('   ⚠️  Admin Panel aur Store alag-alag apps hain.');
-    console.log('');
-    console.log('   🛠️   Admin Panel (http://localhost:5174) ke liye:');
-    console.log('        npm run dev:admin');
-    console.log('');
-    console.log('   🛒  Store Frontend (http://localhost:5173) ke liye:');
-    console.log('        npm run dev');
-    console.log('');
-    console.log('   ✅  Sab ek saath start karne ke liye (recommended):');
-    console.log('        npm run dev:all');
-    console.log('');
-    console.log('   Press CTRL+C to stop this API server');
+
+    if (env === 'production') {
+      console.log(`   📡  Port:          ${PORT}`);
+      if (publicUrl) console.log(`   🌐  Public URL:    ${publicUrl}`);
+      console.log(`   ❤️   Health:        ${publicUrl || ''}/api/health`);
+      console.log('═'.repeat(58) + '\n');
+      return;
+    }
+
+    console.log(`\n   📡  API Server:     http://localhost:${PORT}`);
+    console.log('\n   Local dev: npm run dev:local  (store + admin + API)\n');
     console.log('═'.repeat(58) + '\n');
   });
 };

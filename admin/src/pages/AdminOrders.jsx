@@ -21,6 +21,8 @@ function AdminOrders() {
   const [orderDeliveryDays, setOrderDeliveryDays] = useState({});
   const [cancelModal, setCancelModal] = useState(null);
   const [cancelReason, setCancelReason] = useState('');
+  const [shiprocketLoading, setShiprocketLoading] = useState(null);
+  const [shiprocketLive, setShiprocketLive] = useState({});
 
   const loadOrders = () => {
     setLoading(true);
@@ -99,6 +101,19 @@ function AdminOrders() {
 
   const toggleExpand = (id) => {
     setExpandedId((prev) => (prev === id ? null : id));
+  };
+
+  const runShiprocketAction = async (orderId, action) => {
+    setShiprocketLoading(orderId);
+    setError('');
+    try {
+      await action();
+      loadOrders();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setShiprocketLoading(null);
+    }
   };
 
   const formatDate = (date) =>
@@ -263,6 +278,170 @@ function AdminOrders() {
                           <span>Pincode</span>
                           <span>{order.customer.pincode}</span>
                         </div>
+                      </div>
+
+                      <div className="order-detail-section">
+                        <h4>Shiprocket</h4>
+                        {order.shiprocket?.awb ? (
+                          <>
+                            <div className="detail-row">
+                              <span>AWB</span>
+                              <span>
+                                <a
+                                  href={order.shiprocket.trackingUrl || `https://shiprocket.co/tracking/${order.shiprocket.awb}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  style={{ color: '#d4af37' }}
+                                >
+                                  {order.shiprocket.awb}
+                                </a>
+                              </span>
+                            </div>
+                            {order.shiprocket.courierName && (
+                              <div className="detail-row">
+                                <span>Courier</span>
+                                <span>{order.shiprocket.courierName}</span>
+                              </div>
+                            )}
+                            {order.shiprocket.statusLabel && (
+                              <div className="detail-row">
+                                <span>Shipment</span>
+                                <span>{order.shiprocket.statusLabel}</span>
+                              </div>
+                            )}
+                          </>
+                        ) : order.shiprocket?.shipmentId ? (
+                          <>
+                            <div className="detail-row">
+                              <span>Shipment ID</span>
+                              <span>{order.shiprocket.shipmentId}</span>
+                            </div>
+                            {order.shiprocket.shiprocketOrderId && (
+                              <div className="detail-row">
+                                <span>SR Order ID</span>
+                                <span>{order.shiprocket.shiprocketOrderId}</span>
+                              </div>
+                            )}
+                            <div className="detail-row">
+                              <span>Verified</span>
+                              <span>{order.shiprocket.verified ? 'Yes' : 'No — resync recommended'}</span>
+                            </div>
+                            <div className="admin-status-box" style={{ marginTop: 8, fontSize: '0.82rem' }}>
+                              <strong style={{ color: '#d4af37' }}>Shiprocket pe dhundhne ka tareeka</strong>
+                              <p style={{ margin: '6px 0 0', color: '#bbb' }}>
+                                1. Kholo:{' '}
+                                <a href="https://app.shiprocket.in/seller/orders" target="_blank" rel="noreferrer" style={{ color: '#d4af37' }}>
+                                  app.shiprocket.in/seller/orders
+                                </a>
+                                {order.shiprocket.shiprocketOrderId && (
+                                  <>
+                                    {' '}
+                                    ya{' '}
+                                    <a
+                                      href={`https://app.shiprocket.in/seller/orders/details/${order.shiprocket.shiprocketOrderId}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      style={{ color: '#d4af37' }}
+                                    >
+                                      direct order link
+                                    </a>
+                                  </>
+                                )}
+                              </p>
+                              <p style={{ margin: '4px 0 0', color: '#bbb' }}>
+                                2. Search box mein <strong>Order Number</strong> daalo:{' '}
+                                <code style={{ color: '#fff' }}>{order.orderNumber}</code>
+                              </p>
+                              <p style={{ margin: '4px 0 0', color: '#f87171' }}>
+                                Shipment ID ({order.shiprocket.shipmentId}) se search mat karo — kaam nahi karega
+                              </p>
+                            </div>
+                            {shiprocketLive[order._id] && (
+                              <div style={{ marginTop: 8, fontSize: '0.82rem', color: '#4ade80' }}>
+                                Live: {shiprocketLive[order._id].status} · Channel: {shiprocketLive[order._id].channelName}
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <p style={{ color: '#888', fontSize: '0.88rem', margin: '0 0 8px' }}>
+                            No Shiprocket shipment yet
+                          </p>
+                        )}
+                        {order.shiprocket?.error && (
+                          <p style={{ color: '#f87171', fontSize: '0.82rem', margin: '4px 0 8px' }}>
+                            {order.shiprocket.error}
+                          </p>
+                        )}
+                        {order.paymentStatus === 'paid' && order.status !== 'cancelled' && (
+                          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            {!order.shiprocket?.shipmentId && (
+                              <button
+                                className="admin-btn admin-btn-outline admin-btn-sm"
+                                disabled={shiprocketLoading === order._id}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  runShiprocketAction(order._id, () =>
+                                    adminApi.createShiprocketShipment(order._id)
+                                  );
+                                }}
+                              >
+                                {shiprocketLoading === order._id ? 'Working...' : 'Create Shipment'}
+                              </button>
+                            )}
+                            {order.shiprocket?.shipmentId && !order.shiprocket?.verified && (
+                              <button
+                                className="admin-btn admin-btn-outline admin-btn-sm"
+                                disabled={shiprocketLoading === order._id}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  runShiprocketAction(order._id, () =>
+                                    adminApi.resyncShiprocketShipment(order._id)
+                                  );
+                                }}
+                              >
+                                Resync to Shiprocket
+                              </button>
+                            )}
+                            {order.shiprocket?.shipmentId && (
+                              <>
+                                <button
+                                  className="admin-btn admin-btn-outline admin-btn-sm"
+                                  disabled={shiprocketLoading === order._id}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    runShiprocketAction(order._id, () =>
+                                      adminApi.verifyShiprocketShipment(order._id)
+                                    );
+                                  }}
+                                >
+                                  Verify on Shiprocket
+                                </button>
+                                <button
+                                  className="admin-btn admin-btn-outline admin-btn-sm"
+                                  disabled={shiprocketLoading === order._id}
+                                  onClick={async (e) => {
+                                    e.stopPropagation();
+                                    setShiprocketLoading(order._id);
+                                    setError('');
+                                    try {
+                                      const res = await adminApi.getShiprocketLiveStatus(order._id);
+                                      setShiprocketLive((prev) => ({
+                                        ...prev,
+                                        [order._id]: res.data.live,
+                                      }));
+                                    } catch (err) {
+                                      setError(err.message);
+                                    } finally {
+                                      setShiprocketLoading(null);
+                                    }
+                                  }}
+                                >
+                                  Check Live Status
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       <div className="order-detail-section">

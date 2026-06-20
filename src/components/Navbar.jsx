@@ -4,10 +4,11 @@ import '../styles/main.css';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
-const NAV_LINKS = [
+const PUBLIC_NAV_LINKS = [
   { to: '/', label: 'Our Oil', end: true },
   { to: '/#why-pure', label: 'Why Pure' },
   { to: '/#how-we-press', label: 'How We Press' },
+  { to: '/recipes', label: 'Recipes' },
   { to: '/#reviews', label: 'Reviews' },
 ];
 
@@ -27,7 +28,6 @@ function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close menu on route change / outside clicks (simple)
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuOpen && !e.target.closest('.site-navbar')) {
@@ -38,31 +38,64 @@ function Navbar() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [menuOpen]);
 
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const onEscape = (e) => {
+      if (e.key === 'Escape') closeMenu();
+    };
+    document.addEventListener('keydown', onEscape);
+    return () => document.removeEventListener('keydown', onEscape);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.classList.add('site-menu-open');
+    } else {
+      document.body.classList.remove('site-menu-open');
+    }
+    return () => document.body.classList.remove('site-menu-open');
+  }, [menuOpen]);
+
+  const navLinks = user
+    ? [{ to: '/', label: 'Home', end: true }]
+    : PUBLIC_NAV_LINKS;
+
   return (
-    <header className={`site-navbar ${scrolled ? 'site-navbar-scrolled' : ''}`}>
+    <header className={`site-navbar ${scrolled ? 'site-navbar-scrolled' : ''} ${menuOpen ? 'site-navbar-menu-open' : ''}`}>
+      {menuOpen && (
+        <button
+          type="button"
+          className="site-nav-backdrop"
+          aria-label="Close menu"
+          onClick={closeMenu}
+        />
+      )}
       <nav className="navbar navbar-expand-lg custom-navbar fixed-top">
         <div className="container site-navbar-inner">
-          <Link className="site-navbar-brand" to="/">
-            <img src="/logo.jpeg" alt="Karyor Logo" className="navbar-logo" />
-            <span className="brand-logo">KARYOR</span>
-          </Link>
+          <div className="site-navbar-top">
+            <Link className="site-navbar-brand" to="/" onClick={closeMenu}>
+              <img src="/logo.jpeg" alt="Karyor Logo" className="navbar-logo" />
+              <span className="brand-logo">KARYOR</span>
+            </Link>
 
-          <button
-            className={`navbar-toggler custom-toggler ${menuOpen ? 'is-open' : ''}`}
-            type="button"
-            onClick={toggleMenu}
-            aria-controls="navMenu"
-            aria-expanded={menuOpen}
-            aria-label="Toggle navigation"
+            <button
+              className={`site-nav-toggle ${menuOpen ? 'is-open' : ''}`}
+              type="button"
+              onClick={toggleMenu}
+              aria-controls="navMenu"
+              aria-expanded={menuOpen}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            >
+              <i className={`bi ${menuOpen ? 'bi-x-lg' : 'bi-list'} site-nav-toggle-icon`} aria-hidden="true" />
+            </button>
+          </div>
+
+          <div
+            className={`collapse navbar-collapse site-nav-panel ${menuOpen ? 'show' : ''}`}
+            id="navMenu"
           >
-            <span />
-            <span />
-            <span />
-          </button>
-
-          <div className={`collapse navbar-collapse ${menuOpen ? 'show' : ''}`} id="navMenu">
             <ul className="navbar-nav ms-auto align-items-lg-center site-nav-list">
-              {NAV_LINKS.map((link) => (
+              {navLinks.map((link) => (
                 <li className="nav-item" key={link.to}>
                   <NavLink
                     className={({ isActive }) =>
@@ -137,7 +170,7 @@ function Navbar() {
                     to="/products"
                     onClick={closeMenu}
                   >
-                   Shop Now
+                    Shop Now
                   </NavLink>
                 </li>
               )}

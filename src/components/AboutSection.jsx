@@ -22,7 +22,7 @@ function AboutSection() {
 
           <div className="purity-card">
             <div>❄️</div>
-            <h3>Single Cold Press</h3>
+            <h3>Cold Pressed & Single Pressed</h3>
             <p>
               Pressed only once at low temperature.
               Heat destroys nutrients — we never use it.

@@ -9,6 +9,7 @@ const QUICK_LINKS = [
 
 const EXPLORE_LINKS = [
   { label: 'All Products', to: '/products' },
+  { label: 'Recipes', to: '/recipes' },
   { label: 'Contact Us', to: '/contact' },
   { label: 'Become Distributor', to: '/distributor' },
   { label: 'My Orders', to: '/my-orders' },
@@ -21,7 +22,7 @@ function Footer() {
 
       <div className="container">
         <div className="site-footer-trust">
-          <span>🌿 100% Pure Cold Pressed</span>
+          <span>🌿 Cold Pressed & Single Pressed</span>
           <span>🚫 No Chemicals • No Refining</span>
           <span>🇮🇳 Made for Indian Kitchens</span>
         </div>
@@ -33,7 +34,7 @@ function Footer() {
               <span className="site-footer-title">KARYOR</span>
             </Link>
             <p>
-              Pure cold-pressed mustard oil from Karyor Farms. Traditional Kachi Ghani, rich in natural goodness for your family&apos;s kitchen.
+              Cold Pressed & Single Pressed Mustard Oil from Karyor Farms. Traditional Kachi Ghani, rich in natural goodness for your family&apos;s kitchen.
             </p>
             <div className="site-footer-social">
               <a href="https://wa.me/918708621377" target="_blank" rel="noreferrer" aria-label="WhatsApp">
@@ -99,7 +100,7 @@ function Footer() {
 
         <div className="site-footer-bottom">
           <p className="copyright">© 2026 KARYOR. All Rights Reserved.</p>
-          <p className="site-footer-tag">Pure · Natural · Cold Pressed</p>
+          <p className="site-footer-tag">Pure · Natural · Cold Pressed & Single Pressed</p>
         </div>
       </div>
     </footer>

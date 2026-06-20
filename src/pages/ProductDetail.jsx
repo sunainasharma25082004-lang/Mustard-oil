@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { productApi } from '../utils/api';
 import { resolveImageUrl } from '../utils/imageUrl';
+import { useLiveData } from '../hooks/useLiveData';
 
 const FEATURES = [
-  { icon: 'bi-droplet-half', label: 'Cold Pressed Single Pressed' },
-  { icon: 'bi-flower1', label: '90+ Year Legacy' },
+  { icon: 'bi-droplet-half', label: 'Cold Pressed & Single Pressed Mustard Oil' },
+  { icon: 'bi-flower1', label: '5+ Years Legacy' },
   { icon: 'bi-shield-check', label: 'No Heat · No Chemical · No Adulteration' },
 ];
 
@@ -20,7 +21,7 @@ function ProductDetail() {
   const [error, setError] = useState('');
   const [quantity, setQuantity] = useState(1);
 
-  useEffect(() => {
+  const loadProduct = useCallback(() => {
     setLoading(true);
     setError('');
     productApi
@@ -29,6 +30,8 @@ function ProductDetail() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [id]);
+
+  useLiveData(loadProduct, [id]);
 
   const handleAddToCart = () => {
     if (!product?.inStock) return;
@@ -81,7 +84,7 @@ function ProductDetail() {
               </div>
 
               <div className="product-detail-info">
-                <span className="product-detail-label">KARYOR Black Mustard Oil</span>
+                <span className="product-detail-label">KARYOR Cold Pressed & Single Pressed Mustard Oil</span>
                 <h1>{product.size || product.name}</h1>
                 <p className="product-detail-desc">{product.description}</p>
 

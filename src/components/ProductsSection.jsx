@@ -4,32 +4,41 @@ import '../styles/main.css';
 import { productApi } from '../utils/api';
 import { resolveImageUrl } from '../utils/imageUrl';
 
-function ProductsSection() {
+function ProductsSection({ products: productsProp }) {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(productsProp === undefined);
   const [error, setError] = useState('');
   const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
-    const apiBase = import.meta.env.VITE_API_URL || '(not set - calling relative)';
-    console.log('[ProductsSection] Using API base:', apiBase);
+    if (productsProp === undefined) {
+      setLoading(true);
+      return;
+    }
 
+    if (Array.isArray(productsProp)) {
+      setProducts(productsProp);
+      setLoading(false);
+      setError('');
+      return undefined;
+    }
+
+    setLoading(true);
     productApi
       .getAll()
       .then((res) => {
         setProducts(res.data || []);
       })
       .catch((err) => {
-        console.error('[ProductsSection] Failed to load live products from API:', err);
         setError(err.message || 'Failed to load products');
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [retryKey]);
+  }, [productsProp, retryKey]);
 
   return (
-    <section className="premium-products">
+    <section className="premium-products" id="products">
       <div className="container">
         <div className="premium-heading">
           <span>Choose Your Pack</span>
@@ -84,7 +93,13 @@ function ProductsSection() {
 
                   <div className="product-image" style={{ position: 'relative' }}>
                     <div className="product-image-inner">
-                      <img src={resolveImageUrl(product.image)} alt={product.size || product.name} className="product-showcase-img" />
+                      <img
+                        src={resolveImageUrl(product.image)}
+                        alt={product.size || product.name}
+                        className="product-showcase-img"
+                        loading="lazy"
+                        decoding="async"
+                      />
                     </div>
                   </div>
 

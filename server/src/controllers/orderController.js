@@ -3,6 +3,10 @@ const {
   calculateExpectedDeliveryDate,
   canCancelOrder,
 } = require('../utils/deliveryHelpers');
+const {
+  cancelShiprocketOrder,
+  isShiprocketEnabled,
+} = require('../utils/shiprocketHelpers');
 
 const createOrder = async (req, res, next) => {
   try {
@@ -89,6 +93,15 @@ const cancelMyOrder = async (req, res, next) => {
     order.cancelledAt = new Date();
     await order.save();
 
+    if (await isShiprocketEnabled()) {
+      const srOrderId = order.shiprocket?.shiprocketOrderId;
+      if (srOrderId) {
+        cancelShiprocketOrder(srOrderId).catch((err) => {
+          console.warn(`[Shiprocket] Cancel failed for ${order.orderNumber}:`, err.message);
+        });
+      }
+    }
+
     res.json({
       success: true,
       message: 'Order cancelled successfully',
@@ -141,6 +154,15 @@ const updateOrderStatus = async (req, res, next) => {
       order.cancelledBy = 'admin';
       order.cancelledAt = new Date();
       order.status = 'cancelled';
+
+      if (await isShiprocketEnabled()) {
+        const srOrderId = order.shiprocket?.shiprocketOrderId;
+        if (srOrderId) {
+          cancelShiprocketOrder(srOrderId).catch((err) => {
+            console.warn(`[Shiprocket] Admin cancel failed for ${order.orderNumber}:`, err.message);
+          });
+        }
+      }
     } else if (status) {
       order.status = status;
     }

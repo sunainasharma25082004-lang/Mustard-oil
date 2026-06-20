@@ -1,5 +1,19 @@
 # 🚀 Render.com Deployment Guide (Same Folder Structure)
 
+## ⚡ Already deployed? — Git push only
+
+Agar Render pe **3 services pehle se connected** hain (API + Store + Admin):
+
+1. Local check (optional): `npm run verify:deploy`
+2. Git push karo → Render **auto-deploy** karega teeno services
+3. Deploy ke baad verify: `https://karyor-api.onrender.com/api/health`
+4. Admin login → Orders / Shipping / Payment test karo
+
+**Zaroori:** Render dashboard mein env vars pehle se set honi chahiye (neeche list).  
+`SETTINGS_ENCRYPTION_KEY` deploy ke baad **mat badalna** — warna saved Razorpay/Shiprocket passwords decrypt nahi honge.
+
+---
+
 Bhai, yeh project **3 alag parts** mein hai isliye hume Render pe **3 services** banana padega:
 
 1. **Backend (API)** → `server/` folder (Node.js + Express + MongoDB)
@@ -34,6 +48,19 @@ Yeh sab **same folder structure** ke saath deploy hoga using `render.yaml`.
 | `CLIENT_URL` | `https://karyor.com,https://www.karyor.com,https://karyor-store.onrender.com,https://karyor-admin.onrender.com` | ✅ |
 | `NODE_ENV` | `production` | ✅ |
 | `ADMIN_NAME` | `Karyor Admin` | Optional |
+| `SETTINGS_ENCRYPTION_KEY` | strong random string (32+ chars) — **production mein zaroori**, deploy ke baad mat badalna | ✅ |
+| `API_PUBLIC_URL` | `https://karyor-api.onrender.com` | ✅ (webhook URL ke liye) |
+| `SHIPROCKET_EMAIL` | API user email (Shiprocket → Settings → API) | ✅ |
+| `SHIPROCKET_PASSWORD` | API user password | ✅ |
+| `SHIPROCKET_WEBHOOK_SECRET` | koi strong random token | ✅ |
+| `SHIPROCKET_PICKUP_LOCATION` | `Primary` (Shiprocket panel jaisa naam) | ✅ |
+| `SHIPROCKET_PICKUP_PINCODE` | `125001` (Hisar warehouse) | ✅ |
+| `SHIPROCKET_COMPANY_NAME` | `Karyor Farms` | ✅ |
+| `SHIPROCKET_COMPANY_PHONE` | `8708621377` | ✅ |
+| `SHIPROCKET_COMPANY_EMAIL` | `karyorfarms@gmail.com` | ✅ |
+| `SHIPROCKET_COMPANY_CITY` | `Hisar` | ✅ |
+| `SHIPROCKET_COMPANY_STATE` | `Haryana` | ✅ |
+| `SHIPROCKET_COMPANY_PINCODE` | `125001` | ✅ |
 
 ### Main Store Frontend (karyor-store) ke liye
 
@@ -150,6 +177,30 @@ Jab sab deploy ho jaye:
 
 3. Admin login kar ke test karo (seed hua admin use karo)
 
+4. **Health check** kholo: `https://karyor-api.onrender.com/api/health`  
+   - `integrations.payment.enabled` = true  
+   - `integrations.shiprocket.enabled` = true  
+
+5. **Admin → Payment Gateways** — Razorpay validate + active gateway = Razorpay
+
+6. **Admin → Shipping Settings** — Test connection → Enabled ON
+
+---
+
+## 3️⃣B Shiprocket Webhook (Production)
+
+1. Render backend deploy hone ke baad webhook URL:
+   ```
+   https://karyor-api.onrender.com/api/webhooks/shiprocket
+   ```
+   (Admin → Shipping Settings mein bhi dikhega agar `API_PUBLIC_URL` set hai)
+
+2. Shiprocket panel → **Settings → Webhooks** → Add URL
+
+3. Secret token = same jo `SHIPROCKET_WEBHOOK_SECRET` mein daala hai backend pe
+
+4. Isse order status auto-update hoga: shipped, delivered, etc.
+
 ---
 
 ## 4️⃣ File Uploads (Product Images) - Important Warning
@@ -192,6 +243,9 @@ Agar abhi jaldi chahiye to Option 1 use karo.
 | Images nahi dikh rahe (admin mein) | `VITE_STORE_URL` set karo admin ke liye |
 | `/uploads` wali images nahi aa rahi | `VITE_API_URL` backend ka URL hona chahiye |
 | Admin login nahi ho raha | `ADMIN_EMAIL` / `ADMIN_PASSWORD` sahi daala? Backend restart kiya? |
+| Payment disabled on store | `RAZORPAY_KEY_ID` + `RAZORPAY_KEY_SECRET` backend env mein; Admin → Payment Gateways → Razorpay enabled |
+| Shiprocket shipment nahi banta | `SHIPROCKET_*` env vars + Admin → Shipping → Enabled; pickup location name match karo |
+| Webhook status update nahi | `SHIPROCKET_WEBHOOK_SECRET` + URL Shiprocket panel mein sahi? |
 | Build fail ho raha | `npm install` command sahi hai kya? Node version check karo (Render default 18/20 hota hai) |
 | Page refresh (F5) on /products, /about, /dashboard etc. gives 404 or "not found" | This is normal for React SPA. We added `routes` rewrite in `render.yaml` (SPA fallback to index.html). Re-deploy the static sites (karyor-store and karyor-admin) after updating render.yaml or add the rewrite manually in Render dashboard under the static site → "Redirects and Rewrites". |
 
