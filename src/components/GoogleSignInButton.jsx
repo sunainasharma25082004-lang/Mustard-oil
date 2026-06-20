@@ -1,33 +1,37 @@
 import { GoogleLogin } from '@react-oauth/google';
+import { useGoogleAuth } from '../context/GoogleAuthContext';
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() || '';
+function GoogleSignInButton({ onSuccess, onError, disabled, loading, width = 320 }) {
+  const { clientId, ready } = useGoogleAuth();
 
-function GoogleSignInButton({ onSuccess, onError, disabled, loading }) {
-  if (!GOOGLE_CLIENT_ID) {
+  if (!ready || !clientId) {
     return null;
   }
 
   return (
-    <div style={{ marginTop: 16 }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          marginBottom: 14,
-          color: '#666',
-          fontSize: '0.82rem',
-        }}
-      >
-        <span style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.1)' }} />
-        <span>or</span>
-        <span style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.1)' }} />
-      </div>
+    <div style={{ marginTop: width >= 360 ? 16 : 12, width: '100%' }}>
+      {width >= 360 && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            marginBottom: 14,
+            color: '#666',
+            fontSize: '0.82rem',
+          }}
+        >
+          <span style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.1)' }} />
+          <span>or</span>
+          <span style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.1)' }} />
+        </div>
+      )}
 
       <div
         style={{
           display: 'flex',
           justifyContent: 'center',
+          width: '100%',
           opacity: disabled || loading ? 0.6 : 1,
           pointerEvents: disabled || loading ? 'none' : 'auto',
         }}
@@ -43,7 +47,7 @@ function GoogleSignInButton({ onSuccess, onError, disabled, loading }) {
           onError={() => onError?.('Google sign-in cancelled or failed')}
           theme="filled_black"
           size="large"
-          width={380}
+          width={width}
           text="continue_with"
           shape="pill"
           locale="en"
@@ -53,5 +57,4 @@ function GoogleSignInButton({ onSuccess, onError, disabled, loading }) {
   );
 }
 
-export { GOOGLE_CLIENT_ID };
 export default GoogleSignInButton;

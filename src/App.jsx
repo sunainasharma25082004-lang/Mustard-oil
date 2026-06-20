@@ -16,7 +16,7 @@ import RecipeDetail from "./pages/RecipeDetail";
 import SignIn from "./components/SignIn";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
-import GoogleAuthProvider from "./components/GoogleAuthProvider";
+import { GoogleAuthProvider } from "./context/GoogleAuthContext";
 
 function App() {
   return (

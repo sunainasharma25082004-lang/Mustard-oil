@@ -5,12 +5,13 @@ import { useAuth } from '../context/AuthContext';
 import { paymentApi, paymentConfigApi, settingsApi, shippingApi } from '../utils/api';
 import { loadRazorpayScript, openRazorpayCheckout } from '../utils/razorpay';
 import AuthModal from './AuthModal';
+import GoogleSignInButton from './GoogleSignInButton';
 import OrderTracking, { formatOrderDateLong } from './OrderTracking';
 
 function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, loginWithGoogle } = useAuth();
   const { items, subtotal, total, clearCart } = useCart();
 
   const [step, setStep] = useState(location.state?.step === 2 ? 2 : 1);
@@ -64,6 +65,18 @@ function Checkout() {
       setPincodeStatus(res.data);
     } catch {
       setPincodeStatus(null);
+    }
+  };
+
+  const handleGoogleSignIn = async (credential) => {
+    setError('');
+    setLoading(true);
+    try {
+      await loginWithGoogle(credential);
+    } catch (err) {
+      setError(err.message || 'Google sign-in failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -602,6 +615,34 @@ function Checkout() {
                       Your shipping details are already saved for this checkout.
                     </p>
 
+                    <div style={{ maxWidth: 320, margin: '0 auto' }}>
+                      <GoogleSignInButton
+                        onSuccess={handleGoogleSignIn}
+                        onError={setError}
+                        disabled={loading}
+                        loading={loading}
+                        width={320}
+                      />
+                    </div>
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 12,
+                        margin: '18px 0 14px',
+                        color: '#666',
+                        fontSize: '0.82rem',
+                        maxWidth: 320,
+                        marginLeft: 'auto',
+                        marginRight: 'auto',
+                      }}
+                    >
+                      <span style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.1)' }} />
+                      <span>or email</span>
+                      <span style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.1)' }} />
+                    </div>
+
                     <button
                       type="button"
                       onClick={() => setShowAuthModal(true)}
@@ -610,19 +651,19 @@ function Checkout() {
                         maxWidth: 320,
                         padding: '15px 24px',
                         borderRadius: 50,
-                        border: 'none',
-                        background: 'linear-gradient(135deg, #f7d76a, #d4af37)',
-                        color: '#000',
-                        fontWeight: 800,
-                        fontSize: '1rem',
+                        border: '1px solid rgba(212,175,55,.45)',
+                        background: 'transparent',
+                        color: '#d4af37',
+                        fontWeight: 700,
+                        fontSize: '0.95rem',
                         cursor: 'pointer',
                       }}
                     >
-                      Sign In or Create Account
+                      Sign In / Register with Email
                     </button>
 
                     <div style={{ marginTop: 16, fontSize: '0.8rem', color: '#777' }}>
-                      You will be able to complete payment right after signing in.
+                      Sign in ke baad turant payment complete kar sakte ho.
                     </div>
                   </div>
                 ) : (

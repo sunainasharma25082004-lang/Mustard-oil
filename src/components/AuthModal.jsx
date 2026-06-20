@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import GoogleSignInButton, { GOOGLE_CLIENT_ID } from './GoogleSignInButton';
+import GoogleSignInButton from './GoogleSignInButton';
+import { useGoogleAuth } from '../context/GoogleAuthContext';
 
 function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
   const { login, register, loginWithGoogle } = useAuth();
+  const { clientId } = useGoogleAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -377,9 +379,9 @@ function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
           </form>
         )}
 
-        {!GOOGLE_CLIENT_ID && import.meta.env.DEV && (
+        {!clientId && import.meta.env.DEV && (
           <p style={{ marginTop: 14, textAlign: 'center', fontSize: '0.78rem', color: '#666' }}>
-            Dev: add VITE_GOOGLE_CLIENT_ID to enable Google sign-in
+            Dev: set VITE_GOOGLE_CLIENT_ID or GOOGLE_CLIENT_ID on API
           </p>
         )}
 
