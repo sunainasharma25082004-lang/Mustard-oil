@@ -38,14 +38,17 @@ function Hero() {
             Aged for Perfection.
           </h2>
 
-          <div className="karyorHeroMobileProduct">
-            <img
-              src="/uploads/products/mustard1ml.jpg"
-              alt="Karyor 1L Cold Pressed Black Mustard Oil — plastic bottle"
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-            />
+          <div className="karyorHeroMobileStage" aria-hidden="false">
+            <div className="karyorHeroMobileStageGlow" />
+            <div className="karyorHeroMobileBottle">
+              <img
+                src="/uploads/products/mustard1ml.jpg"
+                alt="Karyor 1L Cold Pressed Black Mustard Oil — plastic bottle"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+              />
+            </div>
           </div>
 
           <div className="karyorHeroMobileBadges">
