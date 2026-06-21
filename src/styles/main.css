@@ -321,141 +321,43 @@ font-size:24px;
   }
 
   .karyorHeroMobile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 12px 0 8px;
+    display: block;
+    padding: 12px 18px 8px;
     background: #0b0b0b;
   }
 
-  .karyorHeroMobileEyebrow {
-    margin: 0 0 10px;
-    padding: 0 18px;
-    color: #d4af37;
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-
-  .karyorHeroMobileTitle {
-    margin: 0 0 14px;
-    padding: 0 18px;
-    color: #fff;
-    font-size: clamp(1.3rem, 5.2vw, 1.6rem);
-    font-weight: 700;
-    line-height: 1.35;
-  }
-
-  /* Laptop-style scene: dark banner bg + yellow flowers + wood, real bottle on top */
-  .karyorHeroMobileStage {
+  .karyorHeroMobileMedia {
     position: relative;
     width: 100%;
-    min-height: min(52vh, 400px);
-    margin: 0 0 14px;
-    overflow: hidden;
-    background:
-      radial-gradient(ellipse 55% 45% at 78% 42%, rgba(255, 183, 0, 0.14), transparent 70%),
-      url('/banner-mobile.jpg') center 52% / cover no-repeat;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding-bottom: 6%;
+    max-width: 480px;
+    margin: 0 auto;
   }
 
-  .karyorHeroMobileStage::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      180deg,
-      #0b0b0b 0%,
-      rgba(11, 11, 11, 0.92) 14%,
-      rgba(11, 11, 11, 0.55) 28%,
-      rgba(11, 11, 11, 0.15) 42%,
-      transparent 58%
-    );
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .karyorHeroMobileStageGlow {
-    position: absolute;
-    left: 50%;
-    bottom: 18%;
-    transform: translateX(-50%);
-    width: min(240px, 65vw);
-    height: min(280px, 42vh);
-    border-radius: 50%;
-    background: radial-gradient(ellipse, rgba(10, 10, 10, 0.92) 35%, rgba(10, 10, 10, 0.5) 60%, transparent 78%);
-    z-index: 2;
-    pointer-events: none;
-  }
-
-  .karyorHeroMobileBottle {
-    position: relative;
-    z-index: 3;
-    width: min(210px, 54vw);
-    margin-bottom: 2%;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-  }
-
-  .karyorHeroMobileBottle img {
+  .karyorHeroMobileBanner {
     width: 100%;
     height: auto;
-    max-height: min(40vh, 310px);
+    display: block;
+    border-radius: 18px;
     object-fit: contain;
-    object-position: center bottom;
-    display: block;
-    filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.65));
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 100%);
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.35),
+      0 0 60px rgba(255, 183, 0, 0.1);
   }
 
-  .karyorHeroMobileBadges {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+  .karyorHeroMobileActions {
+    position: absolute;
+    left: 50%;
+    bottom: 9%;
+    transform: translateX(-50%);
+    z-index: 2;
+    width: min(220px, 58vw);
+  }
+
+  .karyorHeroMobileActions .karyorHeroShopBtn {
     width: 100%;
-    max-width: 380px;
-    margin: 0 auto 20px;
-    padding: 0 18px;
-    box-sizing: border-box;
-  }
-
-  .karyorHeroMobileBadge {
-    padding: 10px 6px;
-    border-radius: 12px;
-    border: 1px solid rgba(212, 175, 55, 0.22);
-    background: rgba(212, 175, 55, 0.06);
-    color: #9a9a9a;
-    font-size: 0.62rem;
-    line-height: 1.35;
-  }
-
-  .karyorHeroMobileBadge strong {
-    display: block;
-    margin-bottom: 2px;
-    color: #e8c96a;
-    font-size: 0.68rem;
-    font-weight: 700;
-  }
-
-  .karyorHeroMobileCta {
-    width: 100%;
-    padding: 4px 18px 12px;
-    box-sizing: border-box;
-  }
-
-  .karyorHeroMobileCta .karyorHeroShopBtn {
-    width: 100%;
-    max-width: 280px;
-    margin: 0 auto;
-    padding: 13px 28px;
-    font-size: 0.9rem;
+    padding: 12px 24px;
+    font-size: 0.88rem;
+    text-align: center;
   }
 }
 
@@ -468,14 +370,14 @@ font-size:24px;
     padding-inline: 14px;
   }
 
-  .karyorHeroMobileBadges {
-    gap: 6px;
+  .karyorHeroMobileActions {
+    bottom: 8%;
+    width: min(200px, 62vw);
   }
 
-  .karyorHeroMobileCta .karyorHeroShopBtn {
-    max-width: 100%;
-    padding: 12px 24px;
-    font-size: 0.86rem;
+  .karyorHeroMobileActions .karyorHeroShopBtn {
+    padding: 11px 20px;
+    font-size: 0.84rem;
   }
 }
 

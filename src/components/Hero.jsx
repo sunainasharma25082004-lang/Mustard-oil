@@ -1,10 +1,5 @@
 import { Link } from 'react-router-dom';
-
-const MOBILE_BADGES = [
-  { title: 'Cold Pressed', text: 'Traditional extraction' },
-  { title: '90+ Legacy', text: 'Years of trust' },
-  { title: 'No Chemicals', text: 'Pure & natural' },
-];
+import mobileHeroBanner from '../assets/qJmjp.jpg';
 
 function Hero() {
   return (
@@ -29,41 +24,22 @@ function Hero() {
           </div>
         </div>
 
-        {/* Mobile — real product photo + separate CTA (no overlap) */}
+        {/* Mobile — full banner image + Shop Now below bottle (like laptop) */}
         <div className="karyorHeroMobile">
-          <p className="karyorHeroMobileEyebrow">Every Drop Carries Tradition</p>
-          <h2 className="karyorHeroMobileTitle">
-            Pure by Tradition.
-            <br />
-            Aged for Perfection.
-          </h2>
-
-          <div className="karyorHeroMobileStage" aria-hidden="false">
-            <div className="karyorHeroMobileStageGlow" />
-            <div className="karyorHeroMobileBottle">
-              <img
-                src="/uploads/products/mustard1ml.jpg"
-                alt="Karyor 1L Cold Pressed Black Mustard Oil — plastic bottle"
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-              />
+          <div className="karyorHeroMobileMedia">
+            <img
+              src={mobileHeroBanner}
+              alt="Karyor Black Mustard Oil — Every Drop Carries Tradition"
+              className="karyorHeroMobileBanner"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
+            <div className="karyorHeroMobileActions">
+              <Link to="/products" className="karyorHeroShopBtn">
+                Shop Now
+              </Link>
             </div>
-          </div>
-
-          <div className="karyorHeroMobileBadges">
-            {MOBILE_BADGES.map((badge) => (
-              <div className="karyorHeroMobileBadge" key={badge.title}>
-                <strong>{badge.title}</strong>
-                {badge.text}
-              </div>
-            ))}
-          </div>
-
-          <div className="karyorHeroMobileCta">
-            <Link to="/#products" className="karyorHeroShopBtn">
-              Shop Now
-            </Link>
           </div>
         </div>
       </div>
