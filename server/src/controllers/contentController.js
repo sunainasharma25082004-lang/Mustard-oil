@@ -3,6 +3,12 @@ const Recipe = require('../models/Recipe');
 const Certificate = require('../models/Certificate');
 const Testimonial = require('../models/Testimonial');
 const Product = require('../models/Product');
+const { cached, bust } = require('../utils/memoryCache');
+
+const HOME_CACHE_KEY = 'content:home';
+const HOME_CACHE_TTL_MS = 2 * 60 * 1000;
+
+const bustHomeCache = () => bust('content:home');
 const { extractYouTubeVideoId } = require('../utils/youtubeHelpers');
 const {
   sanitizeReviewText,
@@ -17,18 +23,23 @@ const slugify = (text) =>
     .replace(/^-+|-+$/g, '');
 
 // Home page bundle — single request for faster first load
+const loadHomeBundle = async () => {
+  const [products, certificates, youtube, testimonials] = await Promise.all([
+    Product.find({ isActive: true }).sort({ price: 1 }).select('-__v').lean(),
+    Certificate.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 }).select('-__v').lean(),
+    YouTubeVideo.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 }).select('-__v').lean(),
+    Testimonial.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 }).select('-__v').lean(),
+  ]);
+  return { products, certificates, youtube, testimonials };
+};
+
 const getHomeBundle = async (req, res, next) => {
   try {
-    const [products, certificates, youtube, testimonials] = await Promise.all([
-      Product.find({ isActive: true }).sort({ price: 1 }).select('-__v').lean(),
-      Certificate.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 }).select('-__v').lean(),
-      YouTubeVideo.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 }).select('-__v').lean(),
-      Testimonial.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 }).select('-__v').lean(),
-    ]);
+    const data = await cached(HOME_CACHE_KEY, HOME_CACHE_TTL_MS, loadHomeBundle);
 
     res.json({
       success: true,
-      data: { products, certificates, youtube, testimonials },
+      data,
     });
   } catch (error) {
     next(error);
@@ -71,6 +82,7 @@ const createYouTubeVideo = async (req, res, next) => {
       isActive: isActive !== false,
     });
 
+    bustHomeCache();
     res.status(201).json({ success: true, message: 'YouTube video added', data: video });
   } catch (error) {
     next(error);
@@ -98,6 +110,7 @@ const updateYouTubeVideo = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Video not found' });
     }
 
+    bustHomeCache();
     res.json({ success: true, message: 'YouTube video updated', data: video });
   } catch (error) {
     next(error);
@@ -110,6 +123,7 @@ const deleteYouTubeVideo = async (req, res, next) => {
     if (!video) {
       return res.status(404).json({ success: false, message: 'Video not found' });
     }
+    bustHomeCache();
     res.json({ success: true, message: 'YouTube video deleted' });
   } catch (error) {
     next(error);
@@ -271,6 +285,7 @@ const createCertificate = async (req, res, next) => {
       isActive: isActive !== false,
     });
 
+    bustHomeCache();
     res.status(201).json({ success: true, message: 'Certificate added', data: certificate });
   } catch (error) {
     next(error);
@@ -308,6 +323,7 @@ const updateCertificate = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Certificate not found' });
     }
 
+    bustHomeCache();
     res.json({ success: true, message: 'Certificate updated', data: certificate });
   } catch (error) {
     next(error);
@@ -320,6 +336,7 @@ const deleteCertificate = async (req, res, next) => {
     if (!certificate) {
       return res.status(404).json({ success: false, message: 'Certificate not found' });
     }
+    bustHomeCache();
     res.json({ success: true, message: 'Certificate deleted' });
   } catch (error) {
     next(error);
@@ -364,6 +381,7 @@ const createTestimonial = async (req, res, next) => {
       isActive: isActive !== false,
     });
 
+    bustHomeCache();
     res.status(201).json({ success: true, message: 'Testimonial added', data: testimonial });
   } catch (error) {
     next(error);
@@ -404,6 +422,7 @@ const updateTestimonial = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Testimonial not found' });
     }
 
+    bustHomeCache();
     res.json({ success: true, message: 'Testimonial updated', data: testimonial });
   } catch (error) {
     next(error);
@@ -416,6 +435,7 @@ const deleteTestimonial = async (req, res, next) => {
     if (!testimonial) {
       return res.status(404).json({ success: false, message: 'Testimonial not found' });
     }
+    bustHomeCache();
     res.json({ success: true, message: 'Testimonial deleted' });
   } catch (error) {
     next(error);

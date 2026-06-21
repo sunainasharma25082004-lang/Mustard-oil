@@ -3,6 +3,34 @@ import { Link } from 'react-router-dom';
 import '../styles/main.css';
 import { productApi } from '../utils/api';
 import { resolveImageUrl } from '../utils/imageUrl';
+import { readCache, writeCache } from '../utils/storeCache';
+
+const PRODUCTS_CACHE_KEY = 'products';
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
+function ProductSkeletonGrid({ count = 2 }) {
+  return (
+    <div className="row g-4 align-items-stretch">
+      {Array.from({ length: count }).map((_, i) => (
+        <div className="col-lg-3 col-md-6" key={i}>
+          <div className="premium-card" style={{ opacity: 0.55, pointerEvents: 'none' }}>
+            <div className="premium-card-bg" />
+            <div className="product-image">
+              <div
+                className="product-image-inner"
+                style={{ background: 'rgba(212,175,55,0.08)', minHeight: 180, borderRadius: 12 }}
+              />
+            </div>
+            <div className="product-content">
+              <div style={{ height: 18, width: '55%', background: 'rgba(212,175,55,0.12)', borderRadius: 6, marginBottom: 10 }} />
+              <div style={{ height: 14, width: '90%', background: 'rgba(255,255,255,0.06)', borderRadius: 4 }} />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function ProductsSection({ products: productsProp }) {
   const [products, setProducts] = useState([]);
@@ -23,14 +51,23 @@ function ProductsSection({ products: productsProp }) {
       return undefined;
     }
 
-    setLoading(true);
+    const cached = readCache(PRODUCTS_CACHE_KEY, CACHE_TTL_MS);
+    if (cached?.length) {
+      setProducts(cached);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+
     productApi
       .getAll()
       .then((res) => {
-        setProducts(res.data || []);
+        const data = res.data || [];
+        setProducts(data);
+        writeCache(PRODUCTS_CACHE_KEY, data);
       })
       .catch((err) => {
-        setError(err.message || 'Failed to load products');
+        if (!cached?.length) setError(err.message || 'Failed to load products');
       })
       .finally(() => {
         setLoading(false);
@@ -48,7 +85,7 @@ function ProductsSection({ products: productsProp }) {
             delivering purity, aroma and authentic taste.
           </p> */}
 
-          {loading && (
+          {loading && products.length === 0 && (
             <p style={{ color: '#d4af37', fontSize: '14px', marginTop: '8px' }}>
               Loading products...
             </p>
@@ -78,9 +115,11 @@ function ProductsSection({ products: productsProp }) {
           )}
         </div>
 
-        {!loading && !error && products.length > 0 && (
+        {loading && products.length === 0 && !error && <ProductSkeletonGrid />}
+
+        {products.length > 0 && (
           <div className="row g-4 align-items-stretch">
-            {products.map((product) => (
+            {products.map((product, index) => (
               <div className="col-lg-3 col-md-6" key={product._id || product.slug}>
                 <Link
                   to={`/products/${product.slug || product._id}`}
@@ -97,8 +136,9 @@ function ProductsSection({ products: productsProp }) {
                         src={resolveImageUrl(product.image)}
                         alt={product.size || product.name}
                         className="product-showcase-img"
-                        loading="lazy"
+                        loading={index < 2 ? 'eager' : 'lazy'}
                         decoding="async"
+                        fetchPriority={index < 2 ? 'high' : 'auto'}
                       />
                     </div>
                   </div>

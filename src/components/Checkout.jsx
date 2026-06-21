@@ -80,6 +80,10 @@ function Checkout() {
     }
   };
 
+  const handleGoogleSignInError = (message) => {
+    setError(message || 'Google sign-in failed');
+  };
+
   const goToPayment = (e) => {
     e.preventDefault();
     setError('');
@@ -618,7 +622,7 @@ function Checkout() {
                     <div style={{ maxWidth: 320, margin: '0 auto' }}>
                       <GoogleSignInButton
                         onSuccess={handleGoogleSignIn}
-                        onError={setError}
+                        onError={handleGoogleSignInError}
                         disabled={loading}
                         loading={loading}
                         width={320}

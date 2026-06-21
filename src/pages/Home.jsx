@@ -9,6 +9,10 @@ import CustomerTestimonials from '../components/CustomerTestimonials';
 import DeferredSection from '../components/DeferredSection';
 import { contentApi } from '../utils/api';
 import { useLiveData } from '../hooks/useLiveData';
+import { readCache, writeCache } from '../utils/storeCache';
+
+const HOME_CACHE_KEY = 'home-bundle';
+const CACHE_TTL_MS = 5 * 60 * 1000;
 
 const Testimonials = lazy(() => import('../components/Testimonials'));
 
@@ -20,13 +24,22 @@ const emptyBundle = {
 };
 
 function Home() {
-  const [bundle, setBundle] = useState(null);
+  const [bundle, setBundle] = useState(() => readCache(HOME_CACHE_KEY, CACHE_TTL_MS));
 
   const loadBundle = useCallback(() => {
+    const cached = readCache(HOME_CACHE_KEY, CACHE_TTL_MS);
+    if (cached) setBundle(cached);
+
     contentApi
       .getHomeBundle()
-      .then((res) => setBundle(res.data || emptyBundle))
-      .catch(() => setBundle(emptyBundle));
+      .then((res) => {
+        const data = res.data || emptyBundle;
+        setBundle(data);
+        writeCache(HOME_CACHE_KEY, data);
+      })
+      .catch(() => {
+        if (!cached) setBundle(emptyBundle);
+      });
   }, []);
 
   useLiveData(loadBundle);

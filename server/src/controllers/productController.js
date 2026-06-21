@@ -1,6 +1,18 @@
 const fs = require('fs');
 const path = require('path');
 const Product = require('../models/Product');
+const { cached, bust } = require('../utils/memoryCache');
+
+const PRODUCTS_CACHE_KEY = 'products:active';
+const PRODUCT_CACHE_TTL_MS = 2 * 60 * 1000;
+
+const bustProductCache = () => {
+  bust('products:');
+  bust('content:home');
+};
+
+const fetchActiveProducts = () =>
+  Product.find({ isActive: true }).sort({ price: 1 }).select('-__v').lean();
 
 const slugify = (text) =>
   text
@@ -11,7 +23,7 @@ const slugify = (text) =>
 
 const getProducts = async (req, res, next) => {
   try {
-    const products = await Product.find({ isActive: true }).sort({ price: 1 });
+    const products = await cached(PRODUCTS_CACHE_KEY, PRODUCT_CACHE_TTL_MS, fetchActiveProducts);
 
     res.json({
       success: true,
@@ -86,6 +98,8 @@ const createProduct = async (req, res, next) => {
       isActive: isActive !== false,
     });
 
+    bustProductCache();
+
     res.status(201).json({
       success: true,
       message: 'Product created successfully',
@@ -126,6 +140,7 @@ const updateProduct = async (req, res, next) => {
     }
 
     await product.save();
+    bustProductCache();
 
     res.json({
       success: true,
@@ -154,6 +169,7 @@ const deleteProduct = async (req, res, next) => {
     }
 
     await Product.findByIdAndDelete(req.params.id);
+    bustProductCache();
 
     res.json({
       success: true,

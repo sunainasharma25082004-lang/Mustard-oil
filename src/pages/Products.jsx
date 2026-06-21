@@ -4,23 +4,40 @@ import { useCart } from '../context/CartContext';
 import { productApi } from '../utils/api';
 import { resolveImageUrl } from '../utils/imageUrl';
 import { useLiveData } from '../hooks/useLiveData';
+import { readCache, writeCache } from '../utils/storeCache';
+
+const PRODUCTS_CACHE_KEY = 'products';
+const CACHE_TTL_MS = 5 * 60 * 1000;
 
 function Products() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState(() => readCache(PRODUCTS_CACHE_KEY, CACHE_TTL_MS) || []);
+  const [loading, setLoading] = useState(() => !readCache(PRODUCTS_CACHE_KEY, CACHE_TTL_MS));
   const [error, setError] = useState('');
   const [retryKey, setRetryKey] = useState(0);
 
   const loadProducts = useCallback(() => {
-    setLoading(true);
+    const cached = readCache(PRODUCTS_CACHE_KEY, CACHE_TTL_MS);
+    if (cached?.length) {
+      setProducts(cached);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
     setError('');
+
     productApi
       .getAll()
-      .then((res) => setProducts(res.data || []))
-      .catch((err) => setError(err.message || 'Failed to load products'))
+      .then((res) => {
+        const data = res.data || [];
+        setProducts(data);
+        writeCache(PRODUCTS_CACHE_KEY, data);
+      })
+      .catch((err) => {
+        if (!cached?.length) setError(err.message || 'Failed to load products');
+      })
       .finally(() => setLoading(false));
   }, [retryKey]);
 
@@ -88,6 +105,9 @@ function Products() {
                           src={resolveImageUrl(item.image)}
                           alt={item.name}
                           className="img-fluid product-showcase-img"
+                          loading="eager"
+                          decoding="async"
+                          fetchPriority="high"
                         />
                       </div>
                     </div>

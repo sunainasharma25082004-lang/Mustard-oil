@@ -1,5 +1,8 @@
 const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
+/** Admin panel uploads use timestamp filenames — only on API server */
+const isApiOnlyUpload = (path) => /^\/uploads\/products\/\d{13}-/i.test(path);
+
 export function resolveImageUrl(image) {
   if (!image) return '';
 
@@ -14,8 +17,12 @@ export function resolveImageUrl(image) {
     return `https:${trimmed}`;
   }
 
-  if (trimmed.startsWith('/uploads/')) {
-    return API_URL ? `${API_URL}${trimmed}` : trimmed;
+  if (trimmed.startsWith('/uploads/products/') && !isApiOnlyUpload(trimmed)) {
+    return trimmed;
+  }
+
+  if (trimmed.startsWith('/uploads/') && API_URL) {
+    return `${API_URL}${trimmed}`;
   }
 
   return trimmed.startsWith('/') ? trimmed : `/${trimmed}`;

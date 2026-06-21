@@ -30,8 +30,27 @@ const verifyGoogleIdToken = async (idToken) => {
   };
 };
 
+const getSuggestedGoogleOrigins = () => {
+  const fromClientUrl = (process.env.CLIENT_URL || '')
+    .split(',')
+    .map((o) => o.trim().replace(/\/$/, ''))
+    .filter((o) => /^https?:\/\//i.test(o));
+
+  const defaults = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'https://mustard-oil-frontend.onrender.com',
+    'https://karyor-store.onrender.com',
+    'https://karyor.com',
+    'https://www.karyor.com',
+  ];
+
+  return [...new Set([...defaults, ...fromClientUrl])];
+};
+
 module.exports = {
   getGoogleClientId,
   isGoogleAuthConfigured,
   verifyGoogleIdToken,
+  getSuggestedGoogleOrigins,
 };

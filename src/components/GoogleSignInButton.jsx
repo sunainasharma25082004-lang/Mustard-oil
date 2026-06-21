@@ -1,5 +1,6 @@
 import { GoogleLogin } from '@react-oauth/google';
 import { useGoogleAuth } from '../context/GoogleAuthContext';
+import { formatGoogleSignInError } from '../utils/googleOAuth';
 
 function GoogleSignInButton({ onSuccess, onError, disabled, loading, width = 320 }) {
   const { clientId, ready } = useGoogleAuth();
@@ -41,10 +42,10 @@ function GoogleSignInButton({ onSuccess, onError, disabled, loading, width = 320
             if (response.credential) {
               onSuccess(response.credential);
             } else {
-              onError?.('Google sign-in failed. Try again.');
+              onError?.(formatGoogleSignInError('Google sign-in failed. Try again.'));
             }
           }}
-          onError={() => onError?.('Google sign-in cancelled or failed')}
+          onError={() => onError?.(formatGoogleSignInError('Google sign-in cancelled or failed'))}
           theme="filled_black"
           size="large"
           width={width}

@@ -1,6 +1,10 @@
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
-const { isGoogleAuthConfigured, verifyGoogleIdToken } = require('../utils/googleAuth');
+const {
+  isGoogleAuthConfigured,
+  verifyGoogleIdToken,
+  getSuggestedGoogleOrigins,
+} = require('../utils/googleAuth');
 
 const register = async (req, res, next) => {
   try {
@@ -123,6 +127,9 @@ const getGoogleConfig = (req, res) => {
     data: {
       enabled: isGoogleAuthConfigured(),
       clientId: process.env.GOOGLE_CLIENT_ID?.trim() || null,
+      authorizedOriginsHint: getSuggestedGoogleOrigins(),
+      setupNote:
+        'Add every store URL (exact browser address) under Google Cloud → Credentials → OAuth Web client → Authorized JavaScript origins',
     },
   });
 };

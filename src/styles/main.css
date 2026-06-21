@@ -301,16 +301,22 @@ font-size:24px;
   }
 }
 
-/* Mobile */
+/* Mobile — button below banner for consistent center alignment */
 @media (max-width: 768px) {
   .karyorHeroSection {
     padding-top: 72px;
-    padding-bottom: 0;
+    padding-bottom: 12px;
   }
 
   .karyorHeroContainer {
     padding-inline: 0;
     max-width: 100%;
+  }
+
+  .karyorHeroMedia {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .karyorHeroBanner {
@@ -324,13 +330,25 @@ font-size:24px;
   }
 
   .karyorHeroActions {
-    left: 8%;
-    top: 50%;
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 18px 20px 6px;
+    box-sizing: border-box;
   }
 
   .karyorHeroShopBtn {
-    padding: 11px 26px;
-    font-size: 0.85rem;
+    width: 100%;
+    max-width: 260px;
+    margin: 0 auto;
+    padding: 12px 28px;
+    font-size: 0.88rem;
+    text-align: center;
   }
 }
 
@@ -338,6 +356,7 @@ font-size:24px;
 @media (max-width: 480px) {
   .karyorHeroSection {
     padding-top: 68px;
+    padding-bottom: 10px;
   }
 
   .karyorHeroBanner {
@@ -346,13 +365,13 @@ font-size:24px;
   }
 
   .karyorHeroActions {
-    left: 36%;
-    top: 84%;
+    padding: 16px 16px 4px;
   }
 
   .karyorHeroShopBtn {
-    padding: 10px 22px;
-    font-size: 0.8rem;
+    max-width: 100%;
+    padding: 11px 24px;
+    font-size: 0.84rem;
   }
 }
 
@@ -2460,6 +2479,9 @@ body.site-menu-open {
 
   .site-nav-cta {
     width: 100%;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     text-align: center;
     margin: 8px 0 0 !important;
     min-height: 48px;

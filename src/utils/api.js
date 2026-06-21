@@ -16,17 +16,10 @@ export async function apiFetch(path, options = {}) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const isGet = !options.method || options.method === 'GET';
-  const isStoreDataGet =
-    path.startsWith('/api/content') ||
-    path.startsWith('/api/products') ||
-    path.startsWith('/api/reviews');
-
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
     headers,
-    // Never cache admin-managed store data in the browser
-    cache: options.cache ?? (isGet && isStoreDataGet ? 'no-store' : 'default'),
+    cache: options.cache ?? 'default',
   });
 
   const data = await response.json().catch(() => ({}));
