@@ -371,7 +371,7 @@ font-size:24px;
   }
 
   .karyorHeroMobileActions {
-    bottom: 4%;
+    bottom: 0%;
     width: min(200px, 62vw);
   }
 
