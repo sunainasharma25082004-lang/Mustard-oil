@@ -1,6 +1,6 @@
 import { GoogleLogin } from '@react-oauth/google';
 import { useGoogleAuth } from '../context/GoogleAuthContext';
-import { formatGoogleSignInError } from '../utils/googleOAuth';
+import { formatGoogleSignInError, getCurrentOrigin, getRequiredGoogleOrigins } from '../utils/googleOAuth';
 
 function GoogleSignInButton({ onSuccess, onError, disabled, loading, width = 320 }) {
   const { clientId, ready } = useGoogleAuth();
@@ -54,6 +54,14 @@ function GoogleSignInButton({ onSuccess, onError, disabled, loading, width = 320
           locale="en"
         />
       </div>
+
+      {import.meta.env.DEV && (
+        <p style={{ marginTop: 10, textAlign: 'center', fontSize: '0.72rem', color: '#666' }}>
+          Dev origin: <code style={{ color: '#d4af37' }}>{getCurrentOrigin()}</code>
+          {' · '}
+          also add: {getRequiredGoogleOrigins().filter((o) => o !== getCurrentOrigin()).join(', ')}
+        </p>
+      )}
     </div>
   );
 }

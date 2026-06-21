@@ -129,7 +129,8 @@ const getGoogleConfig = (req, res) => {
       clientId: process.env.GOOGLE_CLIENT_ID?.trim() || null,
       authorizedOriginsHint: getSuggestedGoogleOrigins(),
       setupNote:
-        'Add every store URL (exact browser address) under Google Cloud → Credentials → OAuth Web client → Authorized JavaScript origins',
+        'Google Cloud → Credentials → OAuth 2.0 Web client (type: Web application) → Authorized JavaScript origins. Use https://karyor.com NOT karyor.com. Add both https://karyor.com and https://www.karyor.com. Save, wait 5 minutes.',
+      clientIdSuffix: process.env.GOOGLE_CLIENT_ID?.trim().slice(-20) || null,
     },
   });
 };

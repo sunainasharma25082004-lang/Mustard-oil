@@ -2,6 +2,20 @@ export function getCurrentOrigin() {
   return typeof window !== 'undefined' ? window.location.origin : '';
 }
 
+/** Origins to register in Google Cloud → OAuth Web client → Authorized JavaScript origins */
+export function getRequiredGoogleOrigins() {
+  const current = getCurrentOrigin();
+  const extras = [
+    'https://karyor.com',
+    'https://www.karyor.com',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'https://mustard-oil-frontend.onrender.com',
+    'https://karyor-store.onrender.com',
+  ];
+  return [...new Set([current, ...extras].filter(Boolean))];
+}
+
 export function formatGoogleSignInError(message) {
   const origin = getCurrentOrigin();
   const lower = (message || '').toLowerCase();

@@ -30,9 +30,30 @@ const createOrder = async (req, res, next) => {
   }
 };
 
+const normalizePhone = (value) => String(value || '').replace(/\D/g, '').slice(-10);
+
 const getMyOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+    const user = req.user;
+    const email = user.email?.toLowerCase().trim();
+    const phone = normalizePhone(user.phone);
+
+    const matchConditions = [{ user: user._id }];
+
+    if (email) {
+      matchConditions.push({ 'customer.email': email });
+    }
+
+    if (phone.length === 10) {
+      matchConditions.push({ 'customer.phone': { $regex: `${phone}$` } });
+    }
+
+    const orders = await Order.find({ $or: matchConditions }).sort({ createdAt: -1 });
+
+    const orphanIds = orders.filter((order) => !order.user).map((order) => order._id);
+    if (orphanIds.length) {
+      Order.updateMany({ _id: { $in: orphanIds } }, { $set: { user: user._id } }).catch(() => {});
+    }
 
     res.json({
       success: true,

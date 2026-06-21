@@ -31,14 +31,7 @@ function MyOrders() {
 
     try {
       const res = await orderApi.getMyOrders();
-      // Safety: only keep orders that belong to current user (backend already filters, this is extra assurance)
-      const userId = String(user._id);
-      const myOrders = (res.data || []).filter(o => {
-        if (!o.user) return true; // in case
-        const orderUserId = typeof o.user === 'object' ? String(o.user._id || o.user) : String(o.user);
-        return orderUserId === userId;
-      });
-      setOrders(myOrders);
+      setOrders(res.data || []);
       setError('');
     } catch (err) {
       setError(err.message);
