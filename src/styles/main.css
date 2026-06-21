@@ -227,7 +227,8 @@ font-size:24px;
 .karyorHeroActions {
   position: absolute;
   left: 11%;
-  top: 83%;
+  top: auto;
+  bottom: 7%;
   z-index: 2;
 }
 
@@ -297,7 +298,8 @@ font-size:24px;
 
   .karyorHeroActions {
     left: 9%;
-    top: 71%;
+    top: auto;
+    bottom: 9%;
   }
 }
 
@@ -333,12 +335,14 @@ font-size:24px;
     position: static;
     left: auto;
     top: auto;
+    bottom: auto;
     transform: none;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-    padding: 18px 20px 6px;
+    padding: 28px 20px 18px;
+    margin-top: 4px;
     box-sizing: border-box;
   }
 
@@ -365,7 +369,7 @@ font-size:24px;
   }
 
   .karyorHeroActions {
-    padding: 16px 16px 4px;
+    padding: 24px 16px 16px;
   }
 
   .karyorHeroShopBtn {
