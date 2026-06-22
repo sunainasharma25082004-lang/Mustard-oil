@@ -5,6 +5,7 @@ import ProductsSection from '../components/ProductsSection';
 import AboutSection from '../components/AboutSection';
 import QualityHighlights from '../components/QualityHighlights';
 import PressingMethodSection from '../components/PressingMethodSection';
+import HomeClosingBanner from '../components/HomeClosingBanner';
 import CertificatesSection from '../components/CertificatesSection';
 import YouTubeSection from '../components/YouTubeSection';
 import CustomerTestimonials from '../components/CustomerTestimonials';
@@ -68,6 +69,7 @@ function Home() {
           <Testimonials />
         </Suspense>
       </DeferredSection>
+      <HomeClosingBanner />
     </>
   );
 }

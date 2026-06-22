@@ -381,6 +381,122 @@ font-size:24px;
   }
 }
 
+/* Closing banner below reviews — hero-sized desktop, copy on mobile */
+.karyorClosingBannerSection {
+  width: 100%;
+  padding: 30px 0 50px;
+  background: #0b0b0b;
+}
+
+.karyorClosingBannerContainer {
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding-inline: 20px;
+}
+
+.karyorClosingBannerDesktop {
+  display: block;
+}
+
+.karyorClosingBannerMobile {
+  display: none;
+}
+
+.karyorClosingBannerMedia {
+  position: relative;
+  width: 100%;
+}
+
+.karyorClosingBannerImg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 24px;
+  object-fit: contain;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.35),
+    0 0 80px rgba(255, 183, 0, 0.12);
+}
+
+.karyorClosingBannerActions {
+  position: absolute;
+  left: 11%;
+  bottom: 8%;
+  z-index: 2;
+}
+
+.karyorClosingBannerMobileCopy {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 28px 22px;
+  text-align: center;
+  background: #121212;
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  border-radius: 20px;
+}
+
+.karyorClosingBannerEyebrow {
+  display: inline-block;
+  color: #c9973e;
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.karyorClosingBannerMobileCopy h2 {
+  color: #fff;
+  font-family: Georgia, serif;
+  font-size: clamp(1.45rem, 5vw, 1.9rem);
+  font-weight: 400;
+  line-height: 1.25;
+  margin-bottom: 14px;
+}
+
+.karyorClosingBannerMobileCopy p {
+  color: #a8a8a8;
+  font-size: 0.92rem;
+  line-height: 1.75;
+  margin-bottom: 22px;
+}
+
+.karyorClosingBannerMobileCopy .karyorHeroShopBtn {
+  width: 100%;
+  max-width: 240px;
+}
+
+@media (max-width: 992px) {
+  .karyorClosingBannerImg {
+    border-radius: 18px;
+  }
+
+  .karyorClosingBannerActions {
+    left: 9%;
+    bottom: 10%;
+  }
+}
+
+@media (max-width: 768px) {
+  .karyorClosingBannerSection {
+    padding: 20px 0 40px;
+  }
+
+  .karyorClosingBannerContainer {
+    padding-inline: 18px;
+    max-width: 100%;
+  }
+
+  .karyorClosingBannerDesktop {
+    display: none;
+  }
+
+  .karyorClosingBannerMobile {
+    display: block;
+  }
+}
+
 
 /* navbar-section */
 /* ===================================
@@ -3666,11 +3782,11 @@ body{
 }
 
 .pressing-method-grid {
-  margin-top: 52px;
+  margin-top: 40px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  max-width: 980px;
+  gap: 18px;
+  max-width: 680px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -3691,7 +3807,8 @@ body{
 
 .pressing-method-media {
   position: relative;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 16 / 10;
+  max-height: 200px;
   overflow: hidden;
 }
 
@@ -3722,13 +3839,13 @@ body{
 }
 
 .pressing-method-body {
-  padding: 22px 20px 24px;
+  padding: 16px 14px 18px;
 }
 
 .pressing-method-body h3 {
   color: #f5d76e;
-  font-size: 1.35rem;
-  margin-bottom: 10px;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
   font-family: Georgia, serif;
   font-weight: 400;
 }
@@ -3841,14 +3958,15 @@ body{
   border-radius: 28px;
   overflow: hidden;
   border: 1px solid rgba(212, 175, 55, 0.22);
-  min-height: 420px;
+  min-height: 300px;
+  max-height: 340px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
 }
 
 .home-kitchen-bg {
   width: 100%;
   height: 100%;
-  min-height: 420px;
+  min-height: 300px;
   object-fit: cover;
   display: block;
 }
@@ -4036,7 +4154,8 @@ body{
 }
 
 .purity-intro-visual img {
-  min-height: 320px;
+  min-height: 220px;
+  max-height: 260px;
   object-fit: cover;
 }
 
@@ -4237,11 +4356,16 @@ body{
   }
 
   .home-kitchen-visual {
-    min-height: 340px;
+    min-height: 260px;
+    max-height: 280px;
   }
 
   .home-kitchen-bg {
-    min-height: 340px;
+    min-height: 260px;
+  }
+
+  .pressing-method-media {
+    max-height: 180px;
   }
 
   .home-kitchen-bottle-wrap {
