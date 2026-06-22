@@ -16,5 +16,4 @@ const noCache = (req, res, next) => {
   next();
 };
 
-module.exports = cachePublic;
-module.exports.noCache = noCache;
+module.exports = { cachePublic, noCache };
