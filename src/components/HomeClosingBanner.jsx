@@ -8,25 +8,21 @@ const COLLAGE_ITEMS = [
     image: HOME_ASSETS.product1L,
     label: '1 Litre Pack',
     caption: 'Labelled Karyor bottle',
-    className: 'home-collage-feature',
   },
   {
     image: coldPressedImg,
     label: 'Cold Pressed',
     caption: 'Low heat extraction',
-    className: 'home-collage-tile-a',
   },
   {
     image: singlePressedImg,
     label: 'Single Pressed',
     caption: 'One press only',
-    className: 'home-collage-tile-b',
   },
   {
     image: HOME_ASSETS.product5L,
     label: '5 Litre Family Pack',
     caption: 'For everyday cooking',
-    className: 'home-collage-wide',
   },
 ];
 
@@ -46,8 +42,10 @@ function HomeClosingBanner() {
 
           <div className="home-collage-grid">
             {COLLAGE_ITEMS.map((item) => (
-              <figure className={`home-collage-item ${item.className}`} key={item.label}>
-                <img src={item.image} alt={item.label} loading="lazy" decoding="async" />
+              <figure className="home-collage-item" key={item.label}>
+                <div className="home-collage-media">
+                  <img src={item.image} alt={item.label} loading="lazy" decoding="async" />
+                </div>
                 <figcaption>
                   <strong>{item.label}</strong>
                   <span>{item.caption}</span>
