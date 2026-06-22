@@ -5,6 +5,7 @@ import product5L from '../assets/home/product-5l.jpg';
 import bottle from '../assets/home/bottle.png';
 import mustardAbout from '../assets/home/mustard-about.jpg';
 import bannerBrand from '../assets/home/banner-brand.png';
+import homeCollage from '../assets/home/home-collage.jpg';
 
 export const HOME_ASSETS = {
   kitchenKadhai,
@@ -14,4 +15,5 @@ export const HOME_ASSETS = {
   bottle,
   mustardAbout,
   bannerBrand,
+  homeCollage,
 };
