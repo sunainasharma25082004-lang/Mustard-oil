@@ -1,4 +1,5 @@
 import "../styles/main.css";
+import { HOME_ASSETS } from '../utils/homeAssets';
 
 function AboutSection() {
   return (
@@ -6,17 +7,27 @@ function AboutSection() {
       {/* PURITY SECTION */}
       <section id="why-pure" className="purity-section">
 
-        <div className="section-title">
-          <span>THE KARYOR DIFFERENCE</span>
-          <h1>Why purity is not a buzzword for us.</h1>
+        <div className="purity-intro-layout">
+          <div className="section-title purity-intro-copy">
+            <span>THE KARYOR DIFFERENCE</span>
+            <h1>Why purity is not a buzzword for us.</h1>
 
-          <p>
-            Refined oil is cheap to produce and long-lasting.
-            But the refining process strips everything that makes
-            mustard oil beneficial. We chose the harder path.
-          </p>
+            <p>
+              Refined oil is cheap to produce and long-lasting.
+              But the refining process strips everything that makes
+              mustard oil beneficial. We chose the harder path.
+            </p>
+          </div>
+
+          <div className="purity-intro-visual">
+            <img
+              src={HOME_ASSETS.mustardFarm}
+              alt="Golden mustard fields and cold pressed oil"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
         </div>
-
 
         <div className="purity-grid">
 
@@ -93,18 +104,28 @@ function AboutSection() {
 
         <div className="process-container">
 
-          <span className="process-tag">
-            FARM TO KITCHEN
-          </span>
+          <div className="process-hero-layout">
+            <div className="process-hero-copy">
+              <span className="process-tag">
+                FARM TO KITCHEN
+              </span>
 
+              <h1>
+                From field to your kitchen.
+                <br/>
+                No shortcuts.
+              </h1>
+            </div>
 
-          <h1>
-            From field to your kitchen.
-            <br/>
-            No shortcuts.
-          </h1>
-
-
+            <div className="process-hero-visual">
+              <img
+                src={HOME_ASSETS.bottle}
+                alt="Karyor labelled mustard oil bottle"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
 
           <div className="process-list">
 

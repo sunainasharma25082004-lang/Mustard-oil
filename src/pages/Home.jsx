@@ -1,5 +1,7 @@
 import { lazy, Suspense, useCallback, useState } from 'react';
 import Hero from '../components/Hero';
+import KitchenExperienceSection from '../components/KitchenExperienceSection';
+import HomeGallerySection from '../components/HomeGallerySection';
 import ProductsSection from '../components/ProductsSection';
 import AboutSection from '../components/AboutSection';
 import QualityHighlights from '../components/QualityHighlights';
@@ -47,7 +49,9 @@ function Home() {
   return (
     <>
       <Hero />
+      <KitchenExperienceSection />
       <QualityHighlights />
+      <HomeGallerySection />
       <AboutSection />
       <ProductsSection products={bundle?.products} />
       <DeferredSection minHeight={280}>
