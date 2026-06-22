@@ -16,7 +16,6 @@ import AdminShippingSettings from './pages/AdminShippingSettings';
 import AdminYouTube from './pages/AdminYouTube';
 import AdminRecipes from './pages/AdminRecipes';
 import AdminCertificates from './pages/AdminCertificates';
-import AdminTestimonials from './pages/AdminTestimonials';
 import AdminSiteImages from './pages/AdminSiteImages';
 import AdminTeam from './pages/AdminTeam';
 import { useAuth } from './context/AuthContext';
@@ -58,7 +57,6 @@ function App() {
             <Route path="youtube" element={<ProtectedPage permission="youtube" element={<AdminYouTube />} />} />
             <Route path="recipes" element={<ProtectedPage permission="recipes" element={<AdminRecipes />} />} />
             <Route path="certificates" element={<ProtectedPage permission="certificates" element={<AdminCertificates />} />} />
-            <Route path="testimonials" element={<ProtectedPage permission="testimonials" element={<AdminTestimonials />} />} />
             <Route path="site-images" element={<ProtectedPage permission="site-images" element={<AdminSiteImages />} />} />
             <Route path="team" element={<AdminTeam />} />
           </Route>

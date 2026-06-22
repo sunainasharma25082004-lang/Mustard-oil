@@ -1,32 +1,5 @@
-const Testimonial = require('../models/Testimonial');
 const Certificate = require('../models/Certificate');
 const Recipe = require('../models/Recipe');
-
-const defaultTestimonials = [
-  {
-    customerName: 'Anjali Sharma',
-    location: 'Gurugram',
-    review:
-      'The aroma and colour remind me of traditional ghani oil. My family noticed the difference within a week.',
-    rating: 5,
-    sortOrder: 1,
-  },
-  {
-    customerName: 'Dr. Rakesh Mehta',
-    location: 'Noida',
-    review:
-      'This is the first packaged Cold Pressed & Single Pressed Mustard Oil I confidently recommend.',
-    rating: 5,
-    sortOrder: 2,
-  },
-  {
-    customerName: 'Priya Nair',
-    location: 'Delhi',
-    review: 'Amazing flavour, amazing aroma. Worth every rupee.',
-    rating: 5,
-    sortOrder: 3,
-  },
-];
 
 const defaultCertificates = [
   {
@@ -134,12 +107,6 @@ const defaultRecipes = [
 ];
 
 const seedContent = async () => {
-  const testimonialCount = await Testimonial.countDocuments();
-  if (testimonialCount === 0) {
-    await Testimonial.insertMany(defaultTestimonials);
-    console.log('Default testimonials seeded');
-  }
-
   const certCount = await Certificate.countDocuments();
   if (certCount === 0) {
     await Certificate.insertMany(defaultCertificates);

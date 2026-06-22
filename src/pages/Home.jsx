@@ -8,7 +8,6 @@ import PressingMethodSection from '../components/PressingMethodSection';
 import HomeClosingBanner from '../components/HomeClosingBanner';
 import CertificatesSection from '../components/CertificatesSection';
 import YouTubeSection from '../components/YouTubeSection';
-import CustomerTestimonials from '../components/CustomerTestimonials';
 import DeferredSection from '../components/DeferredSection';
 import { contentApi } from '../utils/api';
 import { useLiveData } from '../hooks/useLiveData';
@@ -23,7 +22,6 @@ const emptyBundle = {
   products: [],
   certificates: [],
   youtube: [],
-  testimonials: [],
 };
 
 function Home() {
@@ -60,9 +58,6 @@ function Home() {
       </DeferredSection>
       <DeferredSection minHeight={200}>
         <YouTubeSection items={bundle?.youtube} />
-      </DeferredSection>
-      <DeferredSection minHeight={320}>
-        <CustomerTestimonials items={bundle?.testimonials} />
       </DeferredSection>
       <DeferredSection minHeight={400} anchorId="reviews">
         <Suspense fallback={null}>

@@ -1,7 +1,6 @@
 const YouTubeVideo = require('../models/YouTubeVideo');
 const Recipe = require('../models/Recipe');
 const Certificate = require('../models/Certificate');
-const Testimonial = require('../models/Testimonial');
 const Product = require('../models/Product');
 const { cached, bust } = require('../utils/memoryCache');
 
@@ -10,11 +9,6 @@ const HOME_CACHE_TTL_MS = 2 * 60 * 1000;
 
 const bustHomeCache = () => bust('content:home');
 const { extractYouTubeVideoId } = require('../utils/youtubeHelpers');
-const {
-  sanitizeReviewText,
-  sanitizeReviewName,
-} = require('../utils/sanitizeReview');
-
 const slugify = (text) =>
   text
     .toLowerCase()
@@ -24,13 +18,12 @@ const slugify = (text) =>
 
 // Home page bundle — single request for faster first load
 const loadHomeBundle = async () => {
-  const [products, certificates, youtube, testimonials] = await Promise.all([
+  const [products, certificates, youtube] = await Promise.all([
     Product.find({ isActive: true }).sort({ price: 1 }).select('-__v').lean(),
     Certificate.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 }).select('-__v').lean(),
     YouTubeVideo.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 }).select('-__v').lean(),
-    Testimonial.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 }).select('-__v').lean(),
   ]);
-  return { products, certificates, youtube, testimonials };
+  return { products, certificates, youtube };
 };
 
 const getHomeBundle = async (req, res, next) => {
@@ -343,105 +336,6 @@ const deleteCertificate = async (req, res, next) => {
   }
 };
 
-// Testimonials
-const getActiveTestimonials = async (req, res, next) => {
-  try {
-    const testimonials = await Testimonial.find({ isActive: true }).sort({ sortOrder: 1, createdAt: -1 });
-    res.json({ success: true, data: testimonials });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const getAllTestimonialsAdmin = async (req, res, next) => {
-  try {
-    const testimonials = await Testimonial.find().sort({ sortOrder: 1, createdAt: -1 });
-    res.json({ success: true, data: testimonials });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const createTestimonial = async (req, res, next) => {
-  try {
-    const { customerName, customerImage, review, rating, location, sortOrder, isActive } = req.body;
-
-    const textResult = sanitizeReviewText(review, { maxLength: 1000 });
-    if (textResult.rejected) {
-      return res.status(400).json({ success: false, message: textResult.reason });
-    }
-
-    const testimonial = await Testimonial.create({
-      customerName: sanitizeReviewName(customerName),
-      customerImage: customerImage || '',
-      review: textResult.sanitized,
-      rating: Math.min(5, Math.max(1, Number(rating) || 5)),
-      location: location?.trim() || '',
-      sortOrder: Number(sortOrder) || 0,
-      isActive: isActive !== false,
-    });
-
-    bustHomeCache();
-    res.status(201).json({ success: true, message: 'Testimonial added', data: testimonial });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const updateTestimonial = async (req, res, next) => {
-  try {
-    const { customerName, customerImage, review, rating, location, sortOrder, isActive } = req.body;
-    const updates = {};
-
-    if (customerName !== undefined) {
-      const name = sanitizeReviewName(customerName);
-      if (!name) {
-        return res.status(400).json({ success: false, message: 'Customer name is required' });
-      }
-      updates.customerName = name;
-    }
-    if (customerImage !== undefined) updates.customerImage = customerImage?.trim() || '';
-    if (review !== undefined) {
-      const textResult = sanitizeReviewText(review, { maxLength: 1000 });
-      if (textResult.rejected) {
-        return res.status(400).json({ success: false, message: textResult.reason });
-      }
-      updates.review = textResult.sanitized;
-    }
-    if (rating !== undefined) updates.rating = Math.min(5, Math.max(1, Number(rating) || 5));
-    if (location !== undefined) updates.location = location?.trim() || '';
-    if (sortOrder !== undefined) updates.sortOrder = Number(sortOrder) || 0;
-    if (isActive !== undefined) updates.isActive = isActive !== false;
-
-    const testimonial = await Testimonial.findByIdAndUpdate(req.params.id, updates, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!testimonial) {
-      return res.status(404).json({ success: false, message: 'Testimonial not found' });
-    }
-
-    bustHomeCache();
-    res.json({ success: true, message: 'Testimonial updated', data: testimonial });
-  } catch (error) {
-    next(error);
-  }
-};
-
-const deleteTestimonial = async (req, res, next) => {
-  try {
-    const testimonial = await Testimonial.findByIdAndDelete(req.params.id);
-    if (!testimonial) {
-      return res.status(404).json({ success: false, message: 'Testimonial not found' });
-    }
-    bustHomeCache();
-    res.json({ success: true, message: 'Testimonial deleted' });
-  } catch (error) {
-    next(error);
-  }
-};
-
 module.exports = {
   getHomeBundle,
   getActiveYouTubeVideos,
@@ -460,9 +354,4 @@ module.exports = {
   createCertificate,
   updateCertificate,
   deleteCertificate,
-  getActiveTestimonials,
-  getAllTestimonialsAdmin,
-  createTestimonial,
-  updateTestimonial,
-  deleteTestimonial,
 };

@@ -292,7 +292,6 @@ function Distributor() {
       }
 
       .dist-info-visual{
-        position:relative;
         border-radius:22px;
         overflow:hidden;
         margin-bottom:28px;
@@ -307,29 +306,6 @@ function Distributor() {
         object-position:center;
         display:block;
         background:#0a0a0a;
-      }
-
-      .dist-info-visual-badge{
-        position:absolute;
-        top:16px;
-        left:16px;
-        display:flex;
-        align-items:center;
-        gap:8px;
-        background:rgba(0,0,0,.7);
-        border:1px solid rgba(212,175,55,.3);
-        border-radius:999px;
-        padding:8px 14px;
-        color:#fff;
-        font-size:0.82rem;
-        font-weight:600;
-      }
-
-      .dist-info-visual-badge img{
-        width:22px;
-        height:22px;
-        border-radius:50%;
-        object-fit:cover;
       }
 
       .dist-info h2,
@@ -562,10 +538,6 @@ function Distributor() {
             <div className="dist-info">
               <div className="dist-info-visual">
                 <img src={distributorBanner} alt="Karyor mustard oil collection" loading="lazy" />
-                <div className="dist-info-visual-badge">
-                  <img src={logo} alt="Karyor" />
-                  Partner with Karyor
-                </div>
               </div>
 
               <h2>Why Join Us?</h2>

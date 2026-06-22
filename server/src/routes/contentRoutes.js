@@ -5,7 +5,6 @@ const {
   getActiveRecipes,
   getRecipeBySlug,
   getActiveCertificates,
-  getActiveTestimonials,
 } = require('../controllers/contentController');
 const { getPublicSiteImages } = require('../controllers/siteImagesController');
 const { cachePublic, noCache } = require('../middleware/cachePublic');
@@ -18,7 +17,6 @@ router.get('/youtube', noCache, getActiveYouTubeVideos);
 router.get('/recipes', noCache, getActiveRecipes);
 router.get('/recipes/:slug', noCache, getRecipeBySlug);
 router.get('/certificates', noCache, getActiveCertificates);
-router.get('/testimonials', noCache, getActiveTestimonials);
 router.get('/site-images', noCache, getPublicSiteImages);
 
 module.exports = router;

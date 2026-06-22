@@ -48,10 +48,6 @@ const {
   createCertificate,
   updateCertificate,
   deleteCertificate,
-  getAllTestimonialsAdmin,
-  createTestimonial,
-  updateTestimonial,
-  deleteTestimonial,
 } = require('../controllers/contentController');
 const upload = require('../middleware/upload');
 const {
@@ -112,11 +108,6 @@ router.post('/certificates', requirePermission('certificates'), createCertificat
 router.put('/certificates/:id', requirePermission('certificates'), updateCertificate);
 router.delete('/certificates/:id', requirePermission('certificates'), deleteCertificate);
 
-router.get('/testimonials', requirePermission('testimonials'), getAllTestimonialsAdmin);
-router.post('/testimonials', requirePermission('testimonials'), createTestimonial);
-router.put('/testimonials/:id', requirePermission('testimonials'), updateTestimonial);
-router.delete('/testimonials/:id', requirePermission('testimonials'), deleteTestimonial);
-
 router.get('/products', requirePermission('products'), getAllProductsAdmin);
 router.post('/products', requirePermission('products'), createProduct);
 router.put('/products/:id', requirePermission('products'), updateProduct);
@@ -138,7 +129,6 @@ router.post('/upload', requireAnyPermission(
   'products',
   'certificates',
   'recipes',
-  'testimonials',
   'site-images'
 ), (req, res, next) => {
   upload.single('image')(req, res, (err) => {

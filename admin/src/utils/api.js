@@ -79,10 +79,7 @@ export const adminApi = {
   createCertificate: (body) => apiFetch('/api/admin/certificates', { method: 'POST', body: JSON.stringify(body) }),
   updateCertificate: (id, body) => apiFetch(`/api/admin/certificates/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
   deleteCertificate: (id) => apiFetch(`/api/admin/certificates/${id}`, { method: 'DELETE' }),
-  getTestimonials: () => apiFetch('/api/admin/testimonials'),
-  createTestimonial: (body) => apiFetch('/api/admin/testimonials', { method: 'POST', body: JSON.stringify(body) }),
-  updateTestimonial: (id, body) => apiFetch(`/api/admin/testimonials/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
-  deleteTestimonial: (id) => apiFetch(`/api/admin/testimonials/${id}`, { method: 'DELETE' }),
+
   getSiteImages: () => apiFetch('/api/admin/site-images'),
   updateSiteImages: (body) => apiFetch('/api/admin/site-images', { method: 'PUT', body: JSON.stringify(body) }),
   getPermissionCatalog: () => apiFetch('/api/admin/permissions'),

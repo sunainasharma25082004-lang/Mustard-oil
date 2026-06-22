@@ -3,7 +3,6 @@ const ADMIN_PERMISSIONS = [
   { key: 'products', label: 'Products', department: 'Sales' },
   { key: 'orders', label: 'Orders & Billing', department: 'Billing' },
   { key: 'reviews', label: 'Reviews', department: 'Support' },
-  { key: 'testimonials', label: 'Testimonials', department: 'Marketing' },
   { key: 'recipes', label: 'Recipes', department: 'Marketing' },
   { key: 'certificates', label: 'Certificates', department: 'Marketing' },
   { key: 'youtube', label: 'YouTube', department: 'Marketing' },
@@ -18,7 +17,7 @@ const PERMISSION_KEYS = ADMIN_PERMISSIONS.map((item) => item.key);
 
 const DEPARTMENT_PRESETS = {
   billing: ['dashboard', 'orders'],
-  marketing: ['dashboard', 'recipes', 'certificates', 'youtube', 'testimonials', 'site-images'],
+  marketing: ['dashboard', 'recipes', 'certificates', 'youtube', 'site-images'],
   sales: ['dashboard', 'products', 'distributors', 'contacts'],
   support: ['dashboard', 'contacts', 'reviews', 'users'],
   operations: ['dashboard', 'orders', 'shipping', 'products'],
