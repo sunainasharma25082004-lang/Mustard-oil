@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getDefaultAdminPath } from '../utils/permissions';
 
 function AdminLogin() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ function AdminLogin() {
   const [error, setError] = useState('');
 
   if (user?.role === 'admin') {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={getDefaultAdminPath(user)} replace />;
   }
 
   const handleSubmit = async (e) => {
@@ -20,8 +21,8 @@ function AdminLogin() {
     setLoading(true);
 
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const res = await login(email, password);
+      navigate(getDefaultAdminPath(res.data.user));
     } catch (err) {
       setError(err.message);
     } finally {

@@ -94,6 +94,7 @@ export const contentApi = {
   getRecipe: (slug) => apiFetch(`/api/content/recipes/${slug}`),
   getCertificates: () => apiFetch('/api/content/certificates'),
   getTestimonials: () => apiFetch('/api/content/testimonials'),
+  getSiteImages: () => apiFetch('/api/content/site-images'),
 };
 
 export const paymentConfigApi = {

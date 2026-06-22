@@ -57,6 +57,15 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    department: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    adminPermissions: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true }
 );

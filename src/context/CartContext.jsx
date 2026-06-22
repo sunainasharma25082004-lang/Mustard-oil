@@ -1,11 +1,71 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useAuth } from './AuthContext';
+import {
+  getGuestCartKey,
+  getUserCartKey,
+  loadStoredCart,
+  saveStoredCart,
+} from '../utils/cartStorage';
 
 const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useState([]);
+  const { user } = useAuth();
+  const [items, setItems] = useState(() => loadStoredCart(getGuestCartKey()));
   const [deliveryCharge, setDeliveryCharge] = useState(0);
   const [deliveryQuote, setDeliveryQuote] = useState(null);
+  const lastUserIdRef = useRef(null);
+  const skipGuestPersistRef = useRef(false);
+  const isRestoringCartRef = useRef(false);
+
+  const resetDelivery = useCallback(() => {
+    setDeliveryCharge(0);
+    setDeliveryQuote(null);
+  }, []);
+
+  useEffect(() => {
+    const currentUserId = user?._id || null;
+    const previousUserId = lastUserIdRef.current;
+    lastUserIdRef.current = currentUserId;
+
+    if (currentUserId) {
+      skipGuestPersistRef.current = false;
+      isRestoringCartRef.current = true;
+      const saved = loadStoredCart(getUserCartKey(currentUserId));
+      setItems(saved);
+      resetDelivery();
+      return;
+    }
+
+    if (previousUserId) {
+      skipGuestPersistRef.current = true;
+      setItems([]);
+      resetDelivery();
+    }
+  }, [user?._id, resetDelivery]);
+
+  useEffect(() => {
+    if (skipGuestPersistRef.current) {
+      skipGuestPersistRef.current = false;
+      return;
+    }
+
+    if (isRestoringCartRef.current) {
+      isRestoringCartRef.current = false;
+      return;
+    }
+
+    const key = user?._id ? getUserCartKey(user._id) : getGuestCartKey();
+    saveStoredCart(key, items);
+  }, [items, user?._id]);
 
   const addToCart = (product, quantity = 1) => {
     setItems((prev) => {
@@ -42,8 +102,9 @@ export function CartProvider({ children }) {
 
   const clearCart = () => {
     setItems([]);
-    setDeliveryCharge(0);
-    setDeliveryQuote(null);
+    resetDelivery();
+    const key = user?._id ? getUserCartKey(user._id) : getGuestCartKey();
+    saveStoredCart(key, []);
   };
 
   const applyDeliveryQuote = useCallback((quote) => {

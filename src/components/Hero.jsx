@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import mobileHeroBanner from '../assets/qJmjp.jpg';
+import { useSiteImages } from '../context/SiteImagesContext';
 
 function Hero() {
+  const { heroDesktop, heroMobile } = useSiteImages();
   return (
     <section className="karyorHeroSection">
       <div className="karyorHeroContainer">
@@ -9,7 +10,7 @@ function Hero() {
         <div className="karyorHeroDesktop">
           <div className="karyorHeroMedia">
             <img
-              src="/banner-img.png"
+              src={heroDesktop}
               alt="Karyor Black Mustard Oil — Every Drop Carries Tradition"
               className="karyorHeroBanner"
               loading="eager"
@@ -28,7 +29,7 @@ function Hero() {
         <div className="karyorHeroMobile">
           <div className="karyorHeroMobileMedia">
             <img
-              src={mobileHeroBanner}
+              src={heroMobile}
               alt="Karyor Black Mustard Oil — Every Drop Carries Tradition"
               className="karyorHeroMobileBanner"
               loading="eager"

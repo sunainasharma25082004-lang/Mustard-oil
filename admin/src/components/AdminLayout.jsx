@@ -1,24 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getVisibleNavItems } from '../utils/permissions';
 
 const STORE_URL = import.meta.env.VITE_STORE_URL || 'http://localhost:5173';
-
-const navItems = [
-  { path: '/dashboard', label: 'Dashboard', icon: '📊' },
-  { path: '/products', label: 'Products', icon: '🛢️' },
-  { path: '/orders', label: 'Orders', icon: '📦' },
-  { path: '/reviews', label: 'Reviews', icon: '⭐' },
-  { path: '/testimonials', label: 'Testimonials', icon: '💬' },
-  { path: '/recipes', label: 'Recipes', icon: '🍳' },
-  { path: '/certificates', label: 'Certificates', icon: '🏅' },
-  { path: '/youtube', label: 'YouTube', icon: '🎬' },
-  { path: '/payment-gateways', label: 'Payment Gateway Settings', icon: '💳', superAdminOnly: true },
-  { path: '/shipping', label: 'Shipping Settings', icon: '🚚' },
-  { path: '/contacts', label: 'Messages', icon: '✉️' },
-  { path: '/distributors', label: 'Distributors', icon: '🤝' },
-  { path: '/users', label: 'Users', icon: '👤' },
-];
 
 function AdminLayout() {
   const location = useLocation();
@@ -26,9 +11,7 @@ function AdminLayout() {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const visibleNavItems = navItems.filter(
-    (item) => !item.superAdminOnly || user?.isSuperAdmin
-  );
+  const visibleNavItems = getVisibleNavItems(user);
 
   const closeMenu = () => setMenuOpen(false);
   const toggleMenu = () => setMenuOpen((open) => !open);
@@ -106,6 +89,11 @@ function AdminLayout() {
 
         <div className="admin-sidebar-footer">
           <p className="admin-sidebar-user">{user?.name}</p>
+          {user?.department && (
+            <p className="admin-sidebar-user" style={{ color: '#888', fontSize: '0.8rem', marginTop: -6 }}>
+              {user.department}
+            </p>
+          )}
           <button
             type="button"
             className="admin-btn admin-btn-outline admin-btn-sm"

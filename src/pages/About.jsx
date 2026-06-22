@@ -1,6 +1,8 @@
 import "../styles/main.css";
+import { useSiteImages } from '../context/SiteImagesContext';
 
 function About() {
+  const { aboutImage } = useSiteImages();
   return (
     <>
       <section className="about-hero">
@@ -28,7 +30,7 @@ function About() {
 
           <div className="about-right">
             <img
-              src="/mustard-about.jpg"
+              src={aboutImage}
               alt="Mustard Oil"
             />
           </div>

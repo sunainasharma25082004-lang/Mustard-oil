@@ -30,6 +30,7 @@ const seedContent = require('./utils/seedContent');
 const seedReviews = require('./utils/seedReviews');
 const seedShiprocket = require('./utils/seedShiprocket');
 const seedPaymentGateways = require('./utils/seedPaymentGateways');
+const seedSiteImages = require('./utils/seedSiteImages');
 const { getIntegrationStatus } = require('./utils/integrationStatus');
 const { getPublicApiBaseUrl } = require('./utils/publicUrl');
 
@@ -217,6 +218,7 @@ const startServer = async () => {
   await runSeed('reviews', seedReviews);
   await runSeed('shiprocket', seedShiprocket);
   await runSeed('payment-gateways', seedPaymentGateways);
+  await runSeed('site-images', seedSiteImages);
 
   app.listen(PORT, () => {
     const env = process.env.NODE_ENV || 'development';

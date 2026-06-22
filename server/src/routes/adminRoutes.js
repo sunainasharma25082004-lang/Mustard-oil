@@ -1,5 +1,5 @@
 const express = require('express');
-const { protect, admin, superAdmin } = require('../middleware/auth');
+const { protect, admin, superAdmin, requirePermission, requireAnyPermission } = require('../middleware/auth');
 const { getDashboardStats } = require('../controllers/adminController');
 const {
   getAllProductsAdmin,
@@ -54,68 +54,93 @@ const {
   deleteTestimonial,
 } = require('../controllers/contentController');
 const upload = require('../middleware/upload');
+const {
+  getAdminSiteImages,
+  updateSiteImages,
+} = require('../controllers/siteImagesController');
+const {
+  getPermissionCatalog,
+  getAdminTeam,
+  createAdminStaff,
+  updateAdminStaff,
+  deleteAdminStaff,
+} = require('../controllers/adminStaffController');
 
 const router = express.Router();
 
 router.use(protect, admin);
 
-router.get('/stats', getDashboardStats);
-router.patch('/settings/delivery', updateDeliverySettings);
+router.get('/permissions', getPermissionCatalog);
+router.get('/team', superAdmin, getAdminTeam);
+router.post('/team', superAdmin, createAdminStaff);
+router.put('/team/:id', superAdmin, updateAdminStaff);
+router.delete('/team/:id', superAdmin, deleteAdminStaff);
 
-router.get('/reviews', getAllReviewsAdmin);
-router.patch('/reviews/:id', moderateReview);
-router.delete('/reviews/:id', deleteReviewAdmin);
+router.get('/stats', requirePermission('dashboard'), getDashboardStats);
+router.patch('/settings/delivery', requirePermission('orders'), updateDeliverySettings);
+router.get('/site-images', requirePermission('site-images'), getAdminSiteImages);
+router.put('/site-images', requirePermission('site-images'), updateSiteImages);
+
+router.get('/reviews', requirePermission('reviews'), getAllReviewsAdmin);
+router.patch('/reviews/:id', requirePermission('reviews'), moderateReview);
+router.delete('/reviews/:id', requirePermission('reviews'), deleteReviewAdmin);
 
 router.get('/settings/payment-gateways', superAdmin, getGatewaySettings);
 router.put('/settings/payment-gateways', superAdmin, updateGatewaySettings);
 
-router.get('/settings/shipping', getShiprocketSettings);
-router.put('/settings/shipping', updateShiprocketSettings);
-router.post('/settings/shipping/test', testShiprocketConnection);
-router.post('/orders/:id/shiprocket/create', createShiprocketShipment);
-router.post('/orders/:id/shiprocket/verify', verifyShiprocketShipment);
-router.post('/orders/:id/shiprocket/resync', resetShiprocketShipment);
-router.get('/orders/:id/shiprocket/track', trackShiprocketShipment);
-router.get('/orders/:id/shiprocket/live', getShiprocketLiveStatus);
+router.get('/settings/shipping', requirePermission('shipping'), getShiprocketSettings);
+router.put('/settings/shipping', requirePermission('shipping'), updateShiprocketSettings);
+router.post('/settings/shipping/test', requirePermission('shipping'), testShiprocketConnection);
+router.post('/orders/:id/shiprocket/create', requirePermission('orders'), createShiprocketShipment);
+router.post('/orders/:id/shiprocket/verify', requirePermission('orders'), verifyShiprocketShipment);
+router.post('/orders/:id/shiprocket/resync', requirePermission('orders'), resetShiprocketShipment);
+router.get('/orders/:id/shiprocket/track', requirePermission('orders'), trackShiprocketShipment);
+router.get('/orders/:id/shiprocket/live', requirePermission('orders'), getShiprocketLiveStatus);
 
-router.get('/youtube', getAllYouTubeVideosAdmin);
-router.post('/youtube', createYouTubeVideo);
-router.put('/youtube/:id', updateYouTubeVideo);
-router.delete('/youtube/:id', deleteYouTubeVideo);
+router.get('/youtube', requirePermission('youtube'), getAllYouTubeVideosAdmin);
+router.post('/youtube', requirePermission('youtube'), createYouTubeVideo);
+router.put('/youtube/:id', requirePermission('youtube'), updateYouTubeVideo);
+router.delete('/youtube/:id', requirePermission('youtube'), deleteYouTubeVideo);
 
-router.get('/recipes', getAllRecipesAdmin);
-router.post('/recipes', createRecipe);
-router.put('/recipes/:id', updateRecipe);
-router.delete('/recipes/:id', deleteRecipe);
+router.get('/recipes', requirePermission('recipes'), getAllRecipesAdmin);
+router.post('/recipes', requirePermission('recipes'), createRecipe);
+router.put('/recipes/:id', requirePermission('recipes'), updateRecipe);
+router.delete('/recipes/:id', requirePermission('recipes'), deleteRecipe);
 
-router.get('/certificates', getAllCertificatesAdmin);
-router.post('/certificates', createCertificate);
-router.put('/certificates/:id', updateCertificate);
-router.delete('/certificates/:id', deleteCertificate);
+router.get('/certificates', requirePermission('certificates'), getAllCertificatesAdmin);
+router.post('/certificates', requirePermission('certificates'), createCertificate);
+router.put('/certificates/:id', requirePermission('certificates'), updateCertificate);
+router.delete('/certificates/:id', requirePermission('certificates'), deleteCertificate);
 
-router.get('/testimonials', getAllTestimonialsAdmin);
-router.post('/testimonials', createTestimonial);
-router.put('/testimonials/:id', updateTestimonial);
-router.delete('/testimonials/:id', deleteTestimonial);
+router.get('/testimonials', requirePermission('testimonials'), getAllTestimonialsAdmin);
+router.post('/testimonials', requirePermission('testimonials'), createTestimonial);
+router.put('/testimonials/:id', requirePermission('testimonials'), updateTestimonial);
+router.delete('/testimonials/:id', requirePermission('testimonials'), deleteTestimonial);
 
-router.get('/products', getAllProductsAdmin);
-router.post('/products', createProduct);
-router.put('/products/:id', updateProduct);
-router.delete('/products/:id', deleteProduct);
+router.get('/products', requirePermission('products'), getAllProductsAdmin);
+router.post('/products', requirePermission('products'), createProduct);
+router.put('/products/:id', requirePermission('products'), updateProduct);
+router.delete('/products/:id', requirePermission('products'), deleteProduct);
 
-router.get('/orders', getAllOrders);
-router.patch('/orders/:id', updateOrderStatus);
+router.get('/orders', requirePermission('orders'), getAllOrders);
+router.patch('/orders/:id', requirePermission('orders'), updateOrderStatus);
 
-router.get('/contacts', getAllContacts);
-router.patch('/contacts/:id', updateContactStatus);
+router.get('/contacts', requirePermission('contacts'), getAllContacts);
+router.patch('/contacts/:id', requirePermission('contacts'), updateContactStatus);
 
-router.get('/distributors', getAllDistributors);
-router.patch('/distributors/:id', updateDistributorStatus);
+router.get('/distributors', requirePermission('distributors'), getAllDistributors);
+router.patch('/distributors/:id', requirePermission('distributors'), updateDistributorStatus);
 
-router.get('/users', getAllUsers);
-router.get('/users/:id', getUserById);
+router.get('/users', requirePermission('users'), getAllUsers);
+router.get('/users/:id', requirePermission('users'), getUserById);
 
-router.post('/upload', (req, res, next) => {
+router.post('/upload', requireAnyPermission(
+  'products',
+  'certificates',
+  'recipes',
+  'testimonials',
+  'site-images'
+), (req, res, next) => {
   upload.single('image')(req, res, (err) => {
     if (err) {
       return res.status(400).json({ success: false, message: err.message });

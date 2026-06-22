@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
+const { getEffectivePermissions } = require('../utils/adminPermissions');
 const {
   isGoogleAuthConfigured,
   verifyGoogleIdToken,
@@ -115,6 +116,9 @@ const formatUser = (user) => ({
   pincode: user.pincode || '',
   role: user.role,
   isSuperAdmin: Boolean(user.isSuperAdmin),
+  department: user.department || '',
+  adminPermissions: user.adminPermissions || [],
+  permissions: user.role === 'admin' ? getEffectivePermissions(user) : [],
   authProvider: user.authProvider || 'local',
   hasGoogle: Boolean(user.googleId),
   createdAt: user.createdAt,

@@ -249,7 +249,7 @@ export default function Testimonials() {
 
       {/* TESTIMONIALS */}
 
-      <section id="reviews" className="testimonial-section">
+      <section className="testimonial-section">
         <div className="container">
           <span className="small-heading">
             REAL KITCHENS, REAL OPINIONS

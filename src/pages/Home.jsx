@@ -59,7 +59,7 @@ function Home() {
       <DeferredSection minHeight={320}>
         <CustomerTestimonials items={bundle?.testimonials} />
       </DeferredSection>
-      <DeferredSection minHeight={400}>
+      <DeferredSection minHeight={400} anchorId="reviews">
         <Suspense fallback={null}>
           <Testimonials />
         </Suspense>

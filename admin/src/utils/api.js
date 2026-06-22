@@ -83,12 +83,20 @@ export const adminApi = {
   createTestimonial: (body) => apiFetch('/api/admin/testimonials', { method: 'POST', body: JSON.stringify(body) }),
   updateTestimonial: (id, body) => apiFetch(`/api/admin/testimonials/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
   deleteTestimonial: (id) => apiFetch(`/api/admin/testimonials/${id}`, { method: 'DELETE' }),
-  uploadImage: async (file) => {
+  getSiteImages: () => apiFetch('/api/admin/site-images'),
+  updateSiteImages: (body) => apiFetch('/api/admin/site-images', { method: 'PUT', body: JSON.stringify(body) }),
+  getPermissionCatalog: () => apiFetch('/api/admin/permissions'),
+  getTeam: () => apiFetch('/api/admin/team'),
+  createTeamMember: (body) => apiFetch('/api/admin/team', { method: 'POST', body: JSON.stringify(body) }),
+  updateTeamMember: (id, body) => apiFetch(`/api/admin/team/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  deleteTeamMember: (id) => apiFetch(`/api/admin/team/${id}`, { method: 'DELETE' }),
+  uploadImage: async (file, folder = 'products') => {
     const token = localStorage.getItem(TOKEN_KEY);
     const formData = new FormData();
     formData.append('image', file);
+    const folderQuery = folder && folder !== 'products' ? `?folder=${encodeURIComponent(folder)}` : '';
 
-    const response = await fetch(`${API_URL}/api/admin/upload`, {
+    const response = await fetch(`${API_URL}/api/admin/upload${folderQuery}`, {
       method: 'POST',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,

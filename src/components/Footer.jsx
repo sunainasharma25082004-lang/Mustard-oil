@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
+import { useSiteImages } from '../context/SiteImagesContext';
 
 const QUICK_LINKS = [
   { label: 'Our Oil', to: '/' },
-  { label: 'Why Pure', to: '/#why-pure' },
-  { label: 'How We Press', to: '/#how-we-press' },
-  { label: 'Reviews', to: '/#reviews' },
+  { label: 'Why Pure', to: { pathname: '/', hash: '#why-pure' } },
+  { label: 'How We Press', to: { pathname: '/', hash: '#how-we-press' } },
+  { label: 'Reviews', to: { pathname: '/', hash: '#reviews' } },
 ];
 
 const EXPLORE_LINKS = [
@@ -16,6 +17,8 @@ const EXPLORE_LINKS = [
 ];
 
 function Footer() {
+  const { logo } = useSiteImages();
+
   return (
     <footer className="site-footer">
       <div className="site-footer-glow" />
@@ -30,7 +33,7 @@ function Footer() {
         <div className="site-footer-grid">
           <div className="site-footer-brand">
             <Link to="/" className="site-footer-logo-wrap">
-              <img src="/logo.jpeg" alt="Karyor" className="site-footer-logo" />
+              <img src={logo} alt="Karyor" className="site-footer-logo" />
               <span className="site-footer-title">KARYOR</span>
             </Link>
             <p>
@@ -53,7 +56,7 @@ function Footer() {
             <h4>Quick Links</h4>
             <ul>
               {QUICK_LINKS.map((link) => (
-                <li key={link.to}>
+                <li key={link.label}>
                   <Link to={link.to} className="footer-link">
                     {link.label}
                   </Link>

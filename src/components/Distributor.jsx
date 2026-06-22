@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react';
 import { distributorApi } from '../utils/api';
+import { useSiteImages } from '../context/SiteImagesContext';
 
 function Distributor() {
+  const {
+    logo,
+    distributorHero,
+    distributorBanner,
+    distributorShowcase,
+    distributorBenefits,
+  } = useSiteImages();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -96,26 +104,68 @@ function Distributor() {
       .distributor-page{
         min-height:100vh;
         background:#0b0b0b;
-        padding:120px 20px 80px;
+        padding:100px 20px 80px;
         position:relative;
         overflow:hidden;
       }
 
-      .distributor-page::before{
+      .distributor-page::before,
+      .distributor-page::after{
         content:"";
         position:absolute;
         width:500px;
         height:500px;
         border-radius:50%;
+        filter:blur(120px);
+        pointer-events:none;
+      }
+
+      .distributor-page::before{
         background:rgba(212,175,55,.08);
         top:-200px;
         right:-150px;
-        filter:blur(120px);
       }
 
-      .dist-container{ max-width:1200px; margin:auto; }
+      .distributor-page::after{
+        background:rgba(212,175,55,.05);
+        bottom:-220px;
+        left:-180px;
+      }
 
-      .dist-header{ text-align:center; margin-bottom:60px; }
+      .dist-container{ max-width:1200px; margin:auto; position:relative; z-index:1; }
+
+      .dist-hero{
+        position:relative;
+        border-radius:32px;
+        overflow:hidden;
+        margin-bottom:40px;
+        border:1px solid rgba(212,175,55,.2);
+        min-height:340px;
+        display:flex;
+        align-items:center;
+      }
+
+      .dist-hero-bg{
+        position:absolute;
+        inset:0;
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        object-position:center;
+      }
+
+      .dist-hero-overlay{
+        position:absolute;
+        inset:0;
+        background:linear-gradient(105deg,rgba(8,8,8,.92) 0%,rgba(8,8,8,.72) 45%,rgba(8,8,8,.35) 100%);
+      }
+
+      .dist-hero-content{
+        position:relative;
+        z-index:1;
+        padding:48px 42px;
+        max-width:720px;
+      }
 
       .dist-badge{
         display:inline-block;
@@ -126,18 +176,82 @@ function Distributor() {
         margin-bottom:15px;
       }
 
-      .dist-header h1{
+      .dist-hero-content h1{
         color:#fff;
-        font-size:4rem;
-        margin-bottom:20px;
+        font-size:3.4rem;
+        margin-bottom:18px;
         font-weight:800;
+        line-height:1.1;
       }
 
-      .dist-header p{
-        color:#bdbdbd;
-        max-width:750px;
-        margin:auto;
+      .dist-hero-content p{
+        color:#e0e0e0;
         line-height:1.8;
+        margin-bottom:24px;
+      }
+
+      .dist-hero-stats{
+        display:flex;
+        flex-wrap:wrap;
+        gap:14px;
+      }
+
+      .dist-hero-stat{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        background:rgba(20,20,20,.75);
+        border:1px solid rgba(212,175,55,.2);
+        border-radius:999px;
+        padding:10px 16px;
+        color:#f5f5f5;
+        font-size:0.88rem;
+      }
+
+      .dist-hero-stat img{
+        width:28px;
+        height:28px;
+        border-radius:50%;
+        object-fit:cover;
+      }
+
+      .dist-showcase{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:20px;
+        margin-bottom:36px;
+      }
+
+      .dist-showcase-card{
+        position:relative;
+        border-radius:24px;
+        overflow:hidden;
+        border:1px solid rgba(212,175,55,.15);
+        background:#141414;
+        min-height:180px;
+      }
+
+      .dist-showcase-card img{
+        width:100%;
+        height:180px;
+        object-fit:cover;
+        display:block;
+        transition:transform .4s ease;
+      }
+
+      .dist-showcase-card:hover img{ transform:scale(1.05); }
+
+      .dist-showcase-label{
+        position:absolute;
+        left:14px;
+        bottom:14px;
+        background:rgba(0,0,0,.72);
+        color:#f7d76a;
+        padding:8px 14px;
+        border-radius:999px;
+        font-size:0.82rem;
+        font-weight:600;
+        border:1px solid rgba(212,175,55,.25);
       }
 
       .dist-wrapper{
@@ -155,6 +269,44 @@ function Distributor() {
         padding:35px;
       }
 
+      .dist-info-visual{
+        position:relative;
+        border-radius:22px;
+        overflow:hidden;
+        margin-bottom:28px;
+        border:1px solid rgba(212,175,55,.18);
+      }
+
+      .dist-info-visual img{
+        width:100%;
+        height:220px;
+        object-fit:cover;
+        display:block;
+      }
+
+      .dist-info-visual-badge{
+        position:absolute;
+        top:16px;
+        left:16px;
+        display:flex;
+        align-items:center;
+        gap:8px;
+        background:rgba(0,0,0,.7);
+        border:1px solid rgba(212,175,55,.3);
+        border-radius:999px;
+        padding:8px 14px;
+        color:#fff;
+        font-size:0.82rem;
+        font-weight:600;
+      }
+
+      .dist-info-visual-badge img{
+        width:22px;
+        height:22px;
+        border-radius:50%;
+        object-fit:cover;
+      }
+
       .dist-info h2,
       .dist-form h2,
       .dist-status-card h2{
@@ -162,17 +314,26 @@ function Distributor() {
         margin-bottom:25px;
       }
 
-      .feature{ display:flex; gap:15px; margin-bottom:25px; }
+      .feature{ display:flex; gap:15px; margin-bottom:22px; align-items:center; }
 
-      .feature-icon{
-        width:55px; height:55px; border-radius:50%;
-        background:rgba(212,175,55,.12);
-        display:flex; align-items:center; justify-content:center;
-        font-size:24px;
+      .feature-thumb{
+        width:58px;
+        height:58px;
+        border-radius:16px;
+        overflow:hidden;
+        flex-shrink:0;
+        border:1px solid rgba(212,175,55,.2);
+        background:#1c1c1c;
+      }
+
+      .feature-thumb img{
+        width:100%;
+        height:100%;
+        object-fit:cover;
       }
 
       .feature h4{ color:#fff; margin-bottom:5px; }
-      .feature p{ color:#bdbdbd; margin:0; }
+      .feature p{ color:#bdbdbd; margin:0; font-size:0.92rem; }
 
       .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:15px; }
 
@@ -263,57 +424,80 @@ function Distributor() {
 
       @media(max-width:992px){
         .dist-wrapper{ grid-template-columns:1fr; }
-        .dist-header h1{ font-size:2.7rem; }
+        .dist-hero-content h1{ font-size:2.7rem; }
+        .dist-showcase{ grid-template-columns:1fr 1fr; }
       }
 
       @media(max-width:768px){
         .form-grid{ grid-template-columns:1fr; }
-        .dist-header h1{ font-size:2.2rem; }
+        .dist-hero-content{ padding:34px 24px; }
+        .dist-hero-content h1{ font-size:2.2rem; }
+        .dist-showcase{ grid-template-columns:1fr; }
+        .dist-hero{ min-height:300px; }
       }
       `}</style>
 
       <div className="distributor-page">
         <div className="dist-container">
-          <div className="dist-header">
-            <div className="dist-badge">BECOME A DISTRIBUTOR</div>
-            <h1>Join The Karyor Network</h1>
-            <p>
-              Become an authorized Karyor Mustard Oil distributor and
-              grow your business with a trusted premium brand.
-            </p>
+          <section className="dist-hero">
+            <img
+              src={distributorHero}
+              alt="Karyor mustard oil"
+              className="dist-hero-bg"
+              loading="eager"
+            />
+            <div className="dist-hero-overlay" />
+            <div className="dist-hero-content">
+              <div className="dist-badge">BECOME A DISTRIBUTOR</div>
+              <h1>Join The Karyor Network</h1>
+              <p>
+                Become an authorized Karyor Mustard Oil distributor and
+                grow your business with a premium brand trusted by Indian kitchens.
+              </p>
+              <div className="dist-hero-stats">
+                <span className="dist-hero-stat">
+                  <img src={logo} alt="Karyor" />
+                  Authorized Partner Program
+                </span>
+                <span className="dist-hero-stat">
+                  <img src={distributorBenefits[0]?.image} alt="Karyor bottle" />
+                  Premium Product Range
+                </span>
+              </div>
+            </div>
+          </section>
+
+          <div className="dist-showcase">
+            {distributorShowcase.map((item) => (
+              <div className="dist-showcase-card" key={item.label}>
+                <img src={item.image} alt={item.label} loading="lazy" />
+                <span className="dist-showcase-label">{item.label}</span>
+              </div>
+            ))}
           </div>
 
           <div className="dist-wrapper">
             <div className="dist-info">
+              <div className="dist-info-visual">
+                <img src={distributorBanner} alt="Karyor mustard oil collection" loading="lazy" />
+                <div className="dist-info-visual-badge">
+                  <img src={logo} alt="Karyor" />
+                  Partner with Karyor
+                </div>
+              </div>
+
               <h2>Why Join Us?</h2>
-              <div className="feature">
-                <div className="feature-icon">🏆</div>
-                <div>
-                  <h4>Trusted Brand</h4>
-                  <p>High quality mustard oil with strong market demand.</p>
+              {distributorBenefits.map((item) => (
+                <div className="feature" key={item.title}>
+                  <div className="feature-thumb">
+                    <img src={item.image} alt={item.title} loading="lazy" />
+                  </div>
+                  <div>
+                    <h4>{item.title}</h4>
+                    <p>{item.text}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="feature">
-                <div className="feature-icon">📈</div>
-                <div>
-                  <h4>Business Growth</h4>
-                  <p>Expand your distribution network and profits.</p>
-                </div>
-              </div>
-              <div className="feature">
-                <div className="feature-icon">🤝</div>
-                <div>
-                  <h4>Full Support</h4>
-                  <p>Marketing and business assistance from our team.</p>
-                </div>
-              </div>
-              <div className="feature">
-                <div className="feature-icon">🚚</div>
-                <div>
-                  <h4>Reliable Supply</h4>
-                  <p>Consistent stock and fast delivery support.</p>
-                </div>
-              </div>
+              ))}
             </div>
 
             <form className="dist-form" onSubmit={handleSubmit}>

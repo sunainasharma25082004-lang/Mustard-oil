@@ -40,4 +40,26 @@ const superAdmin = (req, res, next) => {
   next();
 };
 
-module.exports = { protect, admin, superAdmin };
+const { userHasPermission, userHasAnyPermission } = require('../utils/adminPermissions');
+
+const requirePermission = (...permissions) => (req, res, next) => {
+  if (req.user?.isSuperAdmin) return next();
+  if (permissions.some((permission) => userHasPermission(req.user, permission))) {
+    return next();
+  }
+  return res.status(403).json({
+    success: false,
+    message: 'You do not have access to this section',
+  });
+};
+
+const requireAnyPermission = (...permissions) => (req, res, next) => {
+  if (req.user?.isSuperAdmin) return next();
+  if (userHasAnyPermission(req.user, permissions)) return next();
+  return res.status(403).json({
+    success: false,
+    message: 'You do not have access to this section',
+  });
+};
+
+module.exports = { protect, admin, superAdmin, requirePermission, requireAnyPermission };

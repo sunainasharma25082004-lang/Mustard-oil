@@ -3,18 +3,24 @@ import { Link, NavLink } from 'react-router-dom';
 import '../styles/main.css';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useSiteImages } from '../context/SiteImagesContext';
+
+const HOME_REVIEWS_LINK = { to: { pathname: '/', hash: '#reviews' }, label: 'Reviews' };
+const DISTRIBUTOR_LINK = { to: '/distributor', label: 'Become a Distributor' };
 
 const PUBLIC_NAV_LINKS = [
   { to: '/', label: 'Our Oil', end: true },
-  { to: '/#why-pure', label: 'Why Pure' },
-  { to: '/#how-we-press', label: 'How We Press' },
+  { to: { pathname: '/', hash: '#why-pure' }, label: 'Why Pure' },
+  { to: { pathname: '/', hash: '#how-we-press' }, label: 'How We Press' },
   { to: '/recipes', label: 'Recipes' },
-  { to: '/#reviews', label: 'Reviews' },
+  HOME_REVIEWS_LINK,
+  DISTRIBUTOR_LINK,
 ];
 
 function Navbar() {
   const { itemCount } = useCart();
   const { user, logout } = useAuth();
+  const { logo } = useSiteImages();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -57,7 +63,7 @@ function Navbar() {
   }, [menuOpen]);
 
   const navLinks = user
-    ? [{ to: '/', label: 'Home', end: true }]
+    ? [{ to: '/', label: 'Home', end: true }, HOME_REVIEWS_LINK, DISTRIBUTOR_LINK]
     : PUBLIC_NAV_LINKS;
 
   return (
@@ -74,7 +80,7 @@ function Navbar() {
         <div className="container site-navbar-inner">
           <div className="site-navbar-top">
             <Link className="site-navbar-brand" to="/" onClick={closeMenu}>
-              <img src="/logo.jpeg" alt="Karyor Logo" className="navbar-logo" />
+              <img src={logo} alt="Karyor Logo" className="navbar-logo" />
               <span className="brand-logo">KARYOR</span>
             </Link>
 
@@ -96,7 +102,7 @@ function Navbar() {
           >
             <ul className="navbar-nav ms-auto align-items-lg-center site-nav-list">
               {navLinks.map((link) => (
-                <li className="nav-item" key={link.to}>
+                <li className="nav-item" key={link.label}>
                   <NavLink
                     className={({ isActive }) =>
                       `nav-link custom-link site-nav-link${isActive ? ' active' : ''}`

@@ -4,9 +4,26 @@ import { useEffect, useRef, useState } from 'react';
  * Mounts children only when the section enters (or nears) the viewport.
  * Reduces initial JS work and defers below-the-fold API-driven sections.
  */
-function DeferredSection({ children, rootMargin = '200px 0px', minHeight = 1, className = '' }) {
+function DeferredSection({
+  children,
+  rootMargin = '200px 0px',
+  minHeight = 1,
+  className = '',
+  anchorId = '',
+}) {
   const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(() => {
+    if (!anchorId || typeof window === 'undefined') return false;
+    return window.location.hash.replace('#', '') === anchorId;
+  });
+
+  useEffect(() => {
+    if (!anchorId || visible) return undefined;
+    if (window.location.hash.replace('#', '') === anchorId) {
+      setVisible(true);
+    }
+    return undefined;
+  }, [anchorId, visible]);
 
   useEffect(() => {
     if (visible) return undefined;
@@ -33,7 +50,12 @@ function DeferredSection({ children, rootMargin = '200px 0px', minHeight = 1, cl
   }, [visible, rootMargin]);
 
   return (
-    <div ref={ref} className={className} style={{ minHeight: visible ? undefined : minHeight }}>
+    <div
+      ref={ref}
+      id={anchorId || undefined}
+      className={className}
+      style={{ minHeight: visible ? undefined : minHeight }}
+    >
       {visible ? children : null}
     </div>
   );
