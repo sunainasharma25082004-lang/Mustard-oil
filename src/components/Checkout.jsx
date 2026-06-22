@@ -62,10 +62,12 @@ function Checkout() {
     pincodeOptions,
     locationHint,
     lookingUp,
+    locating,
     handlePincodeChange,
     handleCityChange,
     handleCityBlur,
     selectPincodeOption,
+    useCurrentLocation,
   } = useLocationFields({ formData, setFormData });
 
   useEffect(() => {
@@ -99,6 +101,19 @@ function Checkout() {
       delete next[name];
       return next;
     });
+  };
+
+  const handleUseCurrentLocation = async () => {
+    setError("");
+    try {
+      await useCurrentLocation();
+      clearFieldError("address");
+      clearFieldError("city");
+      clearFieldError("pincode");
+      setPincodeStatus(null);
+    } catch (err) {
+      setError(err.message || "Could not detect your location.");
+    }
   };
 
   const handleChange = (e) => {
@@ -549,6 +564,44 @@ function Checkout() {
         margin-bottom:8px;
       }
 
+      .form-label-row{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        margin-bottom:8px;
+      }
+
+      .form-label-row label{
+        margin-bottom:0;
+      }
+
+      .use-location-btn{
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        padding:8px 14px;
+        border-radius:999px;
+        border:1px solid rgba(212,175,55,.35);
+        background:rgba(212,175,55,.08);
+        color:#d4af37;
+        font-size:0.78rem;
+        font-weight:600;
+        cursor:pointer;
+        white-space:nowrap;
+        transition:.2s;
+      }
+
+      .use-location-btn:hover:not(:disabled){
+        background:rgba(212,175,55,.16);
+        transform:translateY(-1px);
+      }
+
+      .use-location-btn:disabled{
+        opacity:0.6;
+        cursor:not-allowed;
+      }
+
       .form-group input,
       .form-group textarea{
         width:100%;
@@ -777,7 +830,17 @@ function Checkout() {
                 </div>
 
                 <div className="form-group">
-                  <label>Address *</label>
+                  <div className="form-label-row">
+                    <label>Address *</label>
+                    <button
+                      type="button"
+                      className="use-location-btn"
+                      onClick={handleUseCurrentLocation}
+                      disabled={locating || lookingUp}
+                    >
+                      {locating ? "Detecting..." : "Use Current Location"}
+                    </button>
+                  </div>
                   <textarea
                     rows="4"
                     name="address"

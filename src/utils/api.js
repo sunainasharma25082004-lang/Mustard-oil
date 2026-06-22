@@ -67,6 +67,10 @@ export const shippingApi = {
 export const locationApi = {
   byPincode: (pincode) => apiFetch(`/api/location/pincode/${encodeURIComponent(pincode)}`),
   byCity: (city) => apiFetch(`/api/location/city/${encodeURIComponent(city)}`),
+  reverseGeocode: (lat, lng) =>
+    apiFetch(
+      `/api/location/reverse?lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`
+    ),
 };
 
 export const paymentApi = {

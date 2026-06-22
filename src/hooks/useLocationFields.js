@@ -1,8 +1,10 @@
 import { useCallback, useRef, useState } from 'react';
 import { locationApi } from '../utils/api';
 import { sanitizePincodeInput } from '../utils/formValidation';
+import { getBrowserPosition } from '../utils/geolocation';
 
 export function useLocationFields({ formData, setFormData, fieldKeys = {} }) {
+  const addressKey = fieldKeys.address || 'address';
   const cityKey = fieldKeys.city || 'city';
   const stateKey = fieldKeys.state || 'state';
   const pincodeKey = fieldKeys.pincode || 'pincode';
@@ -10,6 +12,7 @@ export function useLocationFields({ formData, setFormData, fieldKeys = {} }) {
   const [pincodeOptions, setPincodeOptions] = useState([]);
   const [locationHint, setLocationHint] = useState('');
   const [lookingUp, setLookingUp] = useState(false);
+  const [locating, setLocating] = useState(false);
   const skipCityLookup = useRef(false);
 
   const applyPatch = useCallback(
@@ -131,14 +134,53 @@ export function useLocationFields({ formData, setFormData, fieldKeys = {} }) {
     [applyPatch, pincodeKey, cityKey, stateKey]
   );
 
+  const useCurrentLocation = useCallback(async () => {
+    setLocating(true);
+    setLocationHint('');
+    setPincodeOptions([]);
+
+    try {
+      const position = await getBrowserPosition();
+      const { latitude, longitude } = position.coords;
+      const res = await locationApi.reverseGeocode(latitude, longitude);
+      const { address, city, state, pincode } = res.data;
+
+      skipCityLookup.current = true;
+      const patch = {};
+      if (address) patch[addressKey] = address;
+      if (city) patch[cityKey] = city;
+      if (state) patch[stateKey] = state;
+      if (pincode) patch[pincodeKey] = pincode;
+      applyPatch(patch);
+
+      if (pincode && /^\d{6}$/.test(pincode)) {
+        setLocationHint(
+          `Current location: ${city || 'your area'}${state ? `, ${state}` : ''}`
+        );
+        await lookupByPincode(pincode);
+      } else if (city) {
+        setLocationHint(`Address filled for ${city}. Pincode verify kar lena.`);
+      } else {
+        setLocationHint('Address filled. Please verify all fields.');
+      }
+    } finally {
+      setLocating(false);
+      setTimeout(() => {
+        skipCityLookup.current = false;
+      }, 300);
+    }
+  }, [addressKey, cityKey, stateKey, pincodeKey, applyPatch, lookupByPincode]);
+
   return {
     pincodeOptions,
     locationHint,
     lookingUp,
+    locating,
     handlePincodeChange,
     handleCityChange,
     handleCityBlur,
     selectPincodeOption,
     lookupByPincode,
+    useCurrentLocation,
   };
 }
