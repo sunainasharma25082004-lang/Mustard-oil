@@ -28,3 +28,16 @@ export const saveStoredCart = (key, items) => {
 export const getGuestCartKey = () => GUEST_CART_KEY;
 
 export const getUserCartKey = (userId) => userCartKey(userId);
+
+export const mergeCartItems = (userItems = [], guestItems = []) => {
+  const merged = [...userItems];
+  for (const guestItem of guestItems) {
+    const existing = merged.find((item) => item._id === guestItem._id);
+    if (existing) {
+      existing.quantity += guestItem.quantity;
+    } else {
+      merged.push(guestItem);
+    }
+  }
+  return merged;
+};

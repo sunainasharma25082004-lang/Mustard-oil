@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import GoogleSignInButton from './GoogleSignInButton';
 import { useGoogleAuth } from '../context/GoogleAuthContext';
 
-function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
-  const { login, register, loginWithGoogle } = useAuth();
+function AuthModal({ isOpen, onClose, title = 'Sign in to continue', shippingData = null }) {
+  const { login, register, loginWithGoogle, updateProfile } = useAuth();
   const { clientId } = useGoogleAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -32,6 +32,18 @@ function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
 
   if (!isOpen) return null;
 
+  const syncShippingToProfile = async () => {
+    if (!shippingData?.address?.trim()) return;
+    const payload = {
+      address: shippingData.address,
+      city: shippingData.city,
+      pincode: shippingData.pincode,
+    };
+    if (shippingData.fullName?.trim()) payload.name = shippingData.fullName;
+    if (shippingData.phone?.trim()) payload.phone = shippingData.phone;
+    await updateProfile(payload);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
@@ -39,6 +51,7 @@ function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
 
     try {
       await login(loginData.email, loginData.password);
+      await syncShippingToProfile();
       onClose?.();
     } catch (err) {
       setError(err.message || 'Login failed');
@@ -74,6 +87,9 @@ function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
         email: registerData.email,
         phone: registerData.phone,
         password: registerData.password,
+        address: shippingData?.address || '',
+        city: shippingData?.city || '',
+        pincode: shippingData?.pincode || '',
       });
       onClose?.();
     } catch (err) {
@@ -99,6 +115,7 @@ function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
     setLoading(true);
     try {
       await loginWithGoogle(credential);
+      await syncShippingToProfile();
       onClose?.();
     } catch (err) {
       setError(err.message || 'Google sign-in failed');

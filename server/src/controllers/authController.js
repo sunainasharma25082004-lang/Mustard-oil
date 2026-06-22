@@ -264,13 +264,17 @@ const updateProfile = async (req, res, next) => {
       user.name = name.trim();
     }
     if (phone !== undefined) {
-      if (!isValidIndianPhone(phone)) {
+      const trimmedPhone = String(phone || '').trim();
+      if (!trimmedPhone) {
+        user.phone = '';
+      } else if (!isValidIndianPhone(trimmedPhone)) {
         return res.status(400).json({
           success: false,
           message: 'Enter a valid 10-digit Indian mobile number',
         });
+      } else {
+        user.phone = normalizePhone(trimmedPhone);
       }
-      user.phone = normalizePhone(phone);
     }
     if (address !== undefined) user.address = address.trim();
     if (city !== undefined) user.city = city.trim();

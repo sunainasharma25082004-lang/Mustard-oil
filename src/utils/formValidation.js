@@ -109,12 +109,12 @@ export function validateDistributorForm(data) {
     errors.pincode = 'Enter a valid 6-digit pincode';
   }
 
-  if (!String(data.experience || '').trim()) {
-    errors.experience = 'Business experience is required';
+  if (!String(data.experience || '').trim() || String(data.experience).trim().length < 10) {
+    errors.experience = 'Describe your business experience (min 10 characters)';
   }
 
-  if (!String(data.investment || '').trim()) {
-    errors.investment = 'Investment capacity is required';
+  if (!String(data.investment || '').trim() || String(data.investment).trim().length < 3) {
+    errors.investment = 'Investment capacity is required (min 3 characters)';
   }
 
   return errors;

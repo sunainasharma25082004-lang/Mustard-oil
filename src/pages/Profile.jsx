@@ -47,7 +47,7 @@ function Profile() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      navigate('/checkout', { state: { step: 2 } });
+      navigate('/signin', { state: { from: '/profile' } });
       return;
     }
 
@@ -101,7 +101,9 @@ function Profile() {
     setFieldErrors({});
     setProfileLoading(true);
     try {
-      await updateProfile(profileForm);
+      const payload = { ...profileForm };
+      if (!payload.phone?.trim()) delete payload.phone;
+      await updateProfile(payload);
       setProfileMsg('Profile updated successfully');
     } catch (err) {
       setProfileError(err.message);
@@ -245,6 +247,7 @@ function Profile() {
               <div className="profile-field">
                 <label>Full Name</label>
                 <input type="text" name="name" value={profileForm.name} onChange={handleProfileChange} required />
+                {fieldErrors.name && <p style={{ color: '#f87171', fontSize: '0.78rem', marginTop: 6 }}>{fieldErrors.name}</p>}
               </div>
               <div className="profile-field">
                 <label>Email</label>
@@ -316,6 +319,7 @@ function Profile() {
             </button>
           </form>
 
+          {!(user.authProvider === 'google' && !user.hasPassword) && (
           <form className="profile-card" onSubmit={handlePasswordChange}>
             <h2>Change Password</h2>
             {passwordMsg && <div className="profile-alert profile-alert-success">{passwordMsg}</div>}
@@ -355,6 +359,7 @@ function Profile() {
               {passwordLoading ? 'Updating...' : 'Update Password'}
             </button>
           </form>
+          )}
 
           <div className="profile-card">
             <h2>Session</h2>

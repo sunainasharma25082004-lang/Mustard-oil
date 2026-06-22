@@ -23,7 +23,7 @@ function MyOrders() {
   const loadMyOrders = async (isRefresh = false) => {
     if (authLoading) return;
     if (!user) {
-      navigate('/checkout', { state: { step: 2 } });
+      navigate('/signin', { state: { from: '/my-orders' } });
       return;
     }
 

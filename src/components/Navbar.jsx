@@ -62,9 +62,7 @@ function Navbar() {
     return () => document.body.classList.remove('site-menu-open');
   }, [menuOpen]);
 
-  const navLinks = user
-    ? [{ to: '/', label: 'Home', end: true }, HOME_REVIEWS_LINK, DISTRIBUTOR_LINK]
-    : PUBLIC_NAV_LINKS;
+  const navLinks = PUBLIC_NAV_LINKS;
 
   return (
     <header className={`site-navbar ${scrolled ? 'site-navbar-scrolled' : ''} ${menuOpen ? 'site-navbar-menu-open' : ''}`}>

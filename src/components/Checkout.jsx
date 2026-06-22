@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useLocationFields } from "../hooks/useLocationFields";
@@ -21,8 +21,7 @@ import OrderTracking, { formatOrderDateLong } from "./OrderTracking";
 
 function Checkout() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { user, loginWithGoogle } = useAuth();
+  const { user, loginWithGoogle, updateProfile } = useAuth();
   const {
     items,
     subtotal,
@@ -32,9 +31,10 @@ function Checkout() {
     applyDeliveryQuote,
     clearDeliveryQuote,
     clearCart,
+    refreshItemPrices,
   } = useCart();
 
-  const [step, setStep] = useState(location.state?.step === 2 ? 2 : 1);
+  const [step, setStep] = useState(1);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -43,6 +43,7 @@ function Checkout() {
     email: "",
     address: "",
     city: "",
+    state: "",
     pincode: "",
   });
 
@@ -52,7 +53,7 @@ function Checkout() {
   const [deliveryDays, setDeliveryDays] = useState(5);
   const [paymentConfig, setPaymentConfig] = useState({
     activeGateway: "razorpay",
-    enabled: true,
+    enabled: false,
     label: "Razorpay",
   });
   const [pincodeStatus, setPincodeStatus] = useState(null);
@@ -101,6 +102,12 @@ function Checkout() {
       delete next[name];
       return next;
     });
+  };
+
+  const handleSelectPincodeOption = (option) => {
+    selectPincodeOption(option);
+    setPincodeStatus(null);
+    clearDeliveryQuote();
   };
 
   const handleUseCurrentLocation = async () => {
@@ -157,11 +164,27 @@ function Checkout() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, formData.pincode]);
 
+  const syncCheckoutShippingToProfile = async () => {
+    if (!formData.address?.trim()) return;
+    try {
+      await updateProfile({
+        name: formData.fullName,
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        pincode: formData.pincode,
+      });
+    } catch {
+      // Non-blocking — checkout can continue
+    }
+  };
+
   const handleGoogleSignIn = async (credential) => {
     setError("");
     setLoading(true);
     try {
       await loginWithGoogle(credential);
+      await syncCheckoutShippingToProfile();
     } catch (err) {
       setError(err.message || "Google sign-in failed");
     } finally {
@@ -196,20 +219,31 @@ function Checkout() {
 
     setFieldErrors({});
 
-    const pincode = formData.pincode.trim();
-
-    let quote = pincodeStatus;
-    if (!quote) {
-      try {
-        const qty = items.reduce((sum, item) => sum + item.quantity, 0);
-        const res = await shippingApi.checkServiceability(pincode, qty);
-        quote = res.data;
-        setPincodeStatus(quote);
-        applyDeliveryQuote(quote);
-      } catch {
-        setError("Could not calculate delivery charges. Please try again.");
+    let cartItems = items;
+    try {
+      const refreshed = await refreshItemPrices();
+      cartItems = refreshed || items;
+      if (!cartItems.length) {
+        setError("Some cart items are no longer available. Please update your cart.");
         return;
       }
+    } catch {
+      setError("Could not refresh product prices. Please try again.");
+      return;
+    }
+
+    const pincode = formData.pincode.trim();
+
+    let quote;
+    try {
+      const qty = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+      const res = await shippingApi.checkServiceability(pincode, qty);
+      quote = res.data;
+      setPincodeStatus(quote);
+      applyDeliveryQuote(quote);
+    } catch {
+      setError("Could not calculate delivery charges. Please try again.");
+      return;
     }
 
     if (!quote.serviceable) {
@@ -220,19 +254,25 @@ function Checkout() {
     setStep(2);
   };
 
-  const orderPayload = {
-    customer: formData,
-    items: items.map((item) => ({
-      productId: item._id,
-      quantity: item.quantity,
-    })),
-  };
-
   const handleOnlinePayment = async () => {
     const scriptLoaded = await loadRazorpayScript();
     if (!scriptLoaded) {
       throw new Error("Failed to load payment gateway. Please try again.");
     }
+
+    const refreshed = await refreshItemPrices();
+    const cartItems = refreshed || items;
+    if (!cartItems.length) {
+      throw new Error("Your cart is empty or items are unavailable.");
+    }
+
+    const orderPayload = {
+      customer: formData,
+      items: cartItems.map((item) => ({
+        productId: item._id,
+        quantity: item.quantity,
+      })),
+    };
 
     const response = await paymentApi.createRazorpayOrder(orderPayload);
 
@@ -877,6 +917,20 @@ function Checkout() {
                     )}
                   </div>
                   <div className="form-group">
+                    <label>State</label>
+                    <input
+                      type="text"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleChange}
+                      placeholder="Auto-filled from pincode"
+                      autoComplete="address-level1"
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
                     <label>Pincode *</label>
                     <input
                       type="text"
@@ -914,7 +968,7 @@ function Checkout() {
                           <button
                             key={`${option.pincode}-${option.area}`}
                             type="button"
-                            onClick={() => selectPincodeOption(option)}
+                            onClick={() => handleSelectPincodeOption(option)}
                             style={{
                               textAlign: "left",
                               background: "#1c1c1c",
@@ -1242,6 +1296,7 @@ function Checkout() {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         title="Sign in to complete your order"
+        shippingData={formData}
       />
     </>
   );

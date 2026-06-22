@@ -1,17 +1,8 @@
 const User = require('../models/User');
 
 const seedAdmin = async () => {
-  const admins = await User.find({ role: 'admin' });
-  if (admins.length) {
-    for (const adminUser of admins) {
-      if (!adminUser.isSuperAdmin) {
-        adminUser.isSuperAdmin = true;
-        await adminUser.save();
-        console.log(`Admin promoted to Super Admin: ${adminUser.email}`);
-      }
-    }
-    return;
-  }
+  const adminCount = await User.countDocuments({ role: 'admin' });
+  if (adminCount > 0) return;
 
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;

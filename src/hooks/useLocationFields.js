@@ -163,6 +163,9 @@ export function useLocationFields({ formData, setFormData, fieldKeys = {} }) {
       } else {
         setLocationHint('Address filled. Please verify all fields.');
       }
+    } catch (err) {
+      setLocationHint(err.message || 'Could not detect location. Enter address manually.');
+      throw err;
     } finally {
       setLocating(false);
       setTimeout(() => {

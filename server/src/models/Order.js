@@ -30,6 +30,7 @@ const orderSchema = new mongoose.Schema(
       email: { type: String, trim: true, lowercase: true },
       address: { type: String, required: true, trim: true },
       city: { type: String, required: true, trim: true },
+      state: { type: String, trim: true, default: '' },
       pincode: { type: String, required: true, trim: true },
     },
     items: {

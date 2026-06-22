@@ -8,14 +8,18 @@ import {
   useState,
 } from 'react';
 import { useAuth } from './AuthContext';
+import { productApi } from '../utils/api';
 import {
   getGuestCartKey,
   getUserCartKey,
   loadStoredCart,
+  mergeCartItems,
   saveStoredCart,
 } from '../utils/cartStorage';
 
 const CartContext = createContext(null);
+
+const resolveUserId = (user) => user?.id || user?._id || null;
 
 export function CartProvider({ children }) {
   const { user } = useAuth();
@@ -32,15 +36,20 @@ export function CartProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    const currentUserId = user?._id || null;
+    const currentUserId = resolveUserId(user);
     const previousUserId = lastUserIdRef.current;
     lastUserIdRef.current = currentUserId;
 
     if (currentUserId) {
       skipGuestPersistRef.current = false;
       isRestoringCartRef.current = true;
+      const guestItems = loadStoredCart(getGuestCartKey());
       const saved = loadStoredCart(getUserCartKey(currentUserId));
-      setItems(saved);
+      const merged = mergeCartItems(saved, guestItems);
+      setItems(merged);
+      if (guestItems.length) {
+        saveStoredCart(getGuestCartKey(), []);
+      }
       resetDelivery();
       return;
     }
@@ -50,7 +59,7 @@ export function CartProvider({ children }) {
       setItems([]);
       resetDelivery();
     }
-  }, [user?._id, resetDelivery]);
+  }, [user?.id, user?._id, resetDelivery]);
 
   useEffect(() => {
     if (skipGuestPersistRef.current) {
@@ -63,9 +72,10 @@ export function CartProvider({ children }) {
       return;
     }
 
-    const key = user?._id ? getUserCartKey(user._id) : getGuestCartKey();
+    const userId = resolveUserId(user);
+    const key = userId ? getUserCartKey(userId) : getGuestCartKey();
     saveStoredCart(key, items);
-  }, [items, user?._id]);
+  }, [items, user?.id, user?._id]);
 
   const addToCart = (product, quantity = 1) => {
     setItems((prev) => {
@@ -103,9 +113,38 @@ export function CartProvider({ children }) {
   const clearCart = () => {
     setItems([]);
     resetDelivery();
-    const key = user?._id ? getUserCartKey(user._id) : getGuestCartKey();
+    const userId = resolveUserId(user);
+    const key = userId ? getUserCartKey(userId) : getGuestCartKey();
     saveStoredCart(key, []);
   };
+
+  const refreshItemPrices = useCallback(async () => {
+    if (!items.length) return items;
+
+    const res = await productApi.getAll();
+    const products = Array.isArray(res.data) ? res.data : [];
+    const byId = new Map(products.map((product) => [product._id, product]));
+
+    let nextItems = [];
+    setItems((prev) => {
+      nextItems = prev
+        .map((item) => {
+          const product = byId.get(item._id);
+          if (!product || !product.isActive || !product.inStock) return null;
+          return {
+            ...item,
+            name: product.name,
+            price: product.price,
+            originalPrice: product.originalPrice,
+            inStock: product.inStock,
+          };
+        })
+        .filter(Boolean);
+      return nextItems;
+    });
+
+    return nextItems;
+  }, [items.length]);
 
   const applyDeliveryQuote = useCallback((quote) => {
     if (!quote) {
@@ -136,6 +175,7 @@ export function CartProvider({ children }) {
     removeFromCart,
     updateQuantity,
     clearCart,
+    refreshItemPrices,
     subtotal,
     deliveryCharge,
     deliveryQuote,

@@ -30,7 +30,12 @@ function SignIn() {
     try {
       await login(loginData.email, loginData.password);
       const redirectTo = location.state?.from || '/';
-      navigate(redirectTo, { replace: true });
+      if (typeof redirectTo === 'string' && redirectTo.includes('#')) {
+        const [pathname, hash] = redirectTo.split('#');
+        navigate({ pathname: pathname || '/', hash: hash ? `#${hash}` : undefined }, { replace: true });
+      } else {
+        navigate(redirectTo, { replace: true });
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -44,7 +49,12 @@ function SignIn() {
     try {
       await loginWithGoogle(credential);
       const redirectTo = location.state?.from || '/';
-      navigate(redirectTo, { replace: true });
+      if (typeof redirectTo === 'string' && redirectTo.includes('#')) {
+        const [pathname, hash] = redirectTo.split('#');
+        navigate({ pathname: pathname || '/', hash: hash ? `#${hash}` : undefined }, { replace: true });
+      } else {
+        navigate(redirectTo, { replace: true });
+      }
     } catch (err) {
       setError(err.message);
     } finally {

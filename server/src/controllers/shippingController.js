@@ -1,4 +1,5 @@
 const { DELIVERY_CHARGE, resolveDeliveryCharge } = require('../utils/orderHelpers');
+const { getPublicShippingConfig } = require('../utils/shiprocketHelpers');
 
 const getShippingConfig = async (req, res, next) => {
   try {

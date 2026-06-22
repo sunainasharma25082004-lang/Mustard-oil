@@ -114,7 +114,7 @@ const limiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many requests, please try again later' },
-  skip: (req) => req.path.startsWith('/webhooks'),
+  skip: (req) => req.path.startsWith('/api/webhooks') || req.originalUrl.includes('/webhooks'),
   validate: {
     xForwardedForHeader: false,
   },

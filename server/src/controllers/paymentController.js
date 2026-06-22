@@ -168,6 +168,14 @@ const verifyRazorpayPayment = async (req, res, next) => {
       });
     }
 
+    if (order.paymentStatus === 'paid') {
+      return res.json({
+        success: true,
+        message: 'Payment already verified',
+        data: order,
+      });
+    }
+
     order.razorpayPaymentId = razorpay_payment_id;
     order.paymentStatus = 'paid';
     order.status = 'confirmed';

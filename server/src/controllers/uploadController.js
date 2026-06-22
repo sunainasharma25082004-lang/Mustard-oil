@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const UPLOAD_BASE = path.join(__dirname, '../../uploads');
-const ALLOWED_FOLDERS = new Set(['products', 'site']);
+const ALLOWED_FOLDERS = new Set(['products', 'site', 'certificates', 'recipes']);
 
 const uploadImage = async (req, res, next) => {
   try {

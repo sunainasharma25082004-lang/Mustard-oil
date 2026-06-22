@@ -24,7 +24,7 @@ const getDashboardStats = async (req, res, next) => {
       Distributor.countDocuments({ status: 'pending' }),
       User.countDocuments({ role: 'user' }),
       Order.aggregate([
-        { $match: { status: { $ne: 'cancelled' } } },
+        { $match: { status: { $ne: 'cancelled' }, paymentStatus: 'paid' } },
         { $group: { _id: null, total: { $sum: '$totalAmount' } } },
       ]),
     ]);
