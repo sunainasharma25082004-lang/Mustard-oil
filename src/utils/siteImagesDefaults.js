@@ -3,7 +3,7 @@ export const DEFAULT_SITE_IMAGES = {
   heroDesktop: '/banner-img.png',
   heroMobile: '/banner-mobile.jpg',
   aboutImage: '/mustard-about.jpg',
-  distributorHero: '/mustard-about.jpg',
+  distributorHero: '/distributor-hero.jpg',
   distributorBanner: '/banner-img.png',
   distributorShowcase: [
     { image: '/product-1l.jpg', label: '1 Litre Pack' },

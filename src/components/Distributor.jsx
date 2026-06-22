@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { distributorApi } from '../utils/api';
 import { useSiteImages } from '../context/SiteImagesContext';
+import distributorHeroImage from '../assets/distributor-hero.jpg';
 
 function Distributor() {
   const {
     logo,
-    distributorHero,
     distributorBanner,
-    distributorShowcase,
     distributorBenefits,
   } = useSiteImages();
   const [loading, setLoading] = useState(false);
@@ -215,51 +214,6 @@ function Distributor() {
         object-fit:cover;
       }
 
-      .dist-showcase{
-        display:grid;
-        grid-template-columns:repeat(3,1fr);
-        gap:20px;
-        margin-bottom:36px;
-      }
-
-      .dist-showcase-card{
-        position:relative;
-        border-radius:24px;
-        overflow:hidden;
-        border:1px solid rgba(212,175,55,.15);
-        background:#141414;
-        display:flex;
-        flex-direction:column;
-      }
-
-      .dist-showcase-card img{
-        width:100%;
-        height:auto;
-        max-height:200px;
-        object-fit:contain;
-        object-position:center;
-        display:block;
-        padding:12px 12px 0;
-        background:#0a0a0a;
-        box-sizing:border-box;
-        transition:transform .4s ease;
-      }
-
-      .dist-showcase-card:hover img{ transform:scale(1.03); }
-
-      .dist-showcase-label{
-        position:static;
-        margin:10px 14px 14px;
-        align-self:flex-start;
-        background:rgba(0,0,0,.72);
-        color:#f7d76a;
-        padding:8px 14px;
-        border-radius:999px;
-        font-size:0.82rem;
-        font-weight:600;
-        border:1px solid rgba(212,175,55,.25);
-      }
-
       .dist-wrapper{
         display:grid;
         grid-template-columns:1fr 1.4fr;
@@ -434,14 +388,12 @@ function Distributor() {
       @media(max-width:992px){
         .dist-wrapper{ grid-template-columns:1fr; }
         .dist-hero-content h1{ font-size:2.7rem; }
-        .dist-showcase{ grid-template-columns:1fr 1fr; }
       }
 
       @media(max-width:768px){
         .form-grid{ grid-template-columns:1fr; }
         .dist-hero-content{ padding:34px 24px; }
         .dist-hero-content h1{ font-size:2.2rem; }
-        .dist-showcase{ grid-template-columns:1fr; }
         .dist-hero{ min-height:300px; }
       }
       `}</style>
@@ -450,8 +402,8 @@ function Distributor() {
         <div className="dist-container">
           <section className="dist-hero">
             <img
-              src={distributorHero}
-              alt="Karyor mustard oil"
+              src={distributorHeroImage}
+              alt="Karyor distributor partnership"
               className="dist-hero-bg"
               loading="eager"
             />
@@ -475,15 +427,6 @@ function Distributor() {
               </div>
             </div>
           </section>
-
-          <div className="dist-showcase">
-            {distributorShowcase.map((item) => (
-              <div className="dist-showcase-card" key={item.label}>
-                <img src={item.image} alt={item.label} loading="lazy" />
-                <span className="dist-showcase-label">{item.label}</span>
-              </div>
-            ))}
-          </div>
 
           <div className="dist-wrapper">
             <div className="dist-info">
