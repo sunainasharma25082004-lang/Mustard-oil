@@ -392,9 +392,44 @@ function Distributor() {
 
       @media(max-width:768px){
         .form-grid{ grid-template-columns:1fr; }
-        .dist-hero-content{ padding:34px 24px; }
+
+        .dist-hero{
+          display:block;
+          min-height:auto;
+          background:#0a0a0a;
+        }
+
+        .dist-hero-bg{
+          position:relative;
+          inset:auto;
+          width:100%;
+          height:auto;
+          max-height:none;
+          object-fit:contain;
+          object-position:center;
+          display:block;
+          background:#0a0a0a;
+        }
+
+        .dist-hero-overlay{
+          display:none;
+        }
+
+        .dist-hero-content{
+          padding:28px 20px 32px;
+          max-width:none;
+        }
+
         .dist-hero-content h1{ font-size:2.2rem; }
-        .dist-hero{ min-height:300px; }
+
+        .dist-hero-stats{
+          flex-direction:column;
+          align-items:flex-start;
+        }
+
+        .dist-info-visual img{
+          max-height:none;
+        }
       }
       `}</style>
 
