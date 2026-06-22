@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { sanitizePhoneInput, validatePhone } from '../utils/formValidation';
 
 // NOTE: This component is deprecated.
 // New professional flow uses AuthModal + separate "Sign in required" card in Checkout.
@@ -69,6 +70,12 @@ function PaymentAuth({ prefill = {}, onAuthenticated }) {
 
     if (registerData.password !== registerData.confirmPassword) {
       setError('Passwords do not match');
+      return;
+    }
+
+    const phoneError = validatePhone(registerData.phone);
+    if (phoneError) {
+      setError(phoneError);
       return;
     }
 
@@ -167,7 +174,11 @@ function PaymentAuth({ prefill = {}, onAuthenticated }) {
             <input
               type="tel"
               value={registerData.phone}
-              onChange={(e) => setRegisterData({ ...registerData, phone: e.target.value })}
+              onChange={(e) => setRegisterData({ ...registerData, phone: sanitizePhoneInput(e.target.value) })}
+              required
+              inputMode="numeric"
+              maxLength={10}
+              pattern="[6-9][0-9]{9}"
             />
           </div>
           <div className="form-group">

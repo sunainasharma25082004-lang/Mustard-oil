@@ -64,6 +64,11 @@ export const shippingApi = {
     apiFetch(`/api/shipping/serviceability?pincode=${encodeURIComponent(pincode)}&quantity=${quantity || 1}`),
 };
 
+export const locationApi = {
+  byPincode: (pincode) => apiFetch(`/api/location/pincode/${encodeURIComponent(pincode)}`),
+  byCity: (city) => apiFetch(`/api/location/city/${encodeURIComponent(city)}`),
+};
+
 export const paymentApi = {
   createRazorpayOrder: (body) =>
     apiFetch('/api/payments/razorpay/create', { method: 'POST', body: JSON.stringify(body) }),

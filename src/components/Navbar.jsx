@@ -84,16 +84,27 @@ function Navbar() {
               <span className="brand-logo">KARYOR</span>
             </Link>
 
-            <button
-              className={`site-nav-toggle ${menuOpen ? 'is-open' : ''}`}
-              type="button"
-              onClick={toggleMenu}
-              aria-controls="navMenu"
-              aria-expanded={menuOpen}
-              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            >
-              <i className={`bi ${menuOpen ? 'bi-x-lg' : 'bi-list'} site-nav-toggle-icon`} aria-hidden="true" />
-            </button>
+            <div className="site-navbar-top-actions">
+              {!user && (
+                <NavLink
+                  to="/products"
+                  className="site-nav-mobile-shop"
+                  onClick={closeMenu}
+                >
+                  Shop Now
+                </NavLink>
+              )}
+              <button
+                className={`site-nav-toggle ${menuOpen ? 'is-open' : ''}`}
+                type="button"
+                onClick={toggleMenu}
+                aria-controls="navMenu"
+                aria-expanded={menuOpen}
+                aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              >
+                <i className={`bi ${menuOpen ? 'bi-x-lg' : 'bi-list'} site-nav-toggle-icon`} aria-hidden="true" />
+              </button>
+            </div>
           </div>
 
           <div
@@ -168,7 +179,7 @@ function Navbar() {
                   </li>
                 </>
               ) : (
-                <li className="nav-item">
+                <li className="nav-item site-nav-shop-menu-item">
                   <NavLink
                     className={({ isActive }) =>
                       `nav-link custom-link site-nav-link${isActive ? ' active' : ''}`

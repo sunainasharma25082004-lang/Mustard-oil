@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { useLocationFields } from "../hooks/useLocationFields";
+import {
+  hasValidationErrors,
+  sanitizePhoneInput,
+  validateCheckoutForm,
+} from "../utils/formValidation";
 import {
   paymentApi,
   paymentConfigApi,
@@ -50,6 +56,17 @@ function Checkout() {
     label: "Razorpay",
   });
   const [pincodeStatus, setPincodeStatus] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const {
+    pincodeOptions,
+    locationHint,
+    lookingUp,
+    handlePincodeChange,
+    handleCityChange,
+    handleCityBlur,
+    selectPincodeOption,
+  } = useLocationFields({ formData, setFormData });
 
   useEffect(() => {
     settingsApi
@@ -75,13 +92,31 @@ function Checkout() {
     }
   }, [user]);
 
+  const clearFieldError = (name) => {
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    if (name === "pincode") {
+
+    if (name === "phone") {
+      setFormData({ ...formData, phone: sanitizePhoneInput(value) });
+    } else if (name === "pincode") {
+      handlePincodeChange(value);
       setPincodeStatus(null);
       clearDeliveryQuote();
+    } else if (name === "city") {
+      handleCityChange(value);
+    } else {
+      setFormData({ ...formData, [name]: value });
     }
+
+    clearFieldError(name);
   };
 
   const checkPincodeDelivery = async (pincode) => {
@@ -137,11 +172,16 @@ function Checkout() {
       return;
     }
 
-    const pincode = formData.pincode.trim();
-    if (!/^\d{6}$/.test(pincode)) {
-      setError("Enter a valid 6-digit pincode to calculate delivery charges.");
+    const errors = validateCheckoutForm(formData);
+    if (hasValidationErrors(errors)) {
+      setFieldErrors(errors);
+      setError("Please fix the highlighted fields before continuing.");
       return;
     }
+
+    setFieldErrors({});
+
+    const pincode = formData.pincode.trim();
 
     let quote = pincodeStatus;
     if (!quote) {
@@ -682,25 +722,42 @@ function Checkout() {
                 <h2 className="checkout-title">Shipping Details</h2>
 
                 <div className="form-group">
-                  <label>Full Name</label>
+                  <label>Full Name *</label>
                   <input
                     type="text"
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleChange}
                     required
+                    minLength={2}
+                    autoComplete="name"
                   />
+                  {fieldErrors.fullName && (
+                    <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: 6 }}>
+                      {fieldErrors.fullName}
+                    </p>
+                  )}
                 </div>
 
                 <div className="form-group">
-                  <label>Phone Number</label>
+                  <label>Phone Number *</label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
                     required
+                    inputMode="numeric"
+                    pattern="[6-9][0-9]{9}"
+                    maxLength={10}
+                    placeholder="10-digit mobile number"
+                    autoComplete="tel"
                   />
+                  {fieldErrors.phone && (
+                    <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: 6 }}>
+                      {fieldErrors.phone}
+                    </p>
+                  )}
                 </div>
 
                 <div className="form-group">
@@ -710,33 +767,54 @@ function Checkout() {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    autoComplete="email"
                   />
+                  {fieldErrors.email && (
+                    <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: 6 }}>
+                      {fieldErrors.email}
+                    </p>
+                  )}
                 </div>
 
                 <div className="form-group">
-                  <label>Address</label>
+                  <label>Address *</label>
                   <textarea
                     rows="4"
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
                     required
+                    minLength={10}
+                    autoComplete="street-address"
                   />
+                  {fieldErrors.address && (
+                    <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: 6 }}>
+                      {fieldErrors.address}
+                    </p>
+                  )}
                 </div>
 
                 <div className="form-row">
                   <div className="form-group">
-                    <label>City</label>
+                    <label>City *</label>
                     <input
                       type="text"
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
+                      onBlur={handleCityBlur}
                       required
+                      minLength={2}
+                      autoComplete="address-level2"
                     />
+                    {fieldErrors.city && (
+                      <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: 6 }}>
+                        {fieldErrors.city}
+                      </p>
+                    )}
                   </div>
                   <div className="form-group">
-                    <label>Pincode</label>
+                    <label>Pincode *</label>
                     <input
                       type="text"
                       name="pincode"
@@ -746,8 +824,50 @@ function Checkout() {
                         checkPincodeDelivery(e.target.value.trim())
                       }
                       required
+                      inputMode="numeric"
+                      pattern="\d{6}"
                       maxLength={6}
+                      placeholder="6-digit pincode"
+                      autoComplete="postal-code"
                     />
+                    {fieldErrors.pincode && (
+                      <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: 6 }}>
+                        {fieldErrors.pincode}
+                      </p>
+                    )}
+                    {lookingUp && (
+                      <p style={{ marginTop: 6, fontSize: "0.78rem", color: "#aaa" }}>
+                        Looking up location...
+                      </p>
+                    )}
+                    {locationHint && !fieldErrors.pincode && (
+                      <p style={{ marginTop: 6, fontSize: "0.78rem", color: "#9ca3af" }}>
+                        {locationHint}
+                      </p>
+                    )}
+                    {pincodeOptions.length > 0 && (
+                      <div style={{ marginTop: 8, display: "grid", gap: 6 }}>
+                        {pincodeOptions.map((option) => (
+                          <button
+                            key={`${option.pincode}-${option.area}`}
+                            type="button"
+                            onClick={() => selectPincodeOption(option)}
+                            style={{
+                              textAlign: "left",
+                              background: "#1c1c1c",
+                              border: "1px solid rgba(212,175,55,.2)",
+                              color: "#ddd",
+                              borderRadius: 10,
+                              padding: "8px 10px",
+                              fontSize: "0.8rem",
+                              cursor: "pointer",
+                            }}
+                          >
+                            {option.city} · {option.pincode} · {option.state}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     {pincodeStatus && (
                       <p
                         style={{

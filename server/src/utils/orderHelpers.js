@@ -110,9 +110,30 @@ const buildOrderFromItems = async (items, customer) => {
   return { orderItems, subtotal, deliveryCharge, totalAmount, deliveryQuote: quote };
 };
 
+const {
+  isValidIndianPhone,
+  isValidPincode,
+  isValidName,
+} = require('./formValidation');
+
 const validateCustomer = (customer) => {
   if (!customer?.fullName || !customer?.phone || !customer?.address || !customer?.city || !customer?.pincode) {
     throw new Error('Complete shipping details are required');
+  }
+  if (!isValidName(customer.fullName)) {
+    throw new Error('Enter a valid full name');
+  }
+  if (!isValidIndianPhone(customer.phone)) {
+    throw new Error('Enter a valid 10-digit Indian mobile number');
+  }
+  if (!isValidPincode(customer.pincode)) {
+    throw new Error('Enter a valid 6-digit pincode');
+  }
+  if (String(customer.address).trim().length < 10) {
+    throw new Error('Enter a complete delivery address');
+  }
+  if (!String(customer.city).trim()) {
+    throw new Error('City is required');
   }
 };
 

@@ -2,6 +2,13 @@ import { useEffect, useState } from 'react';
 import { distributorApi } from '../utils/api';
 import { useSiteImages } from '../context/SiteImagesContext';
 import distributorHeroImage from '../assets/distributor-hero.jpg';
+import { useLocationFields } from '../hooks/useLocationFields';
+import {
+  hasValidationErrors,
+  sanitizePhoneInput,
+  validateDistributorForm,
+  validatePhone,
+} from '../utils/formValidation';
 
 function Distributor() {
   const {
@@ -22,10 +29,22 @@ function Distributor() {
     email: '',
     city: '',
     state: '',
+    pincode: '',
     business: '',
     experience: '',
     investment: '',
   });
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const {
+    pincodeOptions,
+    locationHint,
+    lookingUp,
+    handlePincodeChange,
+    handleCityChange,
+    handleCityBlur,
+    selectPincodeOption,
+  } = useLocationFields({ formData, setFormData });
 
   const checkStatus = async (phone) => {
     if (!phone?.trim()) return;
@@ -51,17 +70,44 @@ function Distributor() {
     }
   }, []);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
+  const clearFieldError = (name) => {
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
     });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'phone') {
+      setFormData({ ...formData, phone: sanitizePhoneInput(value) });
+    } else if (name === 'pincode') {
+      handlePincodeChange(value);
+    } else if (name === 'city') {
+      handleCityChange(value);
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+
+    clearFieldError(name);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+
+    const errors = validateDistributorForm(formData);
+    if (hasValidationErrors(errors)) {
+      setFieldErrors(errors);
+      setError('Please fill all required fields correctly.');
+      return;
+    }
+
+    setFieldErrors({});
     setLoading(true);
 
     try {
@@ -77,6 +123,7 @@ function Distributor() {
         email: '',
         city: '',
         state: '',
+        pincode: '',
         business: '',
         experience: '',
         investment: '',
@@ -92,8 +139,23 @@ function Distributor() {
 
   const handleStatusCheck = (e) => {
     e.preventDefault();
+    const phoneError = validatePhone(statusPhone);
+    if (phoneError) {
+      setStatusError(phoneError);
+      return;
+    }
     checkStatus(statusPhone);
   };
+
+  const handleStatusPhoneChange = (e) => {
+    setStatusPhone(sanitizePhoneInput(e.target.value));
+    setStatusError('');
+  };
+
+  const renderFieldError = (name) =>
+    fieldErrors[name] ? (
+      <p style={{ color: '#ff9b9b', fontSize: '0.78rem', margin: '-8px 0 12px' }}>{fieldErrors[name]}</p>
+    ) : null;
 
   return (
     <>
@@ -427,8 +489,41 @@ function Distributor() {
           align-items:flex-start;
         }
 
+        .dist-info{
+          padding:0;
+          overflow:hidden;
+        }
+
+        .dist-info-visual{
+          margin:0;
+          border-radius:0;
+          border-left:none;
+          border-right:none;
+          border-top:none;
+          margin-bottom:0;
+        }
+
         .dist-info-visual img{
+          width:100%;
+          height:auto;
           max-height:none;
+          object-fit:contain;
+          object-position:center;
+          display:block;
+          background:#0a0a0a;
+        }
+
+        .dist-info h2{
+          padding:28px 22px 0;
+          margin-bottom:22px;
+        }
+
+        .dist-info .feature{
+          padding:0 22px;
+        }
+
+        .dist-info .feature:last-of-type{
+          padding-bottom:28px;
         }
       }
       `}</style>
@@ -494,22 +589,58 @@ function Distributor() {
               {success && <div className="dist-alert dist-alert-success">{success}</div>}
 
               <div className="form-grid">
-                <input type="text" name="name" placeholder="Full Name" className="dist-input" value={formData.name} onChange={handleChange} required />
-                <input type="text" name="phone" placeholder="Phone Number" className="dist-input" value={formData.phone} onChange={handleChange} required />
+                <input type="text" name="name" placeholder="Full Name *" className="dist-input" value={formData.name} onChange={handleChange} required minLength={2} />
+                <input type="tel" name="phone" placeholder="Phone Number *" className="dist-input" value={formData.phone} onChange={handleChange} required inputMode="numeric" maxLength={10} pattern="[6-9][0-9]{9}" />
               </div>
+              {renderFieldError('name')}
+              {renderFieldError('phone')}
 
               <div className="form-grid">
-                <input type="email" name="email" placeholder="Email Address" className="dist-input" value={formData.email} onChange={handleChange} />
-                <input type="text" name="business" placeholder="Business Name" className="dist-input" value={formData.business} onChange={handleChange} />
+                <input type="email" name="email" placeholder="Email Address *" className="dist-input" value={formData.email} onChange={handleChange} required />
+                <input type="text" name="business" placeholder="Business Name *" className="dist-input" value={formData.business} onChange={handleChange} required />
               </div>
+              {renderFieldError('email')}
+              {renderFieldError('business')}
 
               <div className="form-grid">
-                <input type="text" name="city" placeholder="City" className="dist-input" value={formData.city} onChange={handleChange} />
-                <input type="text" name="state" placeholder="State" className="dist-input" value={formData.state} onChange={handleChange} />
+                <input type="text" name="city" placeholder="City *" className="dist-input" value={formData.city} onChange={handleChange} onBlur={handleCityBlur} required />
+                <input type="text" name="pincode" placeholder="Pincode" className="dist-input" value={formData.pincode} onChange={handleChange} inputMode="numeric" maxLength={6} pattern="\d{6}" />
               </div>
+              {renderFieldError('city')}
+              {renderFieldError('pincode')}
+              {lookingUp && <p style={{ color: '#999', fontSize: '0.8rem', margin: '-4px 0 10px' }}>Looking up location...</p>}
+              {locationHint && <p style={{ color: '#aaa', fontSize: '0.8rem', margin: '-4px 0 10px' }}>{locationHint}</p>}
+              {pincodeOptions.length > 0 && (
+                <div style={{ display: 'grid', gap: 6, marginBottom: 12 }}>
+                  {pincodeOptions.map((option) => (
+                    <button
+                      key={`${option.pincode}-${option.area}`}
+                      type="button"
+                      onClick={() => selectPincodeOption(option)}
+                      style={{
+                        textAlign: 'left',
+                        background: '#1c1c1c',
+                        border: '1px solid rgba(212,175,55,.2)',
+                        color: '#ddd',
+                        borderRadius: 10,
+                        padding: '8px 10px',
+                        fontSize: '0.8rem',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {option.city} · {option.pincode} · {option.state}
+                    </button>
+                  ))}
+                </div>
+              )}
 
-              <textarea rows="4" name="experience" placeholder="Business Experience" className="dist-textarea" value={formData.experience} onChange={handleChange} />
-              <textarea rows="4" name="investment" placeholder="Investment Capacity" className="dist-textarea" value={formData.investment} onChange={handleChange} />
+              <input type="text" name="state" placeholder="State *" className="dist-input" value={formData.state} onChange={handleChange} required />
+              {renderFieldError('state')}
+
+              <textarea rows="4" name="experience" placeholder="Business Experience *" className="dist-textarea" value={formData.experience} onChange={handleChange} required minLength={10} />
+              {renderFieldError('experience')}
+              <textarea rows="4" name="investment" placeholder="Investment Capacity *" className="dist-textarea" value={formData.investment} onChange={handleChange} required minLength={3} />
+              {renderFieldError('investment')}
 
               <button type="submit" className="submit-btn" disabled={loading}>
                 {loading ? 'Submitting...' : 'Apply For Distributorship'}
@@ -534,8 +665,11 @@ function Distributor() {
                 className="dist-input"
                 style={{ flex: 1, minWidth: 200, marginBottom: 0 }}
                 value={statusPhone}
-                onChange={(e) => setStatusPhone(e.target.value)}
+                onChange={handleStatusPhoneChange}
                 required
+                inputMode="numeric"
+                maxLength={10}
+                pattern="[6-9][0-9]{9}"
               />
               <button type="submit" className="status-btn" style={{ width: 'auto', minWidth: 160, padding: '16px 28px' }} disabled={statusLoading}>
                 {statusLoading ? 'Checking...' : 'Check Status'}

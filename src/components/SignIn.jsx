@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { sanitizePhoneInput, validatePhone } from '../utils/formValidation';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import GoogleSignInButton from './GoogleSignInButton';
@@ -57,6 +58,12 @@ function SignIn() {
 
     if (registerData.password !== registerData.confirmPassword) {
       setError('Passwords do not match');
+      return;
+    }
+
+    const phoneError = validatePhone(registerData.phone);
+    if (phoneError) {
+      setError(phoneError);
       return;
     }
 
@@ -324,10 +331,14 @@ function SignIn() {
 
               <input
                 type="tel"
-                placeholder="Phone Number"
+                placeholder="Phone Number *"
                 className="auth-input"
                 value={registerData.phone}
-                onChange={(e) => setRegisterData({ ...registerData, phone: e.target.value })}
+                onChange={(e) => setRegisterData({ ...registerData, phone: sanitizePhoneInput(e.target.value) })}
+                required
+                inputMode="numeric"
+                maxLength={10}
+                pattern="[6-9][0-9]{9}"
               />
 
               <input

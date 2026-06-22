@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { sanitizePhoneInput, validatePhone } from '../utils/formValidation';
 import { useAuth } from '../context/AuthContext';
 import GoogleSignInButton from './GoogleSignInButton';
 import { useGoogleAuth } from '../context/GoogleAuthContext';
@@ -56,6 +57,12 @@ function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
     }
     if (registerData.password.length < 6) {
       setError('Password must be at least 6 characters');
+      return;
+    }
+
+    const phoneError = validatePhone(registerData.phone);
+    if (phoneError) {
+      setError(phoneError);
       return;
     }
 
@@ -309,8 +316,12 @@ function AuthModal({ isOpen, onClose, title = 'Sign in to continue' }) {
                 <input
                   type="tel"
                   value={registerData.phone}
-                  onChange={(e) => setRegisterData({ ...registerData, phone: e.target.value })}
+                  onChange={(e) => setRegisterData({ ...registerData, phone: sanitizePhoneInput(e.target.value) })}
                   required
+                  inputMode="numeric"
+                  maxLength={10}
+                  pattern="[6-9][0-9]{9}"
+                  placeholder="10-digit mobile"
                   style={{ width: '100%', padding: '12px 14px', borderRadius: '11px', border: '1px solid rgba(212,175,55,.2)', background: '#1d1d1d', color: 'white', fontSize: '0.97rem' }}
                 />
               </div>

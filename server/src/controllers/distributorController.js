@@ -1,4 +1,10 @@
 const Distributor = require('../models/Distributor');
+const {
+  isValidIndianPhone,
+  isValidEmail,
+  isValidName,
+  normalizePhone,
+} = require('../utils/formValidation');
 
 const buildApprovalMessage = (name) =>
   `Congratulations ${name}! You have been added as an authorized KARYOR Mustard Oil distributor. Welcome to the Karyor family!`;
@@ -13,14 +19,29 @@ const createDistributor = async (req, res, next) => {
   try {
     const { name, phone, email, city, state, business, experience, investment } = req.body;
 
-    if (!name || !phone) {
+    if (!name || !phone || !email || !city || !state || !business || !experience || !investment) {
       return res.status(400).json({
         success: false,
-        message: 'Name and phone are required',
+        message: 'All application fields are required',
       });
     }
 
-    const normalizedPhone = String(phone).replace(/\D/g, '');
+    if (!isValidName(name)) {
+      return res.status(400).json({ success: false, message: 'Enter a valid full name' });
+    }
+
+    if (!isValidIndianPhone(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Enter a valid 10-digit Indian mobile number',
+      });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ success: false, message: 'Enter a valid email address' });
+    }
+
+    const normalizedPhone = normalizePhone(phone);
 
     const last10 = normalizedPhone.slice(-10);
     const existing = await Distributor.findOne({
@@ -63,17 +84,14 @@ const createDistributor = async (req, res, next) => {
 
 const getDistributorStatus = async (req, res, next) => {
   try {
-    const rawPhone = req.params.phone || '';
-    const digits = rawPhone.replace(/\D/g, '');
+    const last10 = normalizePhone(req.params.phone || '');
 
-    if (digits.length < 10) {
+    if (!isValidIndianPhone(last10)) {
       return res.status(400).json({
         success: false,
-        message: 'Valid phone number is required',
+        message: 'Enter a valid 10-digit Indian mobile number',
       });
     }
-
-    const last10 = digits.slice(-10);
     const application = await Distributor.findOne({
       phone: { $regex: `${last10}$` },
     }).sort({ createdAt: -1 });

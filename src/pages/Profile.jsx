@@ -2,6 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../utils/api';
+import { useLocationFields } from '../hooks/useLocationFields';
+import {
+  isValidName,
+  sanitizePhoneInput,
+  validatePhone,
+  validatePincode,
+} from '../utils/formValidation';
 
 function Profile() {
   const navigate = useNavigate();
@@ -25,6 +32,17 @@ function Profile() {
   const [profileError, setProfileError] = useState('');
   const [passwordMsg, setPasswordMsg] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const {
+    pincodeOptions,
+    locationHint,
+    lookingUp,
+    handlePincodeChange,
+    handleCityChange,
+    handleCityBlur,
+    selectPincodeOption,
+  } = useLocationFields({ formData: profileForm, setFormData: setProfileForm });
 
   useEffect(() => {
     if (authLoading) return;
@@ -43,14 +61,45 @@ function Profile() {
   }, [user, authLoading, navigate]);
 
   const handleProfileChange = (e) => {
-    setProfileForm({ ...profileForm, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === 'phone') {
+      setProfileForm({ ...profileForm, phone: sanitizePhoneInput(value) });
+    } else if (name === 'pincode') {
+      handlePincodeChange(value);
+    } else if (name === 'city') {
+      handleCityChange(value);
+    } else {
+      setProfileForm({ ...profileForm, [name]: value });
+    }
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
   };
 
   const handleProfileSave = async (e) => {
     e.preventDefault();
-    setProfileLoading(true);
     setProfileError('');
     setProfileMsg('');
+
+    const errors = {};
+    if (!isValidName(profileForm.name)) errors.name = 'Enter a valid name';
+    const phoneError = validatePhone(profileForm.phone, { required: false });
+    if (profileForm.phone?.trim() && phoneError) errors.phone = phoneError;
+    const pincodeError = validatePincode(profileForm.pincode, { required: false });
+    if (profileForm.pincode?.trim() && pincodeError) errors.pincode = pincodeError;
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setProfileError('Please fix the highlighted fields.');
+      return;
+    }
+
+    setFieldErrors({});
+    setProfileLoading(true);
     try {
       await updateProfile(profileForm);
       setProfileMsg('Profile updated successfully');
@@ -203,11 +252,30 @@ function Profile() {
               </div>
               <div className="profile-field">
                 <label>Phone</label>
-                <input type="tel" name="phone" value={profileForm.phone} onChange={handleProfileChange} />
+                <input
+                  type="tel"
+                  name="phone"
+                  value={profileForm.phone}
+                  onChange={handleProfileChange}
+                  inputMode="numeric"
+                  maxLength={10}
+                  pattern="[6-9][0-9]{9}"
+                  placeholder="10-digit mobile"
+                />
+                {fieldErrors.phone && <p style={{ color: '#f87171', fontSize: '0.78rem', marginTop: 6 }}>{fieldErrors.phone}</p>}
               </div>
               <div className="profile-field">
                 <label>Pincode</label>
-                <input type="text" name="pincode" value={profileForm.pincode} onChange={handleProfileChange} />
+                <input
+                  type="text"
+                  name="pincode"
+                  value={profileForm.pincode}
+                  onChange={handleProfileChange}
+                  inputMode="numeric"
+                  maxLength={6}
+                  pattern="\d{6}"
+                />
+                {fieldErrors.pincode && <p style={{ color: '#f87171', fontSize: '0.78rem', marginTop: 6 }}>{fieldErrors.pincode}</p>}
               </div>
             </div>
             <div className="profile-field">
@@ -216,7 +284,32 @@ function Profile() {
             </div>
             <div className="profile-field">
               <label>City</label>
-              <input type="text" name="city" value={profileForm.city} onChange={handleProfileChange} />
+              <input type="text" name="city" value={profileForm.city} onChange={handleProfileChange} onBlur={handleCityBlur} />
+              {lookingUp && <p style={{ color: '#888', fontSize: '0.78rem', marginTop: 6 }}>Looking up location...</p>}
+              {locationHint && <p style={{ color: '#888', fontSize: '0.78rem', marginTop: 6 }}>{locationHint}</p>}
+              {pincodeOptions.length > 0 && (
+                <div style={{ display: 'grid', gap: 6, marginTop: 8 }}>
+                  {pincodeOptions.map((option) => (
+                    <button
+                      key={`${option.pincode}-${option.area}`}
+                      type="button"
+                      onClick={() => selectPincodeOption(option)}
+                      style={{
+                        textAlign: 'left',
+                        background: '#1c1c1c',
+                        border: '1px solid rgba(212,175,55,.2)',
+                        color: '#ddd',
+                        borderRadius: 10,
+                        padding: '8px 10px',
+                        fontSize: '0.8rem',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {option.city} · {option.pincode}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <button type="submit" className="profile-btn" disabled={profileLoading}>
               {profileLoading ? 'Saving...' : 'Save Profile'}

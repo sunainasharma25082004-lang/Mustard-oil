@@ -173,6 +173,7 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/shipping', shippingRoutes);
+app.use('/api/location', require('./routes/locationRoutes'));
 
 app.use(notFound);
 app.use(errorHandler);

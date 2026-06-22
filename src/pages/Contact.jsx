@@ -1,5 +1,10 @@
 import { useState } from "react";
 import { contactApi } from "../utils/api";
+import {
+  hasValidationErrors,
+  sanitizePhoneInput,
+  validateContactForm,
+} from "../utils/formValidation";
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -11,9 +16,19 @@ function Contact() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const nextValue = name === "phone" ? sanitizePhoneInput(value) : value;
+    setFormData({ ...formData, [name]: nextValue });
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+      });
+    }
   };
 
   const containsLink = (text) => {
@@ -33,6 +48,14 @@ function Contact() {
       return;
     }
 
+    const errors = validateContactForm(formData);
+    if (hasValidationErrors(errors)) {
+      setFieldErrors(errors);
+      setError("Please fill all required fields correctly.");
+      return;
+    }
+
+    setFieldErrors({});
     setLoading(true);
 
     try {
@@ -273,46 +296,72 @@ function Contact() {
                       <input
                         type="text"
                         name="name"
-                        placeholder="Full Name"
+                        placeholder="Full Name *"
                         className="lux-input"
                         value={formData.name}
                         onChange={handleChange}
                         required
+                        minLength={2}
                       />
+                      {fieldErrors.name && (
+                        <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: -10, marginBottom: 10 }}>
+                          {fieldErrors.name}
+                        </p>
+                      )}
                     </div>
 
                     <div className="col-md-6">
                       <input
                         type="email"
                         name="email"
-                        placeholder="Email Address"
+                        placeholder="Email Address *"
                         className="lux-input"
                         value={formData.email}
                         onChange={handleChange}
                         required
                       />
+                      {fieldErrors.email && (
+                        <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: -10, marginBottom: 10 }}>
+                          {fieldErrors.email}
+                        </p>
+                      )}
                     </div>
 
                   </div>
 
                   <input
-                    type="text"
+                    type="tel"
                     name="phone"
-                    placeholder="Phone Number"
+                    placeholder="Phone Number *"
                     className="lux-input"
                     value={formData.phone}
                     onChange={handleChange}
+                    required
+                    inputMode="numeric"
+                    maxLength={10}
+                    pattern="[6-9][0-9]{9}"
                   />
+                  {fieldErrors.phone && (
+                    <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: -10, marginBottom: 10 }}>
+                      {fieldErrors.phone}
+                    </p>
+                  )}
 
                   <textarea
                     rows="6"
                     name="message"
-                    placeholder="Write Your Message..."
+                    placeholder="Write Your Message *"
                     className="lux-input"
                     value={formData.message}
                     onChange={handleChange}
                     required
+                    minLength={10}
                   ></textarea>
+                  {fieldErrors.message && (
+                    <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: -10, marginBottom: 10 }}>
+                      {fieldErrors.message}
+                    </p>
+                  )}
                   <p style={{ fontSize: '0.8rem', color: '#888', margin: '-8px 0 14px 4px' }}>
                     No links or URLs allowed. We will get back to you soon.
                   </p>

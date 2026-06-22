@@ -25,7 +25,7 @@ function Hero() {
           </div>
         </div>
 
-        {/* Mobile — full banner image + Shop Now below bottle (like laptop) */}
+        {/* Mobile — banner only; Shop Now lives in navbar beside hamburger */}
         <div className="karyorHeroMobile">
           <div className="karyorHeroMobileMedia">
             <img
@@ -36,11 +36,6 @@ function Hero() {
               fetchPriority="high"
               decoding="async"
             />
-            <div className="karyorHeroMobileActions">
-              <Link to="/products" className="karyorHeroShopBtn">
-                Shop Now
-              </Link>
-            </div>
           </div>
         </div>
       </div>

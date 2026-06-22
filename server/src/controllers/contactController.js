@@ -1,13 +1,40 @@
 const Contact = require('../models/Contact');
+const {
+  isValidIndianPhone,
+  isValidEmail,
+  isValidName,
+} = require('../utils/formValidation');
 
 const createContact = async (req, res, next) => {
   try {
     const { name, email, phone, message } = req.body;
 
-    if (!name || !email || !message) {
+    if (!name || !email || !phone || !message) {
       return res.status(400).json({
         success: false,
-        message: 'Name, email and message are required',
+        message: 'Name, email, phone and message are required',
+      });
+    }
+
+    if (!isValidName(name)) {
+      return res.status(400).json({ success: false, message: 'Enter a valid name' });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ success: false, message: 'Enter a valid email address' });
+    }
+
+    if (!isValidIndianPhone(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Enter a valid 10-digit Indian mobile number',
+      });
+    }
+
+    if (String(message).trim().length < 10) {
+      return res.status(400).json({
+        success: false,
+        message: 'Message must be at least 10 characters',
       });
     }
 

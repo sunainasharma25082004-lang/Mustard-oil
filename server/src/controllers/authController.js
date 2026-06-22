@@ -1,4 +1,11 @@
 const User = require('../models/User');
+const {
+  isValidIndianPhone,
+  isValidPincode,
+  isValidEmail,
+  isValidName,
+  normalizePhone,
+} = require('../utils/formValidation');
 const generateToken = require('../utils/generateToken');
 const { getEffectivePermissions } = require('../utils/adminPermissions');
 const {
@@ -11,11 +18,30 @@ const register = async (req, res, next) => {
   try {
     const { name, email, phone, password, address, city, pincode } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !phone) {
       return res.status(400).json({
         success: false,
-        message: 'Name, email and password are required',
+        message: 'Name, email, phone and password are required',
       });
+    }
+
+    if (!isValidName(name)) {
+      return res.status(400).json({ success: false, message: 'Enter a valid name' });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ success: false, message: 'Enter a valid email address' });
+    }
+
+    if (!isValidIndianPhone(phone)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Enter a valid 10-digit Indian mobile number',
+      });
+    }
+
+    if (pincode?.trim() && !isValidPincode(pincode)) {
+      return res.status(400).json({ success: false, message: 'Enter a valid 6-digit pincode' });
     }
 
     if (password.length < 6) {
@@ -36,7 +62,7 @@ const register = async (req, res, next) => {
     const user = await User.create({
       name,
       email,
-      phone,
+      phone: normalizePhone(phone),
       password,
       address: address?.trim() || '',
       city: city?.trim() || '',
@@ -231,11 +257,29 @@ const updateProfile = async (req, res, next) => {
     const { name, phone, address, city, pincode } = req.body;
     const user = req.user;
 
-    if (name !== undefined) user.name = name.trim();
-    if (phone !== undefined) user.phone = phone.trim();
+    if (name !== undefined) {
+      if (!isValidName(name)) {
+        return res.status(400).json({ success: false, message: 'Enter a valid name' });
+      }
+      user.name = name.trim();
+    }
+    if (phone !== undefined) {
+      if (!isValidIndianPhone(phone)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Enter a valid 10-digit Indian mobile number',
+        });
+      }
+      user.phone = normalizePhone(phone);
+    }
     if (address !== undefined) user.address = address.trim();
     if (city !== undefined) user.city = city.trim();
-    if (pincode !== undefined) user.pincode = pincode.trim();
+    if (pincode !== undefined) {
+      if (pincode.trim() && !isValidPincode(pincode)) {
+        return res.status(400).json({ success: false, message: 'Enter a valid 6-digit pincode' });
+      }
+      user.pincode = pincode.trim();
+    }
 
     if (!user.name) {
       return res.status(400).json({ success: false, message: 'Name is required' });
