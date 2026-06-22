@@ -1,11 +1,11 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 const CartContext = createContext(null);
 
-export const DELIVERY_CHARGE = 0;
-
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
+  const [deliveryCharge, setDeliveryCharge] = useState(0);
+  const [deliveryQuote, setDeliveryQuote] = useState(null);
 
   const addToCart = (product, quantity = 1) => {
     setItems((prev) => {
@@ -40,14 +40,34 @@ export function CartProvider({ children }) {
     );
   };
 
-  const clearCart = () => setItems([]);
+  const clearCart = () => {
+    setItems([]);
+    setDeliveryCharge(0);
+    setDeliveryQuote(null);
+  };
+
+  const applyDeliveryQuote = useCallback((quote) => {
+    if (!quote) {
+      setDeliveryCharge(0);
+      setDeliveryQuote(null);
+      return;
+    }
+
+    setDeliveryQuote(quote);
+    setDeliveryCharge(quote.serviceable ? Number(quote.deliveryCharge) || 0 : 0);
+  }, []);
+
+  const clearDeliveryQuote = useCallback(() => {
+    setDeliveryCharge(0);
+    setDeliveryQuote(null);
+  }, []);
 
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [items]
   );
 
-  const total = subtotal + (items.length > 0 ? DELIVERY_CHARGE : 0);
+  const total = subtotal + (items.length > 0 ? deliveryCharge : 0);
 
   const value = {
     items,
@@ -56,6 +76,10 @@ export function CartProvider({ children }) {
     updateQuantity,
     clearCart,
     subtotal,
+    deliveryCharge,
+    deliveryQuote,
+    applyDeliveryQuote,
+    clearDeliveryQuote,
     total,
     itemCount: items.reduce((sum, item) => sum + item.quantity, 0),
   };

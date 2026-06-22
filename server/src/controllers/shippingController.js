@@ -1,9 +1,4 @@
-const { DELIVERY_CHARGE } = require('../utils/orderHelpers');
-const {
-  checkServiceability,
-  getPublicShippingConfig,
-  isShiprocketEnabled,
-} = require('../utils/shiprocketHelpers');
+const { DELIVERY_CHARGE, resolveDeliveryCharge } = require('../utils/orderHelpers');
 
 const getShippingConfig = async (req, res, next) => {
   try {
@@ -32,44 +27,17 @@ const getServiceability = async (req, res, next) => {
       });
     }
 
-    const enabled = await isShiprocketEnabled();
-    if (!enabled) {
-      return res.json({
-        success: true,
-        data: {
-          serviceable: true,
-          shiprocketEnabled: false,
-          deliveryCharge: DELIVERY_CHARGE,
-          message: 'Standard delivery available',
-        },
-      });
-    }
-
-    const config = await getPublicShippingConfig();
-    const unitWeight = Number(config.defaultWeight) || 0.5;
     const units = Math.max(1, Number(quantity) || 1);
-    const totalWeight = Math.max(0.1, Number((unitWeight * units).toFixed(2)));
-
-    const result = await checkServiceability({
-      deliveryPincode,
-      weight: weight ? Number(weight) : totalWeight,
-      cod: false,
+    const quote = await resolveDeliveryCharge({
+      pincode: deliveryPincode,
+      totalQuantity: units,
     });
-
-    const deliveryCharge = DELIVERY_CHARGE;
 
     res.json({
       success: true,
       data: {
-        shiprocketEnabled: true,
-        serviceable: result.serviceable,
-        deliveryCharge,
-        estimatedDeliveryDays: result.estimatedDeliveryDays,
-        courierName: result.recommendedCourier?.courier_name || null,
-        pickupPincode: result.pickupPincode,
-        message: result.serviceable
-          ? 'Delivery available to this pincode'
-          : 'Delivery not available to this pincode via Shiprocket',
+        ...quote,
+        pickupPincode: quote.pickupPincode || undefined,
       },
     });
   } catch (error) {

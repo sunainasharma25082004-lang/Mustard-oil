@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { DELIVERY_CHARGE, useCart } from '../context/CartContext';
+import { useCart } from '../context/CartContext';
 import { resolveImageUrl } from '../utils/imageUrl';
 
 function AddCart() {
@@ -279,17 +279,18 @@ function AddCart() {
                   <span>₹{subtotal}</span>
                 </div>
 
-                {DELIVERY_CHARGE > 0 && (
-                  <div className="summary-row">
-                    <span>Delivery</span>
-                    <span>₹{DELIVERY_CHARGE}</span>
-                  </div>
-                )}
+                <div className="summary-row">
+                  <span>Delivery</span>
+                  <span style={{ color: '#888', fontSize: '0.85rem' }}>At checkout</span>
+                </div>
 
                 <div className="summary-row summary-total">
                   <span>Total</span>
-                  <span>₹{total}</span>
+                  <span>₹{subtotal}</span>
                 </div>
+                <p style={{ textAlign: 'center', fontSize: '0.72rem', color: '#666', marginTop: 8 }}>
+                  Delivery charge added at checkout based on your pincode
+                </p>
 
                 <button
                   onClick={() => navigate('/checkout')}

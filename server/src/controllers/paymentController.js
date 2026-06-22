@@ -52,10 +52,14 @@ const createRazorpayOrder = async (req, res, next) => {
     const { customer, items } = req.body;
     validateCustomer(customer);
 
-    const { orderItems, subtotal, deliveryCharge, totalAmount } =
-      await buildOrderFromItems(items);
+    const { orderItems, subtotal, deliveryCharge, totalAmount, deliveryQuote } =
+      await buildOrderFromItems(items, customer);
 
-    const deliveryDays = await getDefaultDeliveryDays();
+    const shiprocketDays = Number(deliveryQuote?.estimatedDeliveryDays);
+    const deliveryDays =
+      shiprocketDays >= 1 && shiprocketDays <= 30
+        ? shiprocketDays
+        : await getDefaultDeliveryDays();
     const expectedDeliveryDate = calculateExpectedDeliveryDate(new Date(), deliveryDays);
 
     const order = await Order.create({
