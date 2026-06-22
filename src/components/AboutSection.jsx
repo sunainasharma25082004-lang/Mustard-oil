@@ -1,6 +1,5 @@
 import "../styles/main.css";
 import { HOME_ASSETS } from '../utils/homeAssets';
-import ProcessKitchenVisual from './ProcessKitchenVisual';
 
 function AboutSection() {
   return (
@@ -105,21 +104,15 @@ function AboutSection() {
 
         <div className="process-container">
 
-          <div className="process-hero-layout">
-            <div className="process-hero-copy">
-              <span className="process-tag">
-                FARM TO KITCHEN
-              </span>
+          <span className="process-tag">
+            FARM TO KITCHEN
+          </span>
 
-              <h1>
-                From field to your kitchen.
-                <br/>
-                No shortcuts.
-              </h1>
-            </div>
-
-            <ProcessKitchenVisual />
-          </div>
+          <h1>
+            From field to your kitchen.
+            <br/>
+            No shortcuts.
+          </h1>
 
           <div className="process-list">
 

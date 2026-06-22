@@ -3652,6 +3652,107 @@ body{
 }
 
 /* =====================================
+   PRESSING METHOD (COLD + SINGLE)
+===================================== */
+
+.pressing-method-section {
+  background: #050505;
+  padding: 90px 0;
+  border-top: 1px solid rgba(201, 151, 62, 0.15);
+}
+
+.pressing-method-header h1 {
+  margin-bottom: 16px;
+}
+
+.pressing-method-grid {
+  margin-top: 52px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pressing-method-card {
+  background: #121212;
+  border: 1px solid rgba(201, 151, 62, 0.22);
+  border-radius: 24px;
+  overflow: hidden;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pressing-method-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(212, 175, 55, 0.45);
+  box-shadow: 0 18px 40px rgba(212, 175, 55, 0.1);
+}
+
+.pressing-method-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+}
+
+.pressing-method-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.45s ease;
+}
+
+.pressing-method-card:hover .pressing-method-media img {
+  transform: scale(1.04);
+}
+
+.pressing-method-tag {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  background: rgba(0, 0, 0, 0.72);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #f7d76a;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 7px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}
+
+.pressing-method-body {
+  padding: 22px 20px 24px;
+}
+
+.pressing-method-body h3 {
+  color: #f5d76e;
+  font-size: 1.35rem;
+  margin-bottom: 10px;
+  font-family: Georgia, serif;
+  font-weight: 400;
+}
+
+.pressing-method-body p {
+  color: #a8a8a8;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .pressing-method-section {
+    padding: 70px 0;
+  }
+
+  .pressing-method-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 36px;
+  }
+}
+
+/* =====================================
    HOME KITCHEN EXPERIENCE
 ===================================== */
 

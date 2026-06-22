@@ -4,6 +4,7 @@ import KitchenExperienceSection from '../components/KitchenExperienceSection';
 import ProductsSection from '../components/ProductsSection';
 import AboutSection from '../components/AboutSection';
 import QualityHighlights from '../components/QualityHighlights';
+import PressingMethodSection from '../components/PressingMethodSection';
 import CertificatesSection from '../components/CertificatesSection';
 import YouTubeSection from '../components/YouTubeSection';
 import CustomerTestimonials from '../components/CustomerTestimonials';
@@ -50,6 +51,7 @@ function Home() {
       <Hero />
       <KitchenExperienceSection />
       <QualityHighlights />
+      <PressingMethodSection />
       <AboutSection />
       <ProductsSection products={bundle?.products} />
       <DeferredSection minHeight={280}>
