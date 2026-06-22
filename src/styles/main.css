@@ -3939,15 +3939,167 @@ body{
   object-fit: cover;
 }
 
-.process-hero-visual {
-  background: linear-gradient(180deg, #111, #0a0a0a);
-  padding: 24px;
+.process-kitchen-cinematic {
+  width: 100%;
 }
 
-.process-hero-visual img {
-  max-height: 360px;
-  object-fit: contain;
-  margin: 0 auto;
+.process-kitchen-frame {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 151, 62, 0.28);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.42);
+  aspect-ratio: 4 / 3;
+  background: #0a0a0a;
+}
+
+.process-kitchen-scene-wrap {
+  position: absolute;
+  inset: -8%;
+  overflow: hidden;
+}
+
+.process-kitchen-scene {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: center center;
+  animation: processKitchenPan 14s ease-in-out infinite alternate;
+}
+
+@keyframes processKitchenPan {
+  0% { transform: scale(1.02) translate3d(0, 0, 0); }
+  100% { transform: scale(1.1) translate3d(-2%, -1.5%, 0); }
+}
+
+.process-kitchen-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.45) 100%);
+  pointer-events: none;
+}
+
+.process-kitchen-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent 60%
+  );
+  background-size: 220% 100%;
+  animation: processKitchenShimmer 5s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes processKitchenShimmer {
+  0% { background-position: 120% 0; }
+  100% { background-position: -120% 0; }
+}
+
+.process-kitchen-bottle-overlay {
+  position: absolute;
+  top: 8%;
+  right: 7%;
+  width: min(34%, 150px);
+  z-index: 3;
+  transform: rotate(-6deg);
+  filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.55));
+  animation: processKitchenBottleTilt 4.5s ease-in-out infinite;
+}
+
+@keyframes processKitchenBottleTilt {
+  0%, 100% { transform: rotate(-6deg) translateY(0); }
+  50% { transform: rotate(-10deg) translateY(4px); }
+}
+
+.process-kitchen-bottle {
+  width: 100%;
+  display: block;
+}
+
+.process-kitchen-oil-stream {
+  position: absolute;
+  top: 34%;
+  right: 22%;
+  width: 3px;
+  height: 28%;
+  background: linear-gradient(180deg, rgba(247, 215, 106, 0.15), #d4af37 40%, #9a7209 100%);
+  border-radius: 999px;
+  z-index: 2;
+  transform: rotate(14deg);
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.65));
+  animation: processKitchenPour 2.4s ease-in-out infinite;
+}
+
+@keyframes processKitchenPour {
+  0%, 100% { opacity: 0.55; transform: rotate(14deg) scaleY(0.85); }
+  50% { opacity: 1; transform: rotate(14deg) scaleY(1); }
+}
+
+.process-kitchen-steam {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent 70%);
+  filter: blur(2px);
+  z-index: 2;
+  animation: processKitchenSteam 3.8s ease-in-out infinite;
+}
+
+.process-kitchen-steam-one {
+  left: 34%;
+  bottom: 36%;
+}
+
+.process-kitchen-steam-two {
+  left: 40%;
+  bottom: 32%;
+  animation-delay: 1.2s;
+}
+
+@keyframes processKitchenSteam {
+  0% { opacity: 0.2; transform: translateY(0) scale(0.8); }
+  50% { opacity: 0.55; transform: translateY(-14px) scale(1.05); }
+  100% { opacity: 0.15; transform: translateY(-24px) scale(1.15); }
+}
+
+.process-kitchen-ui {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 4;
+}
+
+.process-kitchen-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.68);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #f5f5f5;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.process-kitchen-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff5f5f;
+  box-shadow: 0 0 0 0 rgba(255, 95, 95, 0.65);
+  animation: processKitchenPulse 1.8s ease-out infinite;
+}
+
+@keyframes processKitchenPulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 95, 95, 0.65); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 95, 95, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 95, 95, 0); }
 }
 
 .process-hero-copy {
@@ -3968,10 +4120,6 @@ body{
   .process-hero-layout {
     grid-template-columns: 1fr;
     gap: 28px;
-  }
-
-  .home-gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
 
   .purity-intro-copy,
@@ -4000,8 +4148,9 @@ body{
     right: 4%;
   }
 
-  .home-gallery-grid {
-    grid-template-columns: 1fr;
+  .process-kitchen-bottle-overlay {
+    width: min(40%, 130px);
+    right: 5%;
   }
 }
 

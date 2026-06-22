@@ -1,5 +1,6 @@
 import "../styles/main.css";
 import { HOME_ASSETS } from '../utils/homeAssets';
+import ProcessKitchenVisual from './ProcessKitchenVisual';
 
 function AboutSection() {
   return (
@@ -117,14 +118,7 @@ function AboutSection() {
               </h1>
             </div>
 
-            <div className="process-hero-visual">
-              <img
-                src={HOME_ASSETS.bottle}
-                alt="Karyor labelled mustard oil bottle"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
+            <ProcessKitchenVisual />
           </div>
 
           <div className="process-list">
