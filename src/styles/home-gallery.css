@@ -16,8 +16,11 @@
 
 .home-gallery-grid img {
   width: 100%;
-  height: 220px;
-  object-fit: cover;
+  height: auto;
+  max-height: 240px;
+  object-fit: contain;
+  object-position: center;
+  background: #0a0a0a;
   border-radius: 16px;
   border: 1px solid rgba(212, 175, 55, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -40,6 +43,6 @@
   }
 
   .home-gallery-grid img {
-    height: 200px;
+    max-height: 220px;
   }
 }

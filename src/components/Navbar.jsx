@@ -119,7 +119,7 @@ function Navbar() {
               <li className="nav-item">
                 <NavLink
                   className={({ isActive }) =>
-                    `nav-link custom-link site-nav-link site-nav-cart${isActive ? ' active' : ''}`
+                    `nav-link custom-link site-nav-link${isActive ? ' active' : ''}`
                   }
                   to="/addcart"
                   onClick={closeMenu}
@@ -171,7 +171,7 @@ function Navbar() {
                 <li className="nav-item">
                   <NavLink
                     className={({ isActive }) =>
-                      `nav-link custom-link site-nav-link site-nav-cta${isActive ? ' active' : ''}`
+                      `nav-link custom-link site-nav-link${isActive ? ' active' : ''}`
                     }
                     to="/products"
                     onClick={closeMenu}

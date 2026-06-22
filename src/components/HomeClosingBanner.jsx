@@ -1,32 +1,39 @@
 import { Link } from 'react-router-dom';
+import { useSiteImages } from '../context/SiteImagesContext';
 import { HOME_ASSETS } from '../utils/homeAssets';
 import coldPressedImg from '../assets/coldpressed.jpg';
 import singlePressedImg from '../assets/single pressed.jpg';
 
-const COLLAGE_ITEMS = [
-  {
-    image: HOME_ASSETS.product1L,
-    label: '1 Litre Pack',
-    caption: 'Labelled Karyor bottle',
-  },
-  {
-    image: coldPressedImg,
-    label: 'Cold Pressed',
-    caption: 'Low heat extraction',
-  },
-  {
-    image: singlePressedImg,
-    label: 'Single Pressed',
-    caption: 'One press only',
-  },
-  {
-    image: HOME_ASSETS.product5L,
-    label: '5 Litre Family Pack',
-    caption: 'For everyday cooking',
-  },
-];
-
 function HomeClosingBanner() {
+  const { heroDesktop } = useSiteImages();
+
+  const collageItems = [
+    {
+      image: heroDesktop,
+      label: 'Karyor Mustard Oil',
+      caption: 'Same bottle as home hero',
+      className: 'home-collage-feature',
+    },
+    {
+      image: coldPressedImg,
+      label: 'Cold Pressed',
+      caption: 'Low heat extraction',
+      className: 'home-collage-tile-a',
+    },
+    {
+      image: singlePressedImg,
+      label: 'Single Pressed',
+      caption: 'One press only',
+      className: 'home-collage-tile-b',
+    },
+    {
+      image: HOME_ASSETS.product5L,
+      label: '5 Litre Family Pack',
+      caption: 'For everyday cooking',
+      className: 'home-collage-wide',
+    },
+  ];
+
   return (
     <section className="home-collage-section">
       <div className="home-collage-container">
@@ -41,8 +48,8 @@ function HomeClosingBanner() {
           </div>
 
           <div className="home-collage-grid">
-            {COLLAGE_ITEMS.map((item) => (
-              <figure className="home-collage-item" key={item.label}>
+            {collageItems.map((item) => (
+              <figure className={`home-collage-item ${item.className}`} key={item.label}>
                 <div className="home-collage-media">
                   <img src={item.image} alt={item.label} loading="lazy" decoding="async" />
                 </div>

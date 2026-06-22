@@ -228,23 +228,29 @@ function Distributor() {
         overflow:hidden;
         border:1px solid rgba(212,175,55,.15);
         background:#141414;
-        min-height:180px;
+        display:flex;
+        flex-direction:column;
       }
 
       .dist-showcase-card img{
         width:100%;
-        height:180px;
-        object-fit:cover;
+        height:auto;
+        max-height:200px;
+        object-fit:contain;
+        object-position:center;
         display:block;
+        padding:12px 12px 0;
+        background:#0a0a0a;
+        box-sizing:border-box;
         transition:transform .4s ease;
       }
 
-      .dist-showcase-card:hover img{ transform:scale(1.05); }
+      .dist-showcase-card:hover img{ transform:scale(1.03); }
 
       .dist-showcase-label{
-        position:absolute;
-        left:14px;
-        bottom:14px;
+        position:static;
+        margin:10px 14px 14px;
+        align-self:flex-start;
         background:rgba(0,0,0,.72);
         color:#f7d76a;
         padding:8px 14px;
@@ -279,9 +285,12 @@ function Distributor() {
 
       .dist-info-visual img{
         width:100%;
-        height:220px;
-        object-fit:cover;
+        height:auto;
+        max-height:280px;
+        object-fit:contain;
+        object-position:center;
         display:block;
+        background:#0a0a0a;
       }
 
       .dist-info-visual-badge{
