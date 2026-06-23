@@ -10,7 +10,7 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
 
 function ProductSkeletonGrid({ count = 2 }) {
   return (
-    <div className="row g-4 align-items-stretch">
+    <div className="row g-4 align-items-stretch justify-content-center">
       {Array.from({ length: count }).map((_, i) => (
         <div className="col-lg-3 col-md-6" key={i}>
           <div className="premium-card" style={{ opacity: 0.55, pointerEvents: 'none' }}>
@@ -118,7 +118,7 @@ function ProductsSection({ products: productsProp }) {
         {loading && products.length === 0 && !error && <ProductSkeletonGrid />}
 
         {products.length > 0 && (
-          <div className="row g-4 align-items-stretch">
+          <div className="row g-4 align-items-stretch justify-content-center">
             {products.map((product, index) => (
               <div className="col-lg-3 col-md-6" key={product._id || product.slug}>
                 <Link
