@@ -837,6 +837,77 @@ select.admin-input:focus {
   margin-bottom: 0;
 }
 
+.admin-image-gallery-hint {
+  color: #888;
+  font-size: 0.78rem;
+  margin: 6px 0 0;
+}
+
+.admin-image-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.admin-image-gallery-item {
+  position: relative;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  background: #111;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.admin-image-gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.admin-image-gallery-cover {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  background: #d4af37;
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  z-index: 1;
+}
+
+.admin-image-gallery-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  cursor: pointer;
+  line-height: 1;
+  z-index: 2;
+}
+
+.admin-image-dropzone-compact {
+  min-height: 140px;
+}
+
+.admin-image-url-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-image-url-row input {
+  flex: 1;
+}
+
 .admin-image-url-group input {
   width: 100%;
   padding: 10px 12px;

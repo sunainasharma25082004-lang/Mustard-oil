@@ -2,6 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const Product = require('../models/Product');
 const { cached, bust } = require('../utils/memoryCache');
+const {
+  MAX_PRODUCT_IMAGES,
+  normalizeImagesInput,
+  collectProductImagePaths,
+} = require('../utils/productImages');
 
 const PRODUCTS_CACHE_KEY = 'products:active';
 const PRODUCT_CACHE_TTL_MS = 2 * 60 * 1000;
@@ -20,6 +25,12 @@ const slugify = (text) =>
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
+
+const deleteUploadedImage = (imagePath) => {
+  if (!imagePath?.startsWith('/uploads/products/')) return;
+  const filePath = path.join(__dirname, '../..', imagePath);
+  fs.unlink(filePath, () => {});
+};
 
 const getProducts = async (req, res, next) => {
   try {
@@ -74,12 +85,20 @@ const getAllProductsAdmin = async (req, res, next) => {
 
 const createProduct = async (req, res, next) => {
   try {
-    const { name, description, price, originalPrice, image, badge, size, inStock, isActive } = req.body;
+    const { name, description, price, originalPrice, badge, size, inStock, isActive } = req.body;
+    const { images, image } = normalizeImagesInput(req.body);
 
     if (!name || price === undefined) {
       return res.status(400).json({
         success: false,
         message: 'Product name and price are required',
+      });
+    }
+
+    if (!images.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one product image is required',
       });
     }
 
@@ -91,7 +110,8 @@ const createProduct = async (req, res, next) => {
       description,
       price: Number(price),
       originalPrice: originalPrice ? Number(originalPrice) : undefined,
-      image: image || '',
+      image,
+      images,
       badge,
       size,
       inStock: inStock !== false,
@@ -121,7 +141,7 @@ const updateProduct = async (req, res, next) => {
       });
     }
 
-    const fields = ['name', 'description', 'price', 'originalPrice', 'image', 'badge', 'size', 'inStock', 'isActive'];
+    const fields = ['name', 'description', 'price', 'originalPrice', 'badge', 'size', 'inStock', 'isActive'];
 
     fields.forEach((field) => {
       if (req.body[field] !== undefined) {
@@ -132,6 +152,23 @@ const updateProduct = async (req, res, next) => {
         }
       }
     });
+
+    if (req.body.images !== undefined || req.body.image !== undefined) {
+      const { images, image } = normalizeImagesInput({
+        images: req.body.images,
+        image: req.body.image,
+      });
+
+      if (!images.length) {
+        return res.status(400).json({
+          success: false,
+          message: 'At least one product image is required',
+        });
+      }
+
+      product.images = images;
+      product.image = image;
+    }
 
     if (req.body.slug) {
       product.slug = req.body.slug;
@@ -163,10 +200,7 @@ const deleteProduct = async (req, res, next) => {
       });
     }
 
-    if (product.image?.startsWith('/uploads/products/')) {
-      const filePath = path.join(__dirname, '../..', product.image);
-      fs.unlink(filePath, () => {});
-    }
+    collectProductImagePaths(product).forEach(deleteUploadedImage);
 
     await Product.findByIdAndDelete(req.params.id);
     bustProductCache();
@@ -187,4 +221,5 @@ module.exports = {
   createProduct,
   updateProduct,
   deleteProduct,
+  MAX_PRODUCT_IMAGES,
 };

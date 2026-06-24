@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { productApi } from '../utils/api';
 import { resolveImageUrl } from '../utils/imageUrl';
+import { getProductPrimaryImage } from '../utils/productImages';
 import { useLiveData } from '../hooks/useLiveData';
 import { readCache, writeCache } from '../utils/storeCache';
 
@@ -102,7 +103,7 @@ function Products() {
                     <div className="product-image-box" style={{ position: 'relative' }}>
                       <div className="product-image-inner product-image-inner-lg">
                         <img
-                          src={resolveImageUrl(item.image)}
+                          src={resolveImageUrl(getProductPrimaryImage(item))}
                           alt={item.name}
                           className="img-fluid product-showcase-img"
                           loading="eager"

@@ -10,7 +10,7 @@ const DISTRIBUTOR_LINK = { to: '/distributor', label: 'Become a Distributor' };
 
 const PUBLIC_NAV_LINKS = [
   { to: '/', label: 'Our Oil', end: true },
-  { to: { pathname: '/', hash: '#why-pure' }, label: 'Why Pure' },
+  // { to: { pathname: '/', hash: '#why-pure' }, label: 'Why Pure' },
   { to: { pathname: '/', hash: '#how-we-press' }, label: 'How We Press' },
   { to: '/recipes', label: 'Recipes' },
   HOME_REVIEWS_LINK,

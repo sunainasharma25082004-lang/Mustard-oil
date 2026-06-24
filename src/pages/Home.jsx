@@ -1,10 +1,8 @@
 import { lazy, Suspense, useCallback, useState } from 'react';
 import Hero from '../components/Hero';
-import KitchenExperienceSection from '../components/KitchenExperienceSection';
 import ProductsSection from '../components/ProductsSection';
 import AboutSection from '../components/AboutSection';
 import QualityHighlights from '../components/QualityHighlights';
-import PressingMethodSection from '../components/PressingMethodSection';
 import HomeClosingBanner from '../components/HomeClosingBanner';
 import CertificatesSection from '../components/CertificatesSection';
 import YouTubeSection from '../components/YouTubeSection';
@@ -48,11 +46,9 @@ function Home() {
   return (
     <>
       <Hero />
-      <KitchenExperienceSection />
-      <QualityHighlights />
-      <PressingMethodSection />
-      <AboutSection />
       <ProductsSection products={bundle?.products} />
+      <QualityHighlights />
+      <AboutSection />
       <DeferredSection minHeight={280}>
         <CertificatesSection items={bundle?.certificates} />
       </DeferredSection>

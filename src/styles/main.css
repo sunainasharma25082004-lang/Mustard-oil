@@ -1755,6 +1755,89 @@ width:100%;
   text-align: center;
 }
 
+.product-gallery-main {
+  position: relative;
+}
+
+.product-gallery-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: rgba(0, 0, 0, 0.72);
+  color: #d4af37;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.product-gallery-nav:hover {
+  background: rgba(0, 0, 0, 0.9);
+  border-color: #d4af37;
+}
+
+.product-gallery-nav--prev {
+  left: 12px;
+}
+
+.product-gallery-nav--next {
+  right: 12px;
+}
+
+.product-gallery-counter {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.72);
+  color: #d4af37;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  z-index: 2;
+}
+
+.product-gallery-thumbs {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  justify-content: flex-start;
+}
+
+.product-gallery-thumb {
+  flex: 0 0 72px;
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  border: 2px solid rgba(212, 175, 55, 0.2);
+  background: #111;
+  padding: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-gallery-thumb.active {
+  border-color: #d4af37;
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.35);
+}
+
+.product-gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
 .product-detail-badge {
   position: absolute;
   top: 20px;
@@ -3096,7 +3179,7 @@ body{
 
     background:#000;
 
-    padding:120px 0;
+    padding:100px 0;
 
 
 }
@@ -3107,9 +3190,24 @@ body{
 .process-container{
 
 
-    max-width:900px;
+    max-width:1080px;
 
     margin:auto;
+
+    padding-inline:24px;
+
+
+}
+
+
+
+
+.process-intro{
+
+
+    max-width:720px;
+
+    margin-bottom:48px;
 
 
 }
@@ -3139,13 +3237,13 @@ body{
 
     font-family:Georgia,serif;
 
-    font-size:52px;
+    font-size:clamp(2rem,4vw,3.25rem);
 
     line-height:1.15;
 
     font-weight:400;
 
-    margin:35px 0 70px;
+    margin:18px 0 0;
 
 
 }
@@ -3157,7 +3255,11 @@ body{
 .process-list{
 
 
-    border-top:1px solid rgba(201,151,62,.25);
+    display:flex;
+
+    flex-direction:column;
+
+    gap:24px;
 
 
 }
@@ -3165,17 +3267,144 @@ body{
 
 
 
-.process-item{
+.process-card{
+
+
+    position:relative;
+
+    display:grid;
+
+    grid-template-columns:minmax(0,280px) minmax(0,1fr);
+
+    gap:28px;
+
+    align-items:center;
+
+    padding:24px;
+
+    border-radius:22px;
+
+    border:1px solid rgba(201,151,62,.2);
+
+    background:linear-gradient(145deg,#121212,#0a0a0a);
+
+
+}
+
+
+
+
+.process-card--reverse{
+
+
+    grid-template-columns:minmax(0,1fr) minmax(0,280px);
+
+
+}
+
+
+
+
+
+.process-card--reverse .process-card-media{
+
+
+    order:2;
+
+
+}
+
+
+
+
+.process-card--reverse .process-card-body{
+
+
+    order:1;
+
+
+}
+
+
+
+
+.process-card-index{
+
+
+    position:absolute;
+
+    top:18px;
+
+    right:18px;
+
+    color:rgba(201,151,62,.45);
+
+    font-size:.72rem;
+
+    font-weight:700;
+
+    letter-spacing:.14em;
+
+
+}
+
+
+
+
+.process-card-media{
+
+
+    width:100%;
+
+    height:210px;
+
+    border-radius:16px;
+
+    border:1px solid rgba(201,151,62,.18);
+
+    background:#0d0d0d;
+
+    overflow:hidden;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+
+}
+
+
+
+
+.process-card-media img{
+
+
+    width:100%;
+
+    height:100%;
+
+    display:block;
+
+    object-fit:contain;
+
+    object-position:center;
+
+
+}
+
+
+
+
+.process-card-body{
 
 
     display:flex;
 
-    gap:30px;
+    flex-direction:column;
 
-    padding:35px 0;
-
-
-    border-bottom:1px solid rgba(201,151,62,.25);
+    gap:12px;
 
 
 }
@@ -3183,13 +3412,29 @@ body{
 
 
 
+.process-card-head{
 
-.process-item span{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
 
 
-    min-width:45px;
+}
 
-    height:45px;
+
+
+
+.process-card-icon{
+
+
+    width:42px;
+
+    min-width:42px;
+
+    height:42px;
 
 
     background:#c9973e;
@@ -3205,10 +3450,10 @@ body{
     align-items:center;
 
 
-    border-radius:5px;
+    border-radius:10px;
 
 
-    font-size:20px;
+    font-size:18px;
 
 
 }
@@ -3216,7 +3461,7 @@ body{
 
 
 
-.process-item h3{
+.process-card h3{
 
 
     color:#d8aa4b;
@@ -3225,9 +3470,11 @@ body{
 
     font-weight:400;
 
-    font-size:22px;
+    font-size:1.35rem;
 
-    margin-bottom:12px;
+    margin:0;
+
+    line-height:1.2;
 
 
 }
@@ -3236,14 +3483,16 @@ body{
 
 
 
-.process-item p{
+.process-card p{
 
 
-    color:#aaa;
+    color:#b0b0b0;
 
-    line-height:1.8;
+    line-height:1.75;
 
-    font-size:14px;
+    font-size:.92rem;
+
+    margin:0;
 
 
 }
@@ -3267,7 +3516,7 @@ body{
 .purity-section,
 .process-section{
 
-    padding:90px 30px;
+    padding:72px 0;
 
 }
 
@@ -3299,6 +3548,75 @@ body{
 
     width:100%;
 
+    padding-inline:20px;
+
+}
+
+
+
+
+.process-intro{
+
+
+    margin-bottom:32px;
+
+
+}
+
+
+
+
+.process-card,
+.process-card--reverse{
+
+
+    grid-template-columns:1fr;
+
+    gap:18px;
+
+    padding:18px;
+
+
+}
+
+
+
+
+.process-card--reverse .process-card-media,
+.process-card--reverse .process-card-body{
+
+
+    order:unset;
+
+
+}
+
+
+
+
+.process-card-media{
+
+
+    height:200px;
+
+    max-width:none;
+
+    margin:0;
+
+
+}
+
+
+
+
+.process-card-index{
+
+
+    top:14px;
+
+    right:14px;
+
+
 }
 
 
@@ -3323,7 +3641,7 @@ body{
 .process-section{
 
 
-    padding:70px 20px;
+    padding:56px 0;
 
 
 }
@@ -3407,23 +3725,10 @@ body{
 
 
 
-.process-section h1{
+.process-intro{
 
 
-    margin-bottom:45px;
-
-
-}
-
-
-
-
-.process-item{
-
-
-    flex-direction:column;
-
-    gap:18px;
+    margin-bottom:24px;
 
 
 }
@@ -3431,11 +3736,71 @@ body{
 
 
 
+.process-container{
 
-.process-item span{
+
+    padding-inline:16px;
 
 
-    width:45px;
+}
+
+
+
+
+.process-list{
+
+
+    gap:16px;
+
+
+}
+
+
+
+
+.process-card{
+
+
+    padding:16px;
+
+    border-radius:18px;
+
+
+}
+
+
+
+
+.process-card-media{
+
+
+    height:190px;
+
+    border-radius:14px;
+
+
+}
+
+
+
+
+.process-card h3{
+
+
+    font-size:1.15rem;
+
+
+}
+
+
+
+
+.process-card p{
+
+
+    font-size:.88rem;
+
+    line-height:1.65;
 
 
 }
@@ -3444,24 +3809,13 @@ body{
 
 
 
-.process-item h3{
-
-
-    font-size:20px;
-
-
-}
 
 
 
 
-.process-item p{
 
 
-    font-size:13px;
 
-
-}
 
 
 

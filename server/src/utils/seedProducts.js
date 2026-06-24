@@ -9,6 +9,13 @@ const defaultProducts = [
     price: 350,
     originalPrice: 422,
     image: '/uploads/products/mustard1ml.jpg',
+    images: [
+      '/uploads/products/mustard1ml.jpg',
+      '/product-1l.jpg',
+      '/bottle.png',
+      '/mustard1ml.jpg',
+      '/product.png',
+    ],
     badge: 'Popular',
     size: '1 Litre',
   },
@@ -19,6 +26,13 @@ const defaultProducts = [
     price: 1700,
     originalPrice: 2110,
     image: '/uploads/products/mustard5ml.jpg',
+    images: [
+      '/uploads/products/mustard5ml.jpg',
+      '/product-5l.jpg',
+      '/bottle51.png',
+      '/mustard5ml.jpg',
+      '/product2.png',
+    ],
     badge: 'Premium',
     size: '5 Litre',
   },
@@ -64,6 +78,31 @@ const seedProducts = async () => {
       );
     }
     console.log('Product pricing updated: 1L MRP ₹422 → ₹350 | 5L MRP ₹2110 → ₹1700');
+  }
+
+  const IMAGES_MIGRATION_KEY = 'product-images-gallery-jun-2026';
+  const imagesMigrationFlag = await Settings.updateOne(
+    { key: IMAGES_MIGRATION_KEY },
+    { $setOnInsert: { key: IMAGES_MIGRATION_KEY, defaultDeliveryDays: 1 } },
+    { upsert: true }
+  );
+
+  if (imagesMigrationFlag.upsertedCount > 0) {
+    for (const product of defaultProducts) {
+      await Product.updateOne(
+        {
+          slug: product.slug,
+          $or: [{ images: { $exists: false } }, { images: { $size: 0 } }],
+        },
+        {
+          $set: {
+            images: product.images,
+            image: product.images[0],
+          },
+        }
+      );
+    }
+    console.log('Product gallery images seeded for default products');
   }
 };
 

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import '../styles/main.css';
 import { productApi } from '../utils/api';
 import { resolveImageUrl } from '../utils/imageUrl';
+import { getProductPrimaryImage } from '../utils/productImages';
 import { readCache, writeCache } from '../utils/storeCache';
 
 const PRODUCTS_CACHE_KEY = 'products';
@@ -133,7 +134,7 @@ function ProductsSection({ products: productsProp }) {
                   <div className="product-image" style={{ position: 'relative' }}>
                     <div className="product-image-inner">
                       <img
-                        src={resolveImageUrl(product.image)}
+                        src={resolveImageUrl(getProductPrimaryImage(product))}
                         alt={product.size || product.name}
                         className="product-showcase-img"
                         loading={index < 2 ? 'eager' : 'lazy'}

@@ -30,6 +30,16 @@ const productSchema = new mongoose.Schema(
       type: String,
       default: '/bottle.png',
     },
+    images: {
+      type: [String],
+      default: [],
+      validate: {
+        validator(value) {
+          return !value || value.length <= 10;
+        },
+        message: 'A product can have at most 10 images',
+      },
+    },
     badge: {
       type: String,
       default: '',

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { resolveImageUrl } from '../utils/imageUrl';
+import { getProductPrimaryImage } from '../utils/productImages';
 
 function AddCart() {
   const navigate = useNavigate();
@@ -239,7 +240,7 @@ function AddCart() {
                 {items.map((item) => (
                   <div className="cart-card" key={item._id}>
 
-                    <img src={resolveImageUrl(item.image)} alt={item.name} />
+                    <img src={resolveImageUrl(getProductPrimaryImage(item))} alt={item.name} />
 
                     <div className="cart-info">
                       <h3>{item.name}</h3>

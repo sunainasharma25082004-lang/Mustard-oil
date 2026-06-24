@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { adminApi } from '../utils/api';
 import { resolveImageUrl } from '../utils/imageUrl';
+import { getProductImages, getProductPrimaryImage, MAX_PRODUCT_IMAGES } from '../utils/productImages';
 
 const emptyForm = {
   name: '',
@@ -8,6 +9,7 @@ const emptyForm = {
   price: '',
   originalPrice: '',
   image: '',
+  images: [],
   badge: '',
   size: '',
   inStock: true,
@@ -25,8 +27,8 @@ function AdminProducts() {
   const [dragOver, setDragOver] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState('');
   const [localPreview, setLocalPreview] = useState('');
-  const [previewError, setPreviewError] = useState(false);
   const [error, setError] = useState('');
+  const [imageUrlInput, setImageUrlInput] = useState('');
   const fileInputRef = useRef(null);
   const localPreviewRef = useRef('');
 
@@ -62,7 +64,7 @@ function AdminProducts() {
   const resetUploadState = () => {
     setSelectedFileName('');
     setDragOver(false);
-    setPreviewError(false);
+    setImageUrlInput('');
     clearLocalPreview();
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -94,13 +96,15 @@ function AdminProducts() {
   };
 
   const openEdit = (product) => {
+    const images = getProductImages(product);
     setEditing(product);
     setForm({
       name: product.name,
       description: product.description || '',
       price: product.price,
       originalPrice: product.originalPrice || '',
-      image: product.image || '',
+      image: images[0] || '',
+      images,
       badge: product.badge || '',
       size: product.size || '',
       inStock: product.inStock,
@@ -115,13 +119,42 @@ function AdminProducts() {
     const { name, value, type, checked } = e.target;
     const nextValue = type === 'checkbox' ? checked : value;
 
-    if (name === 'image') {
-      clearLocalPreview();
-      setPreviewError(false);
-      setSelectedFileName('');
+    setForm({ ...form, [name]: nextValue });
+  };
+
+  const appendImage = (url) => {
+    const nextUrl = String(url).trim();
+    if (!nextUrl) return false;
+
+    if (form.images.length >= MAX_PRODUCT_IMAGES) {
+      setError(`You can add up to ${MAX_PRODUCT_IMAGES} images per product.`);
+      return false;
     }
 
-    setForm({ ...form, [name]: nextValue });
+    if (form.images.includes(nextUrl)) {
+      setError('This image is already added.');
+      return false;
+    }
+
+    const nextImages = [...form.images, nextUrl];
+    setForm({
+      ...form,
+      images: nextImages,
+      image: nextImages[0],
+    });
+    setError('');
+    return true;
+  };
+
+  const removeImage = (index) => {
+    setForm((prev) => {
+      const nextImages = prev.images.filter((_, itemIndex) => itemIndex !== index);
+      return {
+        ...prev,
+        images: nextImages,
+        image: nextImages[0] || '',
+      };
+    });
   };
 
   const uploadFile = async (file) => {
@@ -130,9 +163,13 @@ function AdminProducts() {
       return;
     }
 
+    if (form.images.length >= MAX_PRODUCT_IMAGES) {
+      setError(`You can add up to ${MAX_PRODUCT_IMAGES} images per product.`);
+      return;
+    }
+
     setUploading(true);
     setError('');
-    setPreviewError(false);
     setSelectedFileName(file.name);
 
     clearLocalPreview();
@@ -143,13 +180,24 @@ function AdminProducts() {
     try {
       const res = await adminApi.uploadImage(file);
       clearLocalPreview();
-      setForm((prev) => ({ ...prev, image: res.data.url }));
+      appendImage(res.data.url);
     } catch (err) {
       setError(err.message);
       setSelectedFileName('');
       clearLocalPreview();
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleAddImageUrl = () => {
+    if (!imageUrlInput.trim()) {
+      setError('Paste an image URL first.');
+      return;
+    }
+
+    if (appendImage(imageUrlInput)) {
+      setImageUrlInput('');
     }
   };
 
@@ -170,19 +218,25 @@ function AdminProducts() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.image) {
-      setError('Please upload a product image before saving.');
+    if (!form.images.length) {
+      setError('Please add at least one product image before saving.');
       return;
     }
 
     setSaving(true);
     setError('');
 
+    const payload = {
+      ...form,
+      images: form.images,
+      image: form.images[0],
+    };
+
     try {
       if (editing) {
-        await adminApi.updateProduct(editing._id, form);
+        await adminApi.updateProduct(editing._id, payload);
       } else {
-        await adminApi.createProduct(form);
+        await adminApi.createProduct(payload);
       }
       closeModal();
       loadProducts();
@@ -213,12 +267,6 @@ function AdminProducts() {
       setError(err.message);
     }
   };
-
-  const previewSrc = useMemo(() => {
-    if (localPreview) return localPreview;
-    if (!form.image) return '';
-    return resolveImageUrl(form.image);
-  }, [localPreview, form.image]);
 
   return (
     <>
@@ -262,7 +310,7 @@ function AdminProducts() {
                 <tr key={p._id}>
                   <td>
                     <img
-                      src={resolveImageUrl(p.image)}
+                      src={resolveImageUrl(getProductPrimaryImage(p))}
                       alt={p.name}
                       className="admin-product-img"
                     />
@@ -365,76 +413,96 @@ function AdminProducts() {
             <form onSubmit={handleSubmit} className="admin-product-form">
               <div className="admin-product-form-layout">
                 <div className="admin-product-form-side">
-                  <div
-                    className={`admin-image-dropzone ${dragOver ? 'drag-over' : ''} ${uploading ? 'uploading' : ''} ${previewSrc && !previewError ? 'has-image' : ''}`}
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      setDragOver(true);
-                    }}
-                    onDragLeave={() => setDragOver(false)}
-                    onDrop={handleDrop}
-                    onClick={() => !uploading && fileInputRef.current?.click()}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        fileInputRef.current?.click();
-                      }
-                    }}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="admin-image-upload-input"
-                    />
+                  <div className="admin-form-group">
+                    <label>
+                      Product Images ({form.images.length}/{MAX_PRODUCT_IMAGES})
+                    </label>
+                    <p className="admin-image-gallery-hint">
+                      First image is the cover photo. Add up to {MAX_PRODUCT_IMAGES} images like Flipkart.
+                    </p>
+                  </div>
 
-                    {previewSrc && !previewError ? (
-                      <img
-                        key={previewSrc}
-                        src={previewSrc}
-                        alt="Product preview"
-                        className="admin-image-dropzone-preview"
-                        onLoad={() => setPreviewError(false)}
-                        onError={() => setPreviewError(true)}
+                  {form.images.length > 0 && (
+                    <div className="admin-image-gallery-grid">
+                      {form.images.map((image, index) => (
+                        <div className="admin-image-gallery-item" key={`${image}-${index}`}>
+                          <img src={resolveImageUrl(image)} alt={`Product image ${index + 1}`} />
+                          {index === 0 && <span className="admin-image-gallery-cover">Cover</span>}
+                          <button
+                            type="button"
+                            className="admin-image-gallery-remove"
+                            onClick={() => removeImage(index)}
+                            aria-label={`Remove image ${index + 1}`}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {form.images.length < MAX_PRODUCT_IMAGES && (
+                    <div
+                      className={`admin-image-dropzone admin-image-dropzone-compact ${dragOver ? 'drag-over' : ''} ${uploading ? 'uploading' : ''}`}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setDragOver(true);
+                      }}
+                      onDragLeave={() => setDragOver(false)}
+                      onDrop={handleDrop}
+                      onClick={() => !uploading && fileInputRef.current?.click()}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          fileInputRef.current?.click();
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="admin-image-upload-input"
                       />
-                    ) : previewError ? (
-                      <div className="admin-image-dropzone-empty">
-                        <span className="admin-image-dropzone-icon">⚠️</span>
-                        <strong>Preview failed</strong>
-                        <span>Check the image URL or upload again</span>
-                      </div>
-                    ) : (
+
                       <div className="admin-image-dropzone-empty">
                         <span className="admin-image-dropzone-icon">📷</span>
-                        <strong>Upload product photo</strong>
+                        <strong>{uploading ? 'Uploading...' : 'Add product image'}</strong>
                         <span>Click or drag image here</span>
                       </div>
-                    )}
-
-                    <div className="admin-image-dropzone-overlay">
-                      {uploading ? 'Uploading...' : form.image ? 'Change image' : 'Choose image'}
                     </div>
-                  </div>
+                  )}
 
                   {selectedFileName && (
                     <p className="admin-image-file-name">{selectedFileName}</p>
                   )}
 
-                  <div className="admin-form-group admin-image-url-group">
-                    <label>Or paste image URL</label>
-                    <input
-                      name="image"
-                      value={form.image}
-                      onChange={handleChange}
-                      placeholder="https://example.com/product.jpg"
-                    />
-                    {form.image && previewError && (
-                      <p className="admin-image-preview-error">Could not load this image URL</p>
-                    )}
-                  </div>
+                  {localPreview && uploading && (
+                    <p className="admin-image-file-name">Uploading preview...</p>
+                  )}
+
+                  {form.images.length < MAX_PRODUCT_IMAGES && (
+                    <div className="admin-form-group admin-image-url-group">
+                      <label>Or paste image URL</label>
+                      <div className="admin-image-url-row">
+                        <input
+                          value={imageUrlInput}
+                          onChange={(e) => setImageUrlInput(e.target.value)}
+                          placeholder="https://example.com/product.jpg"
+                        />
+                        <button
+                          type="button"
+                          className="admin-btn admin-btn-outline admin-btn-sm"
+                          onClick={handleAddImageUrl}
+                        >
+                          Add
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="admin-product-toggles">
                     <label className="admin-toggle-row">

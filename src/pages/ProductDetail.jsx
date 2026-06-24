@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { productApi } from '../utils/api';
-import { resolveImageUrl } from '../utils/imageUrl';
+import ProductImageGallery from '../components/ProductImageGallery';
 import { useLiveData } from '../hooks/useLiveData';
 
 const FEATURES = [
@@ -72,16 +72,7 @@ function ProductDetail() {
 
           {product && !loading && (
             <div className="product-detail-grid">
-              <div className="product-detail-gallery">
-                {product.badge && (
-                  <span className="product-detail-badge">{product.badge}</span>
-                )}
-                <div className="product-detail-image-wrap" style={{ position: 'relative' }}>
-                  <div className="product-image-inner product-image-inner-xl">
-                    <img src={resolveImageUrl(product.image)} alt={product.name} className="product-showcase-img" />
-                  </div>
-                </div>
-              </div>
+              <ProductImageGallery product={product} />
 
               <div className="product-detail-info">
                 <span className="product-detail-label">KARYOR Cold Pressed & Single Pressed Mustard Oil</span>
