@@ -4,6 +4,31 @@ import { resolveImageUrl } from '../utils/imageUrl';
 
 const STORE_URL = (import.meta.env.VITE_STORE_URL || 'http://localhost:5173').replace(/\/$/, '');
 
+const DEFAULT_PROCESS_STEPS = [
+  { key: 'sourcing', image: '' },
+  { key: 'cold-pressing', image: '' },
+  {
+    key: 'natural-filtering',
+    image: 'https://t4.ftcdn.net/jpg/04/28/39/13/360_F_428391329_rhOO1cHy4gIFlUCvBfq0md0Mzefn0dJi.jpg',
+  },
+  {
+    key: 'lab-testing',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQU1jZQpq6-adv87fSgdI7IyvAaSaF_jk9gbxcxQzTnTQ&s=10',
+  },
+  {
+    key: 'sealed-shipped',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUFE0qHUYux6BhcmCn3Mmbj1ZEIOS3KDmbFeU8HEmAoQ&s=10',
+  },
+];
+
+const PROCESS_STEP_LABELS = {
+  sourcing: 'Sourcing',
+  'cold-pressing': 'Cold Pressing',
+  'natural-filtering': 'Natural Filtering',
+  'lab-testing': 'Lab Testing',
+  'sealed-shipped': 'Sealed & Shipped',
+};
+
 const emptyForm = {
   logo: '',
   heroDesktop: '',
@@ -13,6 +38,7 @@ const emptyForm = {
   distributorBanner: '',
   distributorShowcase: [],
   distributorBenefits: [],
+  processSteps: DEFAULT_PROCESS_STEPS,
 };
 
 function ImageField({ label, hint, value, onChange, uploading, onUpload }) {
@@ -52,7 +78,17 @@ function AdminSiteImages() {
     setLoading(true);
     return adminApi
       .getSiteImages()
-      .then((res) => setForm({ ...emptyForm, ...res.data }))
+      .then((res) => {
+        const data = { ...emptyForm, ...res.data };
+        data.processSteps = DEFAULT_PROCESS_STEPS.map((step) => {
+          const match = data.processSteps?.find((item) => item.key === step.key);
+          return {
+            key: step.key,
+            image: match?.image || step.image || '',
+          };
+        });
+        setForm(data);
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   };
@@ -96,6 +132,25 @@ function AdminSiteImages() {
         const next = [...prev.distributorShowcase];
         next[index] = { ...next[index], image: res.data.url };
         return { ...prev, distributorShowcase: next };
+      });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploadingKey('');
+    }
+  };
+
+  const uploadProcessStep = async (index, file) => {
+    if (!file) return;
+    const uploadKey = `process-${index}`;
+    setUploadingKey(uploadKey);
+    setError('');
+    try {
+      const res = await adminApi.uploadImage(file, 'site');
+      setForm((prev) => {
+        const next = [...prev.processSteps];
+        next[index] = { ...next[index], image: res.data.url };
+        return { ...prev, processSteps: next };
       });
     } catch (err) {
       setError(err.message);
@@ -184,7 +239,7 @@ function AdminSiteImages() {
 
       <form onSubmit={handleSubmit}>
         <div className="admin-card" style={{ marginBottom: 24 }}>
-          <h2 style={{ marginTop: 0 }}>Header & Home Banner</h2>
+          <h2 style={{ marginTop: 0 }}>Logo</h2>
           <ImageField
             label="Logo (Navbar & Footer)"
             hint="Shown in the top navigation and footer."
@@ -193,17 +248,25 @@ function AdminSiteImages() {
             uploading={uploadingKey === 'logo'}
             onUpload={(file) => uploadFor('logo', file)}
           />
+        </div>
+
+        <div className="admin-card" style={{ marginBottom: 24 }}>
+          <h2 style={{ marginTop: 0 }}>Hero Section — Home Page</h2>
+          <p className="admin-hint" style={{ marginTop: -8, marginBottom: 20 }}>
+            Change the top banner image separately for laptop/desktop and mobile screens.
+            Upload a file from your computer or paste an image URL.
+          </p>
           <ImageField
-            label="Home Banner — Desktop"
-            hint="Large hero image on the home page (laptop/desktop)."
+            label="Laptop / Desktop View"
+            hint="This image shows on laptops, desktops, and large tablets."
             value={form.heroDesktop}
             onChange={(value) => setField('heroDesktop', value)}
             uploading={uploadingKey === 'heroDesktop'}
             onUpload={(file) => uploadFor('heroDesktop', file)}
           />
           <ImageField
-            label="Home Banner — Mobile"
-            hint="Hero image on phones and small screens."
+            label="Mobile View"
+            hint="This image shows on phones and small screens only."
             value={form.heroMobile}
             onChange={(value) => setField('heroMobile', value)}
             uploading={uploadingKey === 'heroMobile'}
@@ -220,6 +283,34 @@ function AdminSiteImages() {
             uploading={uploadingKey === 'aboutImage'}
             onUpload={(file) => uploadFor('aboutImage', file)}
           />
+        </div>
+
+        <div className="admin-card" style={{ marginBottom: 24 }}>
+          <h2 style={{ marginTop: 0 }}>Home — Process Section</h2>
+          <p className="admin-hint" style={{ marginTop: -8, marginBottom: 20 }}>
+            Change images for the &quot;From field to your kitchen&quot; steps on the home page.
+            Upload a file or paste an image URL.
+          </p>
+          {form.processSteps.map((item, index) => (
+            <div
+              key={item.key}
+              className="admin-form-group"
+              style={{ borderTop: '1px solid #2a2a2a', paddingTop: 16 }}
+            >
+              <ImageField
+                label={PROCESS_STEP_LABELS[item.key] || `Step ${index + 1}`}
+                hint={`Step ${index + 1} image`}
+                value={item.image}
+                onChange={(value) => {
+                  const next = [...form.processSteps];
+                  next[index] = { ...next[index], image: value };
+                  setField('processSteps', next);
+                }}
+                uploading={uploadingKey === `process-${index}`}
+                onUpload={(file) => uploadProcessStep(index, file)}
+              />
+            </div>
+          ))}
         </div>
 
         <div className="admin-card" style={{ marginBottom: 24 }}>

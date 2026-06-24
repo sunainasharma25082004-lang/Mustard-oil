@@ -1,3 +1,5 @@
+import { buildDefaultProcessSteps } from './processStepsDefaults';
+
 export const DEFAULT_SITE_IMAGES = {
   logo: '/logo.jpeg',
   heroDesktop: '/banner-img.png',
@@ -10,6 +12,7 @@ export const DEFAULT_SITE_IMAGES = {
     { image: '/product-5l.jpg', label: '5 Litre Pack' },
     { image: '/mustard1ml.jpg', label: 'Premium Range' },
   ],
+  processSteps: buildDefaultProcessSteps(),
   distributorBenefits: [
     {
       image: '/bottle.png',
@@ -52,5 +55,12 @@ export function mergeSiteImages(stored) {
       stored.distributorBenefits?.length > 0
         ? stored.distributorBenefits
         : DEFAULT_SITE_IMAGES.distributorBenefits,
+    processSteps: DEFAULT_SITE_IMAGES.processSteps.map((step) => {
+      const match = stored.processSteps?.find((item) => item.key === step.key);
+      return {
+        key: step.key,
+        image: match?.image?.trim() || step.image,
+      };
+    }),
   };
 }

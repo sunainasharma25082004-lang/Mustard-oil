@@ -1,3 +1,20 @@
+const DEFAULT_PROCESS_STEPS = [
+  { key: 'sourcing', image: '' },
+  { key: 'cold-pressing', image: '' },
+  {
+    key: 'natural-filtering',
+    image: 'https://t4.ftcdn.net/jpg/04/28/39/13/360_F_428391329_rhOO1cHy4gIFlUCvBfq0md0Mzefn0dJi.jpg',
+  },
+  {
+    key: 'lab-testing',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQU1jZQpq6-adv87fSgdI7IyvAaSaF_jk9gbxcxQzTnTQ&s=10',
+  },
+  {
+    key: 'sealed-shipped',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUFE0qHUYux6BhcmCn3Mmbj1ZEIOS3KDmbFeU8HEmAoQ&s=10',
+  },
+];
+
 const DEFAULT_SITE_IMAGES = {
   logo: '/logo.jpeg',
   heroDesktop: '/banner-img.png',
@@ -10,6 +27,7 @@ const DEFAULT_SITE_IMAGES = {
     { image: '/product-5l.jpg', label: '5 Litre Pack' },
     { image: '/mustard1ml.jpg', label: 'Premium Range' },
   ],
+  processSteps: DEFAULT_PROCESS_STEPS,
   distributorBenefits: [
     {
       image: '/bottle.png',
@@ -52,7 +70,14 @@ const mergeSiteImages = (stored) => {
       stored.distributorBenefits?.length > 0
         ? stored.distributorBenefits
         : DEFAULT_SITE_IMAGES.distributorBenefits,
+    processSteps: DEFAULT_PROCESS_STEPS.map((step) => {
+      const match = stored.processSteps?.find((item) => item.key === step.key);
+      return {
+        key: step.key,
+        image: match?.image?.trim() || step.image,
+      };
+    }),
   };
 };
 
-module.exports = { DEFAULT_SITE_IMAGES, mergeSiteImages };
+module.exports = { DEFAULT_SITE_IMAGES, DEFAULT_PROCESS_STEPS, mergeSiteImages };

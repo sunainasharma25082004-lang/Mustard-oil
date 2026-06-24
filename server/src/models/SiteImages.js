@@ -18,6 +18,14 @@ const benefitItemSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const processStepSchema = new mongoose.Schema(
+  {
+    key: { type: String, required: true },
+    image: { type: String, default: '' },
+  },
+  { _id: false }
+);
+
 const siteImagesSchema = new mongoose.Schema(
   {
     key: { type: String, unique: true, required: true, default: 'site-images' },
@@ -29,6 +37,7 @@ const siteImagesSchema = new mongoose.Schema(
     distributorBanner: { type: String, default: DEFAULT_SITE_IMAGES.distributorBanner },
     distributorShowcase: { type: [showcaseItemSchema], default: () => DEFAULT_SITE_IMAGES.distributorShowcase },
     distributorBenefits: { type: [benefitItemSchema], default: () => DEFAULT_SITE_IMAGES.distributorBenefits },
+    processSteps: { type: [processStepSchema], default: () => DEFAULT_SITE_IMAGES.processSteps },
   },
   { timestamps: true }
 );

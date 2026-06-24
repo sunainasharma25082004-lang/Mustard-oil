@@ -1,48 +1,32 @@
 import '../styles/main.css';
+import { useMemo } from 'react';
+import { useSiteImages } from '../context/SiteImagesContext';
+import { resolveImageUrl } from '../utils/imageUrl';
 import { HOME_ASSETS } from '../utils/homeAssets';
+import { PROCESS_STEP_CONTENT } from '../utils/processStepsDefaults';
 
-const PROCESS_STEPS = [
-  {
-    icon: '🌱',
-    title: 'Sourcing',
-    text:
-      'We source bold mustard seeds directly from farmers known for high oil content and strong pungency.',
-    image: HOME_ASSETS.processSourcing,
-    alt: 'Golden mustard fields and fresh mustard seeds',
-  },
-  {
-    icon: '⚙️',
-    title: 'Cold Pressing',
-    text:
-      'Seeds are pressed slowly at low temperature. One press only, keeping natural nutrients intact.',
-    image: HOME_ASSETS.processColdPress,
-    alt: 'Cold pressed mustard oil poured into a traditional kadhai',
-  },
-  {
-    icon: '✨',
-    title: 'Natural Settling',
-    text:
-      "Oil is naturally filtered and clarified. No chemicals, no unnecessary processing — only by traditional methods 'cloth, plates'.",
-    image: 'https://t4.ftcdn.net/jpg/04/28/39/13/360_F_428391329_rhOO1cHy4gIFlUCvBfq0md0Mzefn0dJi.jpg',
-    alt: 'Pure Karyor mustard oil bottle after natural settling',
-  },
-  {
-    icon: '🧪',
-    title: 'Lab Testing',
-    text: 'Every batch is tested for purity and quality before bottling.',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQU1jZQpq6-adv87fSgdI7IyvAaSaF_jk9gbxcxQzTnTQ&s=10',
-    alt: 'Karyor 1 litre mustard oil — lab tested for purity',
-  },
-  {
-    icon: '📦',
-    title: 'Sealed & Shipped',
-    text: 'Packed carefully and delivered fresh to your home.',
-    image: HOME_ASSETS.processShipping,
-    alt: 'Karyor mustard oil used fresh in a home kitchen',
-  },
-];
+const PROCESS_IMAGE_FALLBACKS = {
+  sourcing: HOME_ASSETS.processSourcing,
+  'cold-pressing': HOME_ASSETS.processColdPress,
+  'natural-filtering': HOME_ASSETS.bottle,
+  'lab-testing': HOME_ASSETS.product1L,
+  'sealed-shipped': HOME_ASSETS.processShipping,
+};
 
 function AboutSection() {
+  const { processSteps } = useSiteImages();
+
+  const steps = useMemo(() => {
+    const imageByKey = Object.fromEntries(
+      (processSteps || []).map((item) => [item.key, item.image])
+    );
+
+    return PROCESS_STEP_CONTENT.map((step) => ({
+      ...step,
+      image: imageByKey[step.key] || PROCESS_IMAGE_FALLBACKS[step.key] || '',
+    }));
+  }, [processSteps]);
+
   return (
     <section id="how-we-press" className="process-section">
       <div className="process-container">
@@ -56,16 +40,16 @@ function AboutSection() {
         </div>
 
         <div className="process-list">
-          {PROCESS_STEPS.map((step, index) => (
+          {steps.map((step, index) => (
             <article
               className={`process-card${index % 2 === 1 ? ' process-card--reverse' : ''}`}
-              key={step.title}
+              key={step.key}
             >
               <span className="process-card-index">{String(index + 1).padStart(2, '0')}</span>
 
               <div className="process-card-media">
                 <img
-                  src={step.image}
+                  src={resolveImageUrl(step.image)}
                   alt={step.alt}
                   loading="lazy"
                   decoding="async"

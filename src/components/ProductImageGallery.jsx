@@ -1,18 +1,65 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { resolveImageUrl } from '../utils/imageUrl';
 import { getProductImages } from '../utils/productImages';
+
+const SWIPE_THRESHOLD = 48;
 
 function ProductImageGallery({ product }) {
   const images = getProductImages(product);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const startXRef = useRef(0);
+  const viewportRef = useRef(null);
+
+  const goTo = useCallback(
+    (index) => {
+      if (!images.length) return;
+      setActiveIndex((index + images.length) % images.length);
+      setDragOffset(0);
+    },
+    [images.length]
+  );
+
+  const finishDrag = useCallback(() => {
+    setDragOffset((offset) => {
+      if (offset > SWIPE_THRESHOLD) {
+        setActiveIndex((current) => (current - 1 + images.length) % images.length);
+      } else if (offset < -SWIPE_THRESHOLD) {
+        setActiveIndex((current) => (current + 1) % images.length);
+      }
+      return 0;
+    });
+    setIsDragging(false);
+  }, [images.length]);
+
+  const onPointerDown = (clientX) => {
+    if (images.length <= 1) return;
+    startXRef.current = clientX;
+    setIsDragging(true);
+  };
+
+  const onPointerMove = (clientX) => {
+    if (!isDragging || images.length <= 1) return;
+    setDragOffset(clientX - startXRef.current);
+  };
+
+  useEffect(() => {
+    if (!isDragging) return undefined;
+
+    const handleMouseMove = (event) => onPointerMove(event.clientX);
+    const handleMouseUp = () => finishDrag();
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, finishDrag]);
 
   if (!images.length) return null;
-
-  const activeImage = images[activeIndex] || images[0];
-
-  const goTo = (index) => {
-    setActiveIndex((index + images.length) % images.length);
-  };
 
   return (
     <div className="product-detail-gallery">
@@ -42,14 +89,45 @@ function ProductImageGallery({ product }) {
           </>
         )}
 
-        <div className="product-detail-image-wrap">
-          <div className="product-image-inner product-image-inner-xl">
-            <img
-              key={activeImage}
-              src={resolveImageUrl(activeImage)}
-              alt={`${product.name} - image ${activeIndex + 1}`}
-              className="product-showcase-img"
-            />
+        <div
+          ref={viewportRef}
+          className={`product-gallery-viewport${isDragging ? ' is-dragging' : ''}`}
+          onTouchStart={(event) => onPointerDown(event.touches[0].clientX)}
+          onTouchMove={(event) => {
+            if (!isDragging) return;
+            const delta = event.touches[0].clientX - startXRef.current;
+            setDragOffset(delta);
+            if (Math.abs(delta) > 10) {
+              event.preventDefault();
+            }
+          }}
+          onTouchEnd={finishDrag}
+          onMouseDown={(event) => {
+            event.preventDefault();
+            onPointerDown(event.clientX);
+          }}
+        >
+          <div
+            className="product-gallery-track"
+            style={{
+              transform: `translateX(calc(-${activeIndex * 100}% + ${dragOffset}px))`,
+              transition: isDragging ? 'none' : 'transform 0.35s ease',
+            }}
+          >
+            {images.map((image, index) => (
+              <div className="product-gallery-slide" key={`${image}-${index}`}>
+                <div className="product-detail-image-wrap">
+                  <div className="product-image-inner product-image-inner-xl">
+                    <img
+                      src={resolveImageUrl(image)}
+                      alt={`${product.name} - image ${index + 1}`}
+                      className="product-showcase-img"
+                      draggable={false}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -70,7 +148,7 @@ function ProductImageGallery({ product }) {
               aria-selected={index === activeIndex}
               aria-label={`View image ${index + 1}`}
               className={`product-gallery-thumb${index === activeIndex ? ' active' : ''}`}
-              onClick={() => setActiveIndex(index)}
+              onClick={() => goTo(index)}
             >
               <img src={resolveImageUrl(image)} alt="" loading="lazy" decoding="async" />
             </button>

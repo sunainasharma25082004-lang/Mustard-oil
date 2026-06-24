@@ -95,7 +95,9 @@ function Footer() {
               </li>
               <li>
                 <i className="bi bi-geo-alt" />
-                <span>Hisar, Haryana (serving Hansi, Barwala, Siwani, Rajgarh, Jind & nearby)</span>
+                <span>
+                  23/14, Mirzapur Rd, Vishvakarma colony, Government Colony, New Jawahar Nagar, Hisar, Haryana 125001
+                </span>
               </li>
             </ul>
           </div>

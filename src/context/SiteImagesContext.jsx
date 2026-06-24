@@ -36,6 +36,10 @@ export function SiteImagesProvider({ children }) {
       ? images.distributorBenefits
       : DEFAULT_SITE_IMAGES.distributorBenefits;
 
+    const processSteps = images.processSteps?.length
+      ? images.processSteps
+      : DEFAULT_SITE_IMAGES.processSteps;
+
     return {
       images,
       logo: resolveWithFallback(images.logo, DEFAULT_SITE_IMAGES.logo),
@@ -56,6 +60,13 @@ export function SiteImagesProvider({ children }) {
         image: resolveWithFallback(
           item.image,
           DEFAULT_SITE_IMAGES.distributorBenefits[index]?.image
+        ),
+      })),
+      processSteps: processSteps.map((item, index) => ({
+        ...item,
+        image: resolveWithFallback(
+          item.image,
+          DEFAULT_SITE_IMAGES.processSteps[index]?.image
         ),
       })),
     };

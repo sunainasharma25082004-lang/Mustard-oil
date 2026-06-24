@@ -35,6 +35,7 @@ const updateSiteImages = async (req, res, next) => {
       distributorBanner,
       distributorShowcase,
       distributorBenefits,
+      processSteps,
     } = req.body;
 
     const doc = await getSiteImagesDoc();
@@ -62,6 +63,15 @@ const updateSiteImages = async (req, res, next) => {
           image: String(item.image).trim(),
           title: String(item.title).trim(),
           text: String(item.text || '').trim(),
+        }));
+    }
+
+    if (Array.isArray(processSteps)) {
+      doc.processSteps = processSteps
+        .filter((item) => item?.key?.trim())
+        .map((item) => ({
+          key: String(item.key).trim(),
+          image: String(item.image || '').trim(),
         }));
     }
 
