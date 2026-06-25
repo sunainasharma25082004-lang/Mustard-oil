@@ -3,11 +3,13 @@ import { useSiteImages } from '../context/SiteImagesContext';
 import { HOME_ASSETS } from '../utils/homeAssets';
 import { resolveImageUrl } from '../utils/imageUrl';
 
+const MOBILE_FALLBACK = '/banner-mobile.jpg';
+
 function Hero() {
   const { heroDesktop, heroMobile } = useSiteImages();
 
   const desktopBanner = heroDesktop || resolveImageUrl(HOME_ASSETS.bannerBrand1);
-  const mobileBanner = heroMobile || resolveImageUrl(HOME_ASSETS.mobileBanner);
+  const mobileBanner = heroMobile || resolveImageUrl(HOME_ASSETS.mobileBanner) || MOBILE_FALLBACK;
 
   return (
     <section className="karyorHeroSection">
@@ -21,6 +23,11 @@ function Hero() {
               loading="eager"
               fetchPriority="high"
               decoding="async"
+              onError={(e) => {
+                if (e.currentTarget.src !== window.location.origin + '/banner.png') {
+                  e.currentTarget.src = '/banner.png';
+                }
+              }}
             />
             <div className="karyorHeroActions">
               <Link to="/#products" className="karyorHeroShopBtn">
@@ -39,6 +46,11 @@ function Hero() {
               loading="eager"
               fetchPriority="high"
               decoding="async"
+              onError={(e) => {
+                if (e.currentTarget.src !== window.location.origin + MOBILE_FALLBACK) {
+                  e.currentTarget.src = MOBILE_FALLBACK;
+                }
+              }}
             />
           </div>
         </div>
