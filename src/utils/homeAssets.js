@@ -8,6 +8,7 @@ import bannerBrand1 from '../assets/home/banner-brand1.png';
 import mobileBanner from '../assets/home/mobile-banner.png';
 import homeCollage from '../assets/home/home-collage.jpg';
 import homeKitchenPouring from '../assets/home/home-kitchen-pouring.jpg';
+import shipped from '../assets/home/shipped.jpg'
 
 export const HOME_ASSETS = {
   kitchenKadhai,
@@ -24,5 +25,5 @@ export const HOME_ASSETS = {
   processColdPress: mustardFarm,
   processSettling: bottle,
   processLab: product1L,
-  processShipping: homeKitchenPouring,
+  processShipping: shipped,
 };
