@@ -53,25 +53,29 @@ export default function Testimonials() {
   });
   const [submitMessage, setSubmitMessage] = useState("");
   const [error, setError] = useState("");
-  const [widgetCode, setWidgetCode] = useState("");
+  const [widgetCode, setWidgetCode] = useState(null); // start as null to detect when loaded
 
-  const loadReviews = useCallback(() => {
-    setLoading(true);
-    Promise.all([
-      reviewApi.getAll().catch(() => ({ data: [] })),
-      settingsApi.getGeneral().catch(() => ({ data: {} }))
-    ])
-      .then(([reviewsRes, settingsRes]) => {
-        setReviews(reviewsRes.data || []);
-        if (settingsRes.data && settingsRes.data.googleReviewsWidgetCode) {
-          setWidgetCode(settingsRes.data.googleReviewsWidgetCode);
+  useEffect(() => {
+    settingsApi.getGeneral()
+      .then(res => {
+        if (res.data?.googleReviewsWidgetCode) {
+          setWidgetCode(res.data.googleReviewsWidgetCode);
         } else {
           setWidgetCode("");
         }
       })
-      .finally(() => setLoading(false));
+      .catch(() => setWidgetCode(""));
   }, []);
 
+  const loadReviews = useCallback(() => {
+    setLoading(true);
+    reviewApi.getAll()
+      .then((res) => {
+        setReviews(res.data || []);
+      })
+      .catch(() => setReviews([]))
+      .finally(() => setLoading(false));
+  }, []);
   useLiveData(loadReviews);
   useEffect(() => {
     if (widgetCode && widgetContainerRef.current) {
@@ -321,17 +325,17 @@ export default function Testimonials() {
             </div>
           )}
 
-          {loading && (
+          {widgetCode === null && loading && (
             <p style={{ color: "#aaa", textAlign: "center", padding: "20px 0" }}>Loading reviews...</p>
           )}
 
-          {!loading && widgetCode ? (
+          {widgetCode ? (
             <div 
               ref={widgetContainerRef}
               style={{ width: "100%", overflow: "hidden", minHeight: "300px" }}
-              dangerouslySetInnerHTML={{ __html: widgetCode }} 
+              dangerouslySetInnerHTML={{ __html: widgetCode.replace(/data-elfsight-app-lazy/g, '') }} 
             />
-          ) : !loading && (
+          ) : widgetCode === "" && !loading && (
           <div className="testimonial-grid">
             {reviews.map((item) => (
               <div className="testimonial-card" key={item._id}>
