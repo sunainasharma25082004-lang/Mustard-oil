@@ -46,8 +46,7 @@ export const DEFAULT_PROCESS_STEP_IMAGES = {
     'https://t4.ftcdn.net/jpg/04/28/39/13/360_F_428391329_rhOO1cHy4gIFlUCvBfq0md0Mzefn0dJi.jpg',
   'lab-testing':
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQU1jZQpq6-adv87fSgdI7IyvAaSaF_jk9gbxcxQzTnTQ&s=10',
-  'sealed-shipped':
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUFE0qHUYux6BhcmCn3Mmbj1ZEIOS3KDmbFeU8HEmAoQ&s=10',
+  'sealed-shipped': '',
 };
 
 export function buildDefaultProcessSteps() {

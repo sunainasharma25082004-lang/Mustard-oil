@@ -11,7 +11,7 @@ const DEFAULT_PROCESS_STEPS = [
   },
   {
     key: 'sealed-shipped',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUFE0qHUYux6BhcmCn3Mmbj1ZEIOS3KDmbFeU8HEmAoQ&s=10',
+    image: '',
   },
 ];
 
