@@ -3,7 +3,7 @@ import { useSiteImages } from '../context/SiteImagesContext';
 import { HOME_ASSETS } from '../utils/homeAssets';
 import { resolveImageUrl } from '../utils/imageUrl';
 
-const MOBILE_FALLBACK = '/banner-mobile.jpg';
+const MOBILE_FALLBACK = '/mobile-banner.png';
 
 function Hero() {
   const { heroDesktop, heroMobile } = useSiteImages();

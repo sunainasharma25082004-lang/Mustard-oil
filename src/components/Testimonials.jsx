@@ -332,7 +332,8 @@ export default function Testimonials() {
           {widgetCode ? (
             <div 
               ref={widgetContainerRef}
-              style={{ width: "100%", overflow: "hidden", minHeight: "300px" }}
+              className="widget-container-wrap"
+              style={{ width: "100%", minHeight: "300px" }}
               dangerouslySetInnerHTML={{ __html: widgetCode.replace(/data-elfsight-app-lazy/g, '') }} 
             />
           ) : widgetCode === "" && !loading && (
