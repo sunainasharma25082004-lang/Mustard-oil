@@ -3,7 +3,7 @@ import { buildDefaultProcessSteps } from './processStepsDefaults';
 export const DEFAULT_SITE_IMAGES = {
   logo: '/logo.jpeg',
   heroDesktop: '/hero-desktop-new.png',
-  heroMobile: '/mobile-banner.png',
+  heroMobile: '',
   aboutImage: '/mustard-about.jpg',
   distributorHero: '/distributor-hero.jpg',
   distributorBanner: '/banner-img.png',
