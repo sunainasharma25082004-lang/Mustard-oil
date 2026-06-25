@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/testimonials.css";
 import { useAuth } from "../context/AuthContext";
@@ -76,16 +76,15 @@ export default function Testimonials() {
   useEffect(() => {
     if (widgetCode && widgetContainerRef.current) {
       const container = widgetContainerRef.current;
-      const scripts = container.getElementsByTagName('script');
-      for (let i = 0; i < scripts.length; i++) {
-        const oldScript = scripts[i];
+      const scripts = Array.from(container.getElementsByTagName('script'));
+      scripts.forEach((oldScript) => {
         const newScript = document.createElement('script');
         Array.from(oldScript.attributes).forEach((attr) => {
           newScript.setAttribute(attr.name, attr.value);
         });
         newScript.appendChild(document.createTextNode(oldScript.innerHTML));
         oldScript.parentNode.replaceChild(newScript, oldScript);
-      }
+      });
     }
   }, [widgetCode, loading]);
 
