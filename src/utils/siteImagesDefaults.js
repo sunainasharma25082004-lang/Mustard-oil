@@ -2,8 +2,8 @@ import { buildDefaultProcessSteps } from './processStepsDefaults';
 
 export const DEFAULT_SITE_IMAGES = {
   logo: '/logo.jpeg',
-  heroDesktop: '/banner-img.png',
-  heroMobile: '/banner-mobile.jpg',
+  heroDesktop: '',
+  heroMobile: '',
   aboutImage: '/mustard-about.jpg',
   distributorHero: '/distributor-hero.jpg',
   distributorBanner: '/banner-img.png',
