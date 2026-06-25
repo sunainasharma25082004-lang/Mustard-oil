@@ -4,6 +4,7 @@ const settingsSchema = new mongoose.Schema(
   {
     key: { type: String, unique: true, required: true },
     defaultDeliveryDays: { type: Number, default: 5, min: 1, max: 30 },
+    googleReviewsWidgetCode: { type: String, default: '' },
   },
   { timestamps: true }
 );

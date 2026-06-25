@@ -72,7 +72,7 @@ function ProductImageGallery({ product }) {
           <>
             <button
               type="button"
-              className="product-gallery-nav product-gallery-nav--prev"
+              className="product-gallery-nav product-gallery-nav--prev product-gallery-nav--desktop"
               onClick={() => goTo(activeIndex - 1)}
               aria-label="Previous image"
             >
@@ -80,7 +80,7 @@ function ProductImageGallery({ product }) {
             </button>
             <button
               type="button"
-              className="product-gallery-nav product-gallery-nav--next"
+              className="product-gallery-nav product-gallery-nav--next product-gallery-nav--desktop"
               onClick={() => goTo(activeIndex + 1)}
               aria-label="Next image"
             >
@@ -132,14 +132,28 @@ function ProductImageGallery({ product }) {
         </div>
 
         {images.length > 1 && (
-          <span className="product-gallery-counter">
+          <span className="product-gallery-counter product-gallery-counter--desktop">
             {activeIndex + 1} / {images.length}
           </span>
+        )}
+
+        {images.length > 1 && (
+          <div className="product-gallery-dots">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                type="button"
+                className={`product-gallery-dot${index === activeIndex ? ' active' : ''}`}
+                onClick={() => goTo(index)}
+                aria-label={`Go to image ${index + 1}`}
+              />
+            ))}
+          </div>
         )}
       </div>
 
       {images.length > 1 && (
-        <div className="product-gallery-thumbs" role="tablist" aria-label="Product images">
+        <div className="product-gallery-thumbs product-gallery-thumbs--desktop" role="tablist" aria-label="Product images">
           {images.map((image, index) => (
             <button
               key={`${image}-${index}`}

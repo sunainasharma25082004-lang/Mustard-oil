@@ -14,7 +14,7 @@ const {
   updateDistributorStatus,
 } = require('../controllers/distributorController');
 const { uploadImage } = require('../controllers/uploadController');
-const { updateDeliverySettings } = require('../controllers/settingsController');
+const { updateDeliverySettings, updateGeneralSettings } = require('../controllers/settingsController');
 const { getAllUsers, getUserById } = require('../controllers/userController');
 const {
   getAllReviewsAdmin,
@@ -74,6 +74,7 @@ router.delete('/team/:id', superAdmin, deleteAdminStaff);
 
 router.get('/stats', requirePermission('dashboard'), getDashboardStats);
 router.patch('/settings/delivery', requirePermission('orders'), updateDeliverySettings);
+router.put('/settings/general', superAdmin, updateGeneralSettings);
 router.get('/site-images', requirePermission('site-images'), getAdminSiteImages);
 router.put('/site-images', requirePermission('site-images'), updateSiteImages);
 

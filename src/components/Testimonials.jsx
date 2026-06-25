@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { reviewApi } from "../utils/api";
 import { useLiveData } from "../hooks/useLiveData";
 import { sanitizeReviewInput, sanitizeReviewField } from "../utils/sanitizeReview";
+import { settingsApi } from "../utils/api";
 
 const faqs = [
   {
@@ -38,6 +39,7 @@ export default function Testimonials() {
   const [open, setOpen] = useState(null);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const widgetContainerRef = useRef(null);
 
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,17 +53,41 @@ export default function Testimonials() {
   });
   const [submitMessage, setSubmitMessage] = useState("");
   const [error, setError] = useState("");
+  const [widgetCode, setWidgetCode] = useState("");
 
   const loadReviews = useCallback(() => {
     setLoading(true);
-    reviewApi
-      .getAll()
-      .then((res) => setReviews(res.data || []))
-      .catch(() => setReviews([]))
+    Promise.all([
+      reviewApi.getAll().catch(() => ({ data: [] })),
+      settingsApi.getGeneral().catch(() => ({ data: {} }))
+    ])
+      .then(([reviewsRes, settingsRes]) => {
+        setReviews(reviewsRes.data || []);
+        if (settingsRes.data && settingsRes.data.googleReviewsWidgetCode) {
+          setWidgetCode(settingsRes.data.googleReviewsWidgetCode);
+        } else {
+          setWidgetCode("");
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
   useLiveData(loadReviews);
+  useEffect(() => {
+    if (widgetCode && widgetContainerRef.current) {
+      const container = widgetContainerRef.current;
+      const scripts = container.getElementsByTagName('script');
+      for (let i = 0; i < scripts.length; i++) {
+        const oldScript = scripts[i];
+        const newScript = document.createElement('script');
+        Array.from(oldScript.attributes).forEach((attr) => {
+          newScript.setAttribute(attr.name, attr.value);
+        });
+        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+      }
+    }
+  }, [widgetCode, loading]);
 
   // Update name if user logs in while form is open
   useEffect(() => {
@@ -257,13 +283,15 @@ export default function Testimonials() {
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
             <h2>What Our Customers Say</h2>
-            <button
-              onClick={openCreateModal}
-              className="golden-btn"
-              style={{ fontSize: "0.9rem", padding: "10px 20px" }}
-            >
-              ✍️ Write a Review
-            </button>
+            {!widgetCode && (
+              <button
+                onClick={openCreateModal}
+                className="golden-btn"
+                style={{ fontSize: "0.9rem", padding: "10px 20px" }}
+              >
+                ✍️ Write a Review
+              </button>
+            )}
           </div>
 
           {error && !showModal && (
@@ -298,7 +326,13 @@ export default function Testimonials() {
             <p style={{ color: "#aaa", textAlign: "center", padding: "20px 0" }}>Loading reviews...</p>
           )}
 
-          {!loading && (
+          {!loading && widgetCode ? (
+            <div 
+              ref={widgetContainerRef}
+              style={{ width: "100%", overflow: "hidden", minHeight: "300px" }}
+              dangerouslySetInnerHTML={{ __html: widgetCode }} 
+            />
+          ) : !loading && (
           <div className="testimonial-grid">
             {reviews.map((item) => (
               <div className="testimonial-card" key={item._id}>

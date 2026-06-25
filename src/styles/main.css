@@ -1873,6 +1873,57 @@ width:100%;
   display: block;
 }
 
+/* ─── Swipe Dots (Flipkart-style, mobile only) ─── */
+
+.product-gallery-dots {
+  display: none;            /* hidden on desktop by default */
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 0 6px;
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  z-index: 4;
+}
+
+.product-gallery-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.35);
+  transition: width 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-gallery-dot.active {
+  width: 22px;
+  background: #d4af37;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+}
+
+/* ─── Mobile: dots on, arrows/counter/thumbs off ─── */
+@media (max-width: 768px) {
+  .product-gallery-nav--desktop {
+    display: none !important;
+  }
+
+  .product-gallery-counter--desktop {
+    display: none !important;
+  }
+
+  .product-gallery-thumbs--desktop {
+    display: none !important;
+  }
+
+  .product-gallery-dots {
+    display: flex;
+  }
+}
+
 .product-detail-badge {
   position: absolute;
   top: 20px;

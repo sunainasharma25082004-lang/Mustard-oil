@@ -1,6 +1,40 @@
 const Settings = require('../models/Settings');
 const { SETTINGS_KEY } = require('../utils/deliveryHelpers');
 
+const getGeneralSettings = async (req, res, next) => {
+  try {
+    const settings = await Settings.findOne({ key: SETTINGS_KEY });
+    res.json({
+      success: true,
+      data: {
+        googleReviewsWidgetCode: settings?.googleReviewsWidgetCode ?? '',
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateGeneralSettings = async (req, res, next) => {
+  try {
+    const { googleReviewsWidgetCode } = req.body;
+    
+    const settings = await Settings.findOneAndUpdate(
+      { key: SETTINGS_KEY },
+      { googleReviewsWidgetCode: googleReviewsWidgetCode || '' },
+      { new: true, upsert: true }
+    );
+
+    res.json({
+      success: true,
+      message: 'General settings updated',
+      data: settings,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getDeliverySettings = async (req, res, next) => {
   try {
     const settings = await Settings.findOne({ key: SETTINGS_KEY });
@@ -43,4 +77,9 @@ const updateDeliverySettings = async (req, res, next) => {
   }
 };
 
-module.exports = { getDeliverySettings, updateDeliverySettings };
+module.exports = { 
+  getDeliverySettings, 
+  updateDeliverySettings,
+  getGeneralSettings,
+  updateGeneralSettings
+};
