@@ -3,12 +3,13 @@ import { useSiteImages } from '../context/SiteImagesContext';
 import { HOME_ASSETS } from '../utils/homeAssets';
 import { resolveImageUrl } from '../utils/imageUrl';
 
+const DESKTOP_FALLBACK = '/hero-desktop-new.png';
 const MOBILE_FALLBACK = '/mobile-banner.png';
 
 function Hero() {
   const { heroDesktop, heroMobile } = useSiteImages();
 
-  const desktopBanner = heroDesktop || resolveImageUrl(HOME_ASSETS.bannerBrand1);
+  const desktopBanner = heroDesktop || DESKTOP_FALLBACK;
   const mobileBanner = heroMobile || resolveImageUrl(HOME_ASSETS.mobileBanner) || MOBILE_FALLBACK;
 
   return (
@@ -24,8 +25,8 @@ function Hero() {
               fetchPriority="high"
               decoding="async"
               onError={(e) => {
-                if (e.currentTarget.src !== window.location.origin + '/banner.png') {
-                  e.currentTarget.src = '/banner.png';
+                if (e.currentTarget.src !== window.location.origin + DESKTOP_FALLBACK) {
+                  e.currentTarget.src = DESKTOP_FALLBACK;
                 }
               }}
             />
