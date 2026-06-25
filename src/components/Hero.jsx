@@ -6,9 +6,13 @@ import { resolveImageUrl } from '../utils/imageUrl';
 const MOBILE_FALLBACK = '/mobile-banner.png';
 
 function Hero() {
-  const { heroMobile } = useSiteImages();
+  const { heroDesktop, heroMobile } = useSiteImages();
 
-  const desktopBanner = resolveImageUrl(HOME_ASSETS.bannerBrand1);
+  // If heroDesktop is not set in DB, fallback to the original default image
+  const desktopBanner = heroDesktop && heroDesktop !== '/hero-desktop-new.png' 
+    ? resolveImageUrl(heroDesktop) 
+    : resolveImageUrl(HOME_ASSETS.bannerBrand1);
+    
   const mobileBanner = heroMobile || resolveImageUrl(HOME_ASSETS.mobileBanner) || MOBILE_FALLBACK;
 
   return (
