@@ -2,14 +2,15 @@ import { Link } from 'react-router-dom';
 import { useSiteImages } from '../context/SiteImagesContext';
 import { HOME_ASSETS } from '../utils/homeAssets';
 import { resolveImageUrl } from '../utils/imageUrl';
+import heroDesktopImg from '/hero-desktop-new.png';
 
 const DESKTOP_FALLBACK = '/hero-desktop-new.png';
 const MOBILE_FALLBACK = '/mobile-banner.png';
 
 function Hero() {
-  const { heroDesktop, heroMobile } = useSiteImages();
+  const { heroMobile } = useSiteImages();
 
-  const desktopBanner = heroDesktop || DESKTOP_FALLBACK;
+  const desktopBanner = heroDesktopImg;
   const mobileBanner = heroMobile || resolveImageUrl(HOME_ASSETS.mobileBanner) || MOBILE_FALLBACK;
 
   return (
