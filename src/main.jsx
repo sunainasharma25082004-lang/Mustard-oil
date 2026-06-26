@@ -7,6 +7,9 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 
 
 import "./styles/main.css";
+import { initAnalytics } from "./utils/analytics";
+
+initAnalytics();
 
 const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 if (API_URL) {

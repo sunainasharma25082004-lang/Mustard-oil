@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
+import AnalyticsTracker from "./components/AnalyticsTracker";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -24,6 +25,7 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <BrowserRouter>
+          <AnalyticsTracker />
           <Routes>
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
