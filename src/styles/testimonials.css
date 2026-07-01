@@ -411,10 +411,3 @@
   }
 }
 
-@media (max-width: 768px) {
-  .widget-container-wrap {
-    margin-left: -15px;
-    margin-right: -15px;
-    padding: 0 5px;
-  }
-}

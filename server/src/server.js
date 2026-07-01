@@ -63,6 +63,7 @@ const defaultOrigins = [
   'https://www.karyor.com',
   'https://karyor-store.onrender.com',
   'https://karyor-admin.onrender.com',
+  'https://admin.karyor.com',
   // Dev / local
   'http://localhost:5173',
   'http://localhost:5174',

@@ -6,9 +6,6 @@ function AdminReviews() {
   const [filter, setFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [widgetCode, setWidgetCode] = useState('');
-  const [savingWidget, setSavingWidget] = useState(false);
-  const [widgetSuccess, setWidgetSuccess] = useState('');
 
   const loadReviews = () => {
     setLoading(true);
@@ -19,19 +16,9 @@ function AdminReviews() {
       .finally(() => setLoading(false));
   };
 
-  const loadSettings = () => {
-    adminApi.getGeneralSettings()
-      .then((res) => setWidgetCode(res.data.googleReviewsWidgetCode || ''))
-      .catch(console.error);
-  };
-
   useEffect(() => {
     loadReviews();
   }, [filter]);
-
-  useEffect(() => {
-    loadSettings();
-  }, []);
 
   const moderate = async (id, status) => {
     try {
@@ -49,21 +36,6 @@ function AdminReviews() {
       loadReviews();
     } catch (err) {
       setError(err.message);
-    }
-  };
-
-  const handleSaveWidget = async () => {
-    setSavingWidget(true);
-    setWidgetSuccess('');
-    setError('');
-    try {
-      await adminApi.updateGeneralSettings({ googleReviewsWidgetCode: widgetCode });
-      setWidgetSuccess('Google Reviews widget code saved successfully!');
-      setTimeout(() => setWidgetSuccess(''), 4000);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSavingWidget(false);
     }
   };
 
@@ -87,33 +59,6 @@ function AdminReviews() {
       </div>
 
       {error && <div className="admin-error" style={{ marginBottom: 20 }}>{error}</div>}
-      {widgetSuccess && (
-        <div style={{ marginBottom: 20, padding: '12px 16px', borderRadius: 10, background: 'rgba(76, 175, 80, 0.12)', border: '1px solid rgba(76, 175, 80, 0.35)', color: '#8fd99a', fontSize: '0.9rem' }}>
-          {widgetSuccess}
-        </div>
-      )}
-
-      <div className="admin-card" style={{ marginBottom: 30 }}>
-        <h2>Google Reviews Widget</h2>
-        <p className="admin-hint" style={{ marginTop: -8, marginBottom: 16 }}>
-          Paste your Elfsight or Trustindex Google Reviews embed code here. This will replace the default website reviews with live Google reviews. Leave empty to use the default manual review system.
-        </p>
-        <div className="admin-form-group">
-          <textarea
-            value={widgetCode}
-            onChange={(e) => setWidgetCode(e.target.value)}
-            placeholder='<script src="https://apps.elfsight.com/p/platform.js" defer></script>...'
-            style={{ width: '100%', height: '100px', background: '#111', color: '#fff', border: '1px solid #333', padding: '10px', borderRadius: '8px' }}
-          />
-        </div>
-        <button
-          className="admin-btn admin-btn-primary"
-          onClick={handleSaveWidget}
-          disabled={savingWidget}
-        >
-          {savingWidget ? 'Saving...' : 'Save Widget Code'}
-        </button>
-      </div>
 
       <div className="admin-card">
         {loading ? (

@@ -38,8 +38,6 @@ export const authApi = {
 
 export const adminApi = {
   getStats: () => apiFetch('/api/admin/stats'),
-  getGeneralSettings: () => apiFetch('/api/settings/general'), // public or generic endpoint, or through admin if needed. Let's make sure it fetches properly. Wait, admin one is not needed for get. Actually let's use the public endpoint for getting, and admin for updating.
-  updateGeneralSettings: (body) => apiFetch('/api/admin/settings/general', { method: 'PUT', body: JSON.stringify(body) }),
   updateDeliverySettings: (body) => apiFetch('/api/admin/settings/delivery', { method: 'PATCH', body: JSON.stringify(body) }),
   getProducts: () => apiFetch('/api/admin/products'),
   createProduct: (body) => apiFetch('/api/admin/products', { method: 'POST', body: JSON.stringify(body) }),

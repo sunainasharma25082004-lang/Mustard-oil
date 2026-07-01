@@ -56,7 +56,6 @@ export const orderApi = {
 
 export const settingsApi = {
   getDelivery: () => apiFetch('/api/settings/delivery'),
-  getGeneral: () => apiFetch('/api/settings/general'),
 };
 
 export const shippingApi = {
