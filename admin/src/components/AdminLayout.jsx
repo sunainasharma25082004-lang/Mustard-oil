@@ -89,10 +89,30 @@ function AdminLayout() {
 
         <div className="admin-sidebar-footer">
           <p className="admin-sidebar-user">{user?.name}</p>
+          <p
+            className="admin-sidebar-user"
+            style={{
+              color: user?.isSuperAdmin ? '#d4af37' : '#888',
+              fontSize: '0.78rem',
+              marginTop: -4,
+              fontWeight: user?.isSuperAdmin ? 700 : 400,
+            }}
+          >
+            {user?.isSuperAdmin ? '👑 Super Admin' : 'Staff Admin'}
+          </p>
           {user?.department && (
             <p className="admin-sidebar-user" style={{ color: '#888', fontSize: '0.8rem', marginTop: -6 }}>
               {user.department}
             </p>
+          )}
+          {user?.isSuperAdmin && (
+            <Link
+              to="/super-admin-account"
+              className="admin-sidebar-account-link"
+              onClick={closeMenu}
+            >
+              Super Admin Account →
+            </Link>
           )}
           <button
             type="button"
