@@ -34,6 +34,7 @@ export async function apiFetch(path, options = {}) {
 export const authApi = {
   login: (body) => apiFetch('/api/auth/login', { method: 'POST', body: JSON.stringify(body) }),
   getMe: () => apiFetch('/api/auth/me'),
+  changePassword: (body) => apiFetch('/api/auth/password', { method: 'PATCH', body: JSON.stringify(body) }),
 };
 
 export const adminApi = {

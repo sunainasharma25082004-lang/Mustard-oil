@@ -13,6 +13,7 @@ export const ADMIN_NAV_ITEMS = [
   { path: '/distributors', label: 'Distributors', icon: '🤝', permission: 'distributors' },
   { path: '/users', label: 'Users', icon: '👤', permission: 'users' },
   { path: '/team', label: 'Team & Access', icon: '🔐', superAdminOnly: true },
+  { path: '/super-admin-account', label: 'Super Admin Account', icon: '👑', superAdminOnly: true },
 ];
 
 export const ROUTE_PERMISSIONS = {

@@ -18,6 +18,7 @@ import AdminRecipes from './pages/AdminRecipes';
 import AdminCertificates from './pages/AdminCertificates';
 import AdminSiteImages from './pages/AdminSiteImages';
 import AdminTeam from './pages/AdminTeam';
+import AdminSuperAdminAccount from './pages/AdminSuperAdminAccount';
 import { useAuth } from './context/AuthContext';
 import { getDefaultAdminPath } from './utils/permissions';
 
@@ -59,6 +60,7 @@ function App() {
             <Route path="certificates" element={<ProtectedPage permission="certificates" element={<AdminCertificates />} />} />
             <Route path="site-images" element={<ProtectedPage permission="site-images" element={<AdminSiteImages />} />} />
             <Route path="team" element={<AdminTeam />} />
+            <Route path="super-admin-account" element={<AdminSuperAdminAccount />} />
           </Route>
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>

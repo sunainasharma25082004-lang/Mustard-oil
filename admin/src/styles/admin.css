@@ -418,6 +418,31 @@ body,
   margin-bottom: 16px;
 }
 
+.admin-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.admin-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-info-label {
+  color: #888;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-info-value {
+  color: #fff;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
 .admin-form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1388,6 +1413,10 @@ body.admin-menu-open {
   }
 
   .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-info-grid {
     grid-template-columns: 1fr;
   }
 
