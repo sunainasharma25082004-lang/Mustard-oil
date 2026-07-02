@@ -1,11 +1,9 @@
-const DEFAULT_GA_MEASUREMENT_ID = 'G-CZ7HQG57CM';
-const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID?.trim() || DEFAULT_GA_MEASUREMENT_ID;
+const GA_MEASUREMENT_ID = 'G-CZ7HQG57CM';
 
 export function isAnalyticsEnabled() {
   return Boolean(GA_MEASUREMENT_ID);
 }
 
-/** Ensures gtag stub exists before the async gtag.js script finishes loading. */
 export function initAnalytics() {
   if (!GA_MEASUREMENT_ID || typeof window === 'undefined') {
     return;
@@ -24,9 +22,8 @@ export function trackPageView(path, title = document.title) {
     return;
   }
 
-  window.gtag('event', 'page_view', {
+  window.gtag('config', GA_MEASUREMENT_ID, {
     page_path: path,
     page_title: title,
-    page_location: window.location.href,
   });
 }
