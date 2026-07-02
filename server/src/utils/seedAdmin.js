@@ -5,11 +5,16 @@ const seedAdmin = async () => {
   const password = process.env.ADMIN_PASSWORD;
   const name = process.env.ADMIN_NAME || 'Admin';
 
-  const adminCount = await User.countDocuments({ role: 'admin' });
+  if (!email) {
+    console.log('Admin seed skipped: ADMIN_EMAIL not set');
+    return;
+  }
 
-  if (adminCount === 0) {
-    if (!email || !password) {
-      console.log('Admin seed skipped: ADMIN_EMAIL or ADMIN_PASSWORD not set');
+  let user = await User.findOne({ email });
+
+  if (!user) {
+    if (!password) {
+      console.log(`Admin seed skipped: ${email} not found and ADMIN_PASSWORD not set`);
       return;
     }
 
@@ -18,24 +23,27 @@ const seedAdmin = async () => {
     return;
   }
 
-  const superAdminCount = await User.countDocuments({ role: 'admin', isSuperAdmin: true });
-  if (superAdminCount > 0) return;
+  let changed = false;
 
-  let candidate = null;
-
-  if (email) {
-    candidate = await User.findOne({ role: 'admin', email });
+  if (user.role !== 'admin') {
+    user.role = 'admin';
+    changed = true;
   }
 
-  if (!candidate) {
-    candidate = await User.findOne({ role: 'admin' }).sort({ createdAt: 1 });
+  if (!user.isSuperAdmin) {
+    user.isSuperAdmin = true;
+    changed = true;
   }
 
-  if (!candidate) return;
+  if (name && user.name !== name) {
+    user.name = name;
+    changed = true;
+  }
 
-  candidate.isSuperAdmin = true;
-  await candidate.save();
-  console.log(`Promoted existing admin to Super Admin: ${candidate.email}`);
+  if (changed) {
+    await user.save();
+    console.log(`Ensured Super Admin: ${email}`);
+  }
 };
 
 module.exports = seedAdmin;
