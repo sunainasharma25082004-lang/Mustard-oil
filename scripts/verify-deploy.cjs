@@ -67,6 +67,9 @@ console.log('\nRender env checklist (set in dashboard — do NOT commit secrets)
   'VITE_API_URL (store + admin)',
   'VITE_RAZORPAY_KEY_ID (store)',
   'VITE_STORE_URL (admin)',
+  'VITE_GA_MEASUREMENT_ID (store)',
+  'GA4_PROPERTY_ID (api)',
+  'GA4_SERVICE_ACCOUNT_JSON (api)',
 ].forEach((item) => ok(item));
 
 console.log(failed ? `\n❌ ${failed} check(s) failed\n` : '\n✅ Ready to push — Render will auto-deploy on git push\n');

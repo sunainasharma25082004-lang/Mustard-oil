@@ -1,30 +1,22 @@
-const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID?.trim() || '';
-
-let initialized = false;
+const DEFAULT_GA_MEASUREMENT_ID = 'G-CZ7HQG57CM';
+const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID?.trim() || DEFAULT_GA_MEASUREMENT_ID;
 
 export function isAnalyticsEnabled() {
   return Boolean(GA_MEASUREMENT_ID);
 }
 
+/** Ensures gtag stub exists before the async gtag.js script finishes loading. */
 export function initAnalytics() {
-  if (!GA_MEASUREMENT_ID || initialized || typeof window === 'undefined') {
+  if (!GA_MEASUREMENT_ID || typeof window === 'undefined') {
     return;
   }
 
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag() {
-    window.dataLayer.push(arguments);
-  };
-
-  window.gtag('js', new Date());
-  window.gtag('config', GA_MEASUREMENT_ID, { send_page_view: false });
-
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
-  document.head.appendChild(script);
-
-  initialized = true;
+  if (typeof window.gtag !== 'function') {
+    window.gtag = function gtag() {
+      window.dataLayer.push(arguments);
+    };
+  }
 }
 
 export function trackPageView(path, title = document.title) {
