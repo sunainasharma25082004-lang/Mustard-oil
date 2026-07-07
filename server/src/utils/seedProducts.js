@@ -46,20 +46,26 @@ const seedProducts = async () => {
     console.log(`Removed ${deleteResult.deletedCount} legacy products (500 ML and 2 Litre)`);
   }
 
+  const INITIAL_SEED_KEY = 'initial-products-seeded';
+  const initialSeedFlag = await Settings.findOne({ key: INITIAL_SEED_KEY });
+
   let added = 0;
 
-  for (const product of defaultProducts) {
-    const exists = await Product.findOne({ slug: product.slug });
+  if (!initialSeedFlag) {
+    for (const product of defaultProducts) {
+      const exists = await Product.findOne({ slug: product.slug });
 
-    if (!exists) {
-      // Only create defaults on first run — never overwrite admin edits on restart/deploy.
-      await Product.create({ ...product, isActive: true });
-      added += 1;
+      if (!exists) {
+        await Product.create({ ...product, isActive: true });
+        added += 1;
+      }
     }
-  }
 
-  if (added > 0) {
-    console.log(`Default products seeded (${added} new) — admin changes are kept on future restarts`);
+    if (added > 0) {
+      console.log(`Default products seeded (${added} new) — admin changes are kept on future restarts`);
+    }
+
+    await Settings.create({ key: INITIAL_SEED_KEY });
   }
 
   // One-time pricing update — runs once on deploy, then admin edits stay permanent.

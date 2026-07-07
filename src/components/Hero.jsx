@@ -9,10 +9,9 @@ const MOBILE_FALLBACK = "/mobile-banner.png";
 function Hero() {
   const { heroDesktop, heroMobile } = useSiteImages();
 
-  // If heroDesktop is not set in DB, fallback to the original default image
   const desktopBanner =
-    heroDesktop && heroDesktop !== "/hero-desktop-new.png"
-      ? resolveImageUrl(heroDesktop)
+    heroDesktop && !heroDesktop.includes("hero-desktop-new.png")
+      ? heroDesktop
       : DESKTOP_FALLBACK;
 
   const mobileBanner =
