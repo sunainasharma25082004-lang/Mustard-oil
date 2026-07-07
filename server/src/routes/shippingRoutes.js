@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.get('/config', getShippingConfig);
 router.get('/serviceability', getServiceability);
+router.post('/serviceability', getServiceability);
 
 module.exports = router;
