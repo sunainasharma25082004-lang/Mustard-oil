@@ -2,20 +2,45 @@ export function isGeolocationSupported() {
   return typeof navigator !== 'undefined' && 'geolocation' in navigator;
 }
 
-export function getBrowserPosition(options = {}) {
-  return new Promise((resolve, reject) => {
-    if (!isGeolocationSupported()) {
-      reject(new Error('Your browser does not support location access.'));
-      return;
-    }
+async function getGeoPermissionState() {
+  if (typeof navigator === 'undefined' || !navigator.permissions?.query) {
+    return null;
+  }
 
+  try {
+    const result = await navigator.permissions.query({ name: 'geolocation' });
+    return result.state;
+  } catch {
+    return null;
+  }
+}
+
+export async function getBrowserPosition(options = {}) {
+  if (!isGeolocationSupported()) {
+    throw new Error('Your browser does not support location access.');
+  }
+
+  if (typeof window !== 'undefined' && !window.isSecureContext) {
+    throw new Error(
+      'Location access works only on a secure connection. Please use https or localhost and allow location.'
+    );
+  }
+
+  const permissionState = await getGeoPermissionState();
+  if (permissionState === 'denied') {
+    throw new Error(
+      'Location access is blocked in browser settings. Please enable location for this site and try again.'
+    );
+  }
+
+  return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(
       resolve,
       (error) => {
         if (error.code === error.PERMISSION_DENIED) {
           reject(
             new Error(
-              'Location permission denied. Browser settings se location allow karo, phir dubara try karo.'
+              'Location permission denied. Please allow location access for this site and try again.'
             )
           );
           return;
