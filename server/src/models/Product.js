@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
   {
@@ -28,7 +28,7 @@ const productSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: '/bottle.png',
+      default: "/bottle.png",
     },
     images: {
       type: [String],
@@ -37,16 +37,36 @@ const productSchema = new mongoose.Schema(
         validator(value) {
           return !value || value.length <= 10;
         },
-        message: 'A product can have at most 10 images',
+        message: "A product can have at most 10 images",
       },
     },
     badge: {
       type: String,
-      default: '',
+      default: "",
     },
     size: {
       type: String,
       trim: true,
+    },
+    shippingWeightKg: {
+      type: Number,
+      default: 0.5,
+      min: 0.1,
+    },
+    shippingLengthCm: {
+      type: Number,
+      default: 20,
+      min: 1,
+    },
+    shippingBreadthCm: {
+      type: Number,
+      default: 15,
+      min: 1,
+    },
+    shippingHeightCm: {
+      type: Number,
+      default: 10,
+      min: 1,
     },
     inStock: {
       type: Boolean,
@@ -57,7 +77,7 @@ const productSchema = new mongoose.Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-module.exports = mongoose.model('Product', productSchema);
+module.exports = mongoose.model("Product", productSchema);

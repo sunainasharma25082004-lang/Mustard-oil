@@ -1,16 +1,20 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const orderItemSchema = new mongoose.Schema(
   {
     product: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
+      ref: "Product",
     },
     productName: { type: String, required: true },
     quantity: { type: Number, required: true, min: 1 },
     price: { type: Number, required: true, min: 0 },
+    shippingWeightKg: { type: Number, default: 0.5, min: 0.1 },
+    shippingLengthCm: { type: Number, default: 20, min: 1 },
+    shippingBreadthCm: { type: Number, default: 15, min: 1 },
+    shippingHeightCm: { type: Number, default: 10, min: 1 },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const orderSchema = new mongoose.Schema(
@@ -22,7 +26,7 @@ const orderSchema = new mongoose.Schema(
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
     },
     customer: {
       fullName: { type: String, required: true, trim: true },
@@ -30,37 +34,37 @@ const orderSchema = new mongoose.Schema(
       email: { type: String, trim: true, lowercase: true },
       address: { type: String, required: true, trim: true },
       city: { type: String, required: true, trim: true },
-      state: { type: String, trim: true, default: '' },
+      state: { type: String, trim: true, default: "" },
       pincode: { type: String, required: true, trim: true },
     },
     items: {
       type: [orderItemSchema],
-      validate: [(v) => v.length > 0, 'Order must have at least one item'],
+      validate: [(v) => v.length > 0, "Order must have at least one item"],
     },
     subtotal: { type: Number, required: true, min: 0 },
     deliveryCharge: { type: Number, required: true, min: 0, default: 0 },
     totalAmount: { type: Number, required: true, min: 0 },
     status: {
       type: String,
-      enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
-      default: 'pending',
+      enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
+      default: "pending",
     },
     paymentStatus: {
       type: String,
-      enum: ['pending', 'paid', 'failed', 'refunded'],
-      default: 'pending',
+      enum: ["pending", "paid", "failed", "refunded"],
+      default: "pending",
     },
     paymentMethod: {
       type: String,
-      enum: ['cod', 'online'],
-      default: 'online',
+      enum: ["cod", "online"],
+      default: "online",
     },
     razorpayOrderId: { type: String },
     razorpayPaymentId: { type: String },
     deliveryDays: { type: Number, min: 1, max: 30 },
     expectedDeliveryDate: { type: Date },
     cancellationReason: { type: String, trim: true },
-    cancelledBy: { type: String, enum: ['user', 'admin'] },
+    cancelledBy: { type: String, enum: ["user", "admin"] },
     cancelledAt: { type: Date },
     shiprocket: {
       shipmentId: { type: Number },
@@ -77,7 +81,7 @@ const orderSchema = new mongoose.Schema(
       createdAt: { type: Date },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-module.exports = mongoose.model('Order', orderSchema);
+module.exports = mongoose.model("Order", orderSchema);

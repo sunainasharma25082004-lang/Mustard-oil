@@ -1,17 +1,25 @@
-import { useEffect, useRef, useState } from 'react';
-import { adminApi } from '../utils/api';
-import { resolveImageUrl } from '../utils/imageUrl';
-import { getProductImages, getProductPrimaryImage, MAX_PRODUCT_IMAGES } from '../utils/productImages';
+import { useEffect, useRef, useState } from "react";
+import { adminApi } from "../utils/api";
+import { resolveImageUrl } from "../utils/imageUrl";
+import {
+  getProductImages,
+  getProductPrimaryImage,
+  MAX_PRODUCT_IMAGES,
+} from "../utils/productImages";
 
 const emptyForm = {
-  name: '',
-  description: '',
-  price: '',
-  originalPrice: '',
-  image: '',
+  name: "",
+  description: "",
+  price: "",
+  originalPrice: "",
+  image: "",
   images: [],
-  badge: '',
-  size: '',
+  badge: "",
+  size: "",
+  shippingWeightKg: "",
+  shippingLengthCm: "",
+  shippingBreadthCm: "",
+  shippingHeightCm: "",
   inStock: true,
   isActive: true,
 };
@@ -25,12 +33,12 @@ function AdminProducts() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
-  const [selectedFileName, setSelectedFileName] = useState('');
-  const [localPreview, setLocalPreview] = useState('');
-  const [error, setError] = useState('');
-  const [imageUrlInput, setImageUrlInput] = useState('');
+  const [selectedFileName, setSelectedFileName] = useState("");
+  const [localPreview, setLocalPreview] = useState("");
+  const [error, setError] = useState("");
+  const [imageUrlInput, setImageUrlInput] = useState("");
   const fileInputRef = useRef(null);
-  const localPreviewRef = useRef('');
+  const localPreviewRef = useRef("");
 
   const loadProducts = () => {
     setLoading(true);
@@ -56,18 +64,18 @@ function AdminProducts() {
   const clearLocalPreview = () => {
     if (localPreviewRef.current) {
       URL.revokeObjectURL(localPreviewRef.current);
-      localPreviewRef.current = '';
+      localPreviewRef.current = "";
     }
-    setLocalPreview('');
+    setLocalPreview("");
   };
 
   const resetUploadState = () => {
-    setSelectedFileName('');
+    setSelectedFileName("");
     setDragOver(false);
-    setImageUrlInput('');
+    setImageUrlInput("");
     clearLocalPreview();
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
@@ -80,9 +88,9 @@ function AdminProducts() {
   useEffect(() => {
     if (showModal) {
       const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
       return () => {
-        document.body.style.overflow = prev || '';
+        document.body.style.overflow = prev || "";
       };
     }
   }, [showModal]);
@@ -90,7 +98,7 @@ function AdminProducts() {
   const openAdd = () => {
     setEditing(null);
     setForm(emptyForm);
-    setError('');
+    setError("");
     resetUploadState();
     setShowModal(true);
   };
@@ -100,24 +108,28 @@ function AdminProducts() {
     setEditing(product);
     setForm({
       name: product.name,
-      description: product.description || '',
+      description: product.description || "",
       price: product.price,
-      originalPrice: product.originalPrice || '',
-      image: images[0] || '',
+      originalPrice: product.originalPrice || "",
+      image: images[0] || "",
       images,
-      badge: product.badge || '',
-      size: product.size || '',
+      badge: product.badge || "",
+      size: product.size || "",
+      shippingWeightKg: product.shippingWeightKg ?? "",
+      shippingLengthCm: product.shippingLengthCm ?? "",
+      shippingBreadthCm: product.shippingBreadthCm ?? "",
+      shippingHeightCm: product.shippingHeightCm ?? "",
       inStock: product.inStock,
       isActive: product.isActive,
     });
-    setError('');
+    setError("");
     resetUploadState();
     setShowModal(true);
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const nextValue = type === 'checkbox' ? checked : value;
+    const nextValue = type === "checkbox" ? checked : value;
 
     setForm({ ...form, [name]: nextValue });
   };
@@ -132,7 +144,7 @@ function AdminProducts() {
     }
 
     if (form.images.includes(nextUrl)) {
-      setError('This image is already added.');
+      setError("This image is already added.");
       return false;
     }
 
@@ -142,24 +154,26 @@ function AdminProducts() {
       images: nextImages,
       image: nextImages[0],
     });
-    setError('');
+    setError("");
     return true;
   };
 
   const removeImage = (index) => {
     setForm((prev) => {
-      const nextImages = prev.images.filter((_, itemIndex) => itemIndex !== index);
+      const nextImages = prev.images.filter(
+        (_, itemIndex) => itemIndex !== index,
+      );
       return {
         ...prev,
         images: nextImages,
-        image: nextImages[0] || '',
+        image: nextImages[0] || "",
       };
     });
   };
 
   const uploadFile = async (file) => {
-    if (!file.type.startsWith('image/')) {
-      setError('Please choose a valid image file (JPG, PNG, WebP)');
+    if (!file.type.startsWith("image/")) {
+      setError("Please choose a valid image file (JPG, PNG, WebP)");
       return;
     }
 
@@ -169,7 +183,7 @@ function AdminProducts() {
     }
 
     setUploading(true);
-    setError('');
+    setError("");
     setSelectedFileName(file.name);
 
     clearLocalPreview();
@@ -183,7 +197,7 @@ function AdminProducts() {
       appendImage(res.data.url);
     } catch (err) {
       setError(err.message);
-      setSelectedFileName('');
+      setSelectedFileName("");
       clearLocalPreview();
     } finally {
       setUploading(false);
@@ -192,12 +206,12 @@ function AdminProducts() {
 
   const handleAddImageUrl = () => {
     if (!imageUrlInput.trim()) {
-      setError('Paste an image URL first.');
+      setError("Paste an image URL first.");
       return;
     }
 
     if (appendImage(imageUrlInput)) {
-      setImageUrlInput('');
+      setImageUrlInput("");
     }
   };
 
@@ -219,17 +233,33 @@ function AdminProducts() {
     e.preventDefault();
 
     if (!form.images.length) {
-      setError('Please add at least one product image before saving.');
+      setError("Please add at least one product image before saving.");
       return;
     }
 
     setSaving(true);
-    setError('');
+    setError("");
 
     const payload = {
       ...form,
       images: form.images,
       image: form.images[0],
+      shippingWeightKg:
+        form.shippingWeightKg === ""
+          ? undefined
+          : Number(form.shippingWeightKg),
+      shippingLengthCm:
+        form.shippingLengthCm === ""
+          ? undefined
+          : Number(form.shippingLengthCm),
+      shippingBreadthCm:
+        form.shippingBreadthCm === ""
+          ? undefined
+          : Number(form.shippingBreadthCm),
+      shippingHeightCm:
+        form.shippingHeightCm === ""
+          ? undefined
+          : Number(form.shippingHeightCm),
     };
 
     try {
@@ -248,9 +278,10 @@ function AdminProducts() {
   };
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Delete "${name}" permanently? This cannot be undone.`)) return;
+    if (!window.confirm(`Delete "${name}" permanently? This cannot be undone.`))
+      return;
 
-    setError('');
+    setError("");
     try {
       await adminApi.deleteProduct(id);
       setProducts((prev) => prev.filter((p) => p._id !== id));
@@ -261,7 +292,9 @@ function AdminProducts() {
 
   const handleToggleActive = async (product) => {
     try {
-      await adminApi.updateProduct(product._id, { isActive: !product.isActive });
+      await adminApi.updateProduct(product._id, {
+        isActive: !product.isActive,
+      });
       loadProducts();
     } catch (err) {
       setError(err.message);
@@ -273,18 +306,24 @@ function AdminProducts() {
       <div className="admin-header">
         <div>
           <h1>Products</h1>
-          <p className="admin-header-sub">Manage store products, images and pricing</p>
+          <p className="admin-header-sub">
+            Manage store products, images and pricing
+          </p>
         </div>
         <button className="admin-btn admin-btn-primary" onClick={openAdd}>
           + Add Product
         </button>
       </div>
 
-      {error && !showModal && <div className="admin-error" style={{ marginBottom: 20 }}>{error}</div>}
+      {error && !showModal && (
+        <div className="admin-error" style={{ marginBottom: 20 }}>
+          {error}
+        </div>
+      )}
 
       <div className="admin-card">
         {loading ? (
-          <p style={{ color: '#888' }}>Loading...</p>
+          <p style={{ color: "#888" }}>Loading...</p>
         ) : products.length === 0 ? (
           <div className="admin-empty-state">
             <p>No products yet</p>
@@ -316,66 +355,106 @@ function AdminProducts() {
                     />
                   </td>
                   <td>
-                    <strong style={{ color: '#fff' }}>{p.name}</strong>
+                    <strong style={{ color: "#fff" }}>{p.name}</strong>
                     {p.badge && (
-                      <span className="admin-badge admin-badge-pending" style={{ marginLeft: 8 }}>
+                      <span
+                        className="admin-badge admin-badge-pending"
+                        style={{ marginLeft: 8 }}
+                      >
                         {p.badge}
                       </span>
                     )}
                   </td>
-                  <td>{p.size || '-'}</td>
-                  <td style={{ whiteSpace: 'nowrap' }}>
+                  <td>{p.size || "-"}</td>
+                  <td style={{ whiteSpace: "nowrap" }}>
                     {p.originalPrice && p.originalPrice > p.price ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                        <span style={{ 
-                          textDecoration: 'line-through', 
-                          color: '#d4af37', 
-                          fontSize: '0.85rem',
-                          fontWeight: 500,
-                          opacity: 0.75
-                        }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <span
+                          style={{
+                            textDecoration: "line-through",
+                            color: "#d4af37",
+                            fontSize: "0.85rem",
+                            fontWeight: 500,
+                            opacity: 0.75,
+                          }}
+                        >
                           ₹{p.originalPrice}
                         </span>
-                        <span style={{ 
-                          fontSize: '0.62rem', 
-                          color: '#b89c5e', 
-                          fontWeight: 700,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.6px'
-                        }}>
+                        <span
+                          style={{
+                            fontSize: "0.62rem",
+                            color: "#b89c5e",
+                            fontWeight: 700,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.6px",
+                          }}
+                        >
                           Discounted
                         </span>
-                        <span style={{ color: '#d4af37', fontWeight: 700, fontSize: '1.05rem' }}>
+                        <span
+                          style={{
+                            color: "#d4af37",
+                            fontWeight: 700,
+                            fontSize: "1.05rem",
+                          }}
+                        >
                           ₹{p.price}
                         </span>
-                        <span style={{ 
-                          fontSize: '0.65rem', 
-                          background: 'rgba(212,175,55,0.15)', 
-                          color: '#d4af37', 
-                          padding: '1px 6px', 
-                          borderRadius: '3px',
-                          fontWeight: 600,
-                          border: '1px solid rgba(212,175,55,0.35)'
-                        }}>
-                          {Math.round(((p.originalPrice - p.price) / p.originalPrice) * 100)}% OFF
+                        <span
+                          style={{
+                            fontSize: "0.65rem",
+                            background: "rgba(212,175,55,0.15)",
+                            color: "#d4af37",
+                            padding: "1px 6px",
+                            borderRadius: "3px",
+                            fontWeight: 600,
+                            border: "1px solid rgba(212,175,55,0.35)",
+                          }}
+                        >
+                          {Math.round(
+                            ((p.originalPrice - p.price) / p.originalPrice) *
+                              100,
+                          )}
+                          % OFF
                         </span>
                       </div>
                     ) : (
-                      <span style={{ color: '#d4af37', fontWeight: 700 }}>₹{p.price}</span>
+                      <span style={{ color: "#d4af37", fontWeight: 700 }}>
+                        ₹{p.price}
+                      </span>
                     )}
                   </td>
-                  <td>{p.inStock ? 'In Stock' : 'Out of Stock'}</td>
+                  <td>{p.inStock ? "In Stock" : "Out of Stock"}</td>
                   <td>
-                    <span className={`admin-badge ${p.isActive ? 'admin-badge-active' : 'admin-badge-inactive'}`}>
-                      {p.isActive ? 'Active' : 'Inactive'}
+                    <span
+                      className={`admin-badge ${p.isActive ? "admin-badge-active" : "admin-badge-inactive"}`}
+                    >
+                      {p.isActive ? "Active" : "Inactive"}
                     </span>
                   </td>
                   <td>
-                    <button type="button" className="admin-btn admin-btn-outline admin-btn-sm" onClick={() => openEdit(p)} style={{ marginRight: 8 }}>
+                    <button
+                      type="button"
+                      className="admin-btn admin-btn-outline admin-btn-sm"
+                      onClick={() => openEdit(p)}
+                      style={{ marginRight: 8 }}
+                    >
                       Edit
                     </button>
-                    <button type="button" className="admin-btn admin-btn-outline admin-btn-sm" onClick={() => handleToggleActive(p)} style={{ marginRight: 8 }}>
-                      {p.isActive ? 'Deactivate' : 'Activate'}
+                    <button
+                      type="button"
+                      className="admin-btn admin-btn-outline admin-btn-sm"
+                      onClick={() => handleToggleActive(p)}
+                      style={{ marginRight: 8 }}
+                    >
+                      {p.isActive ? "Deactivate" : "Activate"}
                     </button>
                     <button
                       type="button"
@@ -394,16 +473,26 @@ function AdminProducts() {
 
       {showModal && (
         <div className="admin-modal-overlay" onClick={closeModal}>
-          <div className="admin-modal admin-product-modal" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="admin-modal admin-product-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="admin-product-modal-header">
               <div>
                 <span className="admin-product-modal-eyebrow">
-                  {editing ? 'Update listing' : 'New listing'}
+                  {editing ? "Update listing" : "New listing"}
                 </span>
-                <h2>{editing ? 'Edit Product' : 'Add Product'}</h2>
-                <p>Fill details below — same content will show on your store.</p>
+                <h2>{editing ? "Edit Product" : "Add Product"}</h2>
+                <p>
+                  Fill details below — same content will show on your store.
+                </p>
               </div>
-              <button type="button" className="admin-modal-close" onClick={closeModal} aria-label="Close">
+              <button
+                type="button"
+                className="admin-modal-close"
+                onClick={closeModal}
+                aria-label="Close"
+              >
                 ×
               </button>
             </div>
@@ -418,16 +507,27 @@ function AdminProducts() {
                       Product Images ({form.images.length}/{MAX_PRODUCT_IMAGES})
                     </label>
                     <p className="admin-image-gallery-hint">
-                      First image is the cover photo. Add up to {MAX_PRODUCT_IMAGES} images like Flipkart.
+                      First image is the cover photo. Add up to{" "}
+                      {MAX_PRODUCT_IMAGES} images like Flipkart.
                     </p>
                   </div>
 
                   {form.images.length > 0 && (
                     <div className="admin-image-gallery-grid">
                       {form.images.map((image, index) => (
-                        <div className="admin-image-gallery-item" key={`${image}-${index}`}>
-                          <img src={resolveImageUrl(image)} alt={`Product image ${index + 1}`} />
-                          {index === 0 && <span className="admin-image-gallery-cover">Cover</span>}
+                        <div
+                          className="admin-image-gallery-item"
+                          key={`${image}-${index}`}
+                        >
+                          <img
+                            src={resolveImageUrl(image)}
+                            alt={`Product image ${index + 1}`}
+                          />
+                          {index === 0 && (
+                            <span className="admin-image-gallery-cover">
+                              Cover
+                            </span>
+                          )}
                           <button
                             type="button"
                             className="admin-image-gallery-remove"
@@ -443,16 +543,18 @@ function AdminProducts() {
 
                   {form.images.length < MAX_PRODUCT_IMAGES && (
                     <div
-                      className={`admin-image-dropzone admin-image-dropzone-compact ${dragOver ? 'drag-over' : ''} ${uploading ? 'uploading' : ''}`}
+                      className={`admin-image-dropzone admin-image-dropzone-compact ${dragOver ? "drag-over" : ""} ${uploading ? "uploading" : ""}`}
                       onDragOver={(e) => {
                         e.preventDefault();
                         setDragOver(true);
                       }}
                       onDragLeave={() => setDragOver(false)}
                       onDrop={handleDrop}
-                      onClick={() => !uploading && fileInputRef.current?.click()}
+                      onClick={() =>
+                        !uploading && fileInputRef.current?.click()
+                      }
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
+                        if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
                           fileInputRef.current?.click();
                         }
@@ -470,7 +572,9 @@ function AdminProducts() {
 
                       <div className="admin-image-dropzone-empty">
                         <span className="admin-image-dropzone-icon">📷</span>
-                        <strong>{uploading ? 'Uploading...' : 'Add product image'}</strong>
+                        <strong>
+                          {uploading ? "Uploading..." : "Add product image"}
+                        </strong>
                         <span>Click or drag image here</span>
                       </div>
                     </div>
@@ -481,7 +585,9 @@ function AdminProducts() {
                   )}
 
                   {localPreview && uploading && (
-                    <p className="admin-image-file-name">Uploading preview...</p>
+                    <p className="admin-image-file-name">
+                      Uploading preview...
+                    </p>
                   )}
 
                   {form.images.length < MAX_PRODUCT_IMAGES && (
@@ -508,7 +614,12 @@ function AdminProducts() {
                     <label className="admin-toggle-row">
                       <span>In Stock</span>
                       <span className="admin-toggle">
-                        <input name="inStock" type="checkbox" checked={form.inStock} onChange={handleChange} />
+                        <input
+                          name="inStock"
+                          type="checkbox"
+                          checked={form.inStock}
+                          onChange={handleChange}
+                        />
                         <span className="admin-toggle-slider" />
                       </span>
                     </label>
@@ -516,7 +627,12 @@ function AdminProducts() {
                     <label className="admin-toggle-row">
                       <span>Show on store</span>
                       <span className="admin-toggle">
-                        <input name="isActive" type="checkbox" checked={form.isActive} onChange={handleChange} />
+                        <input
+                          name="isActive"
+                          type="checkbox"
+                          checked={form.isActive}
+                          onChange={handleChange}
+                        />
                         <span className="admin-toggle-slider" />
                       </span>
                     </label>
@@ -524,7 +640,9 @@ function AdminProducts() {
                 </div>
 
                 <div className="admin-product-form-fields">
-                  <div className="admin-form-section-title">Product details</div>
+                  <div className="admin-form-section-title">
+                    Product details
+                  </div>
 
                   <div className="admin-form-group">
                     <label>Product Name *</label>
@@ -549,21 +667,78 @@ function AdminProducts() {
                     </div>
 
                     <div className="admin-form-group">
-                      <label>Current Price (₹) *</label>
+                      <label>Weight (kg)</label>
                       <input
-                        name="price"
+                        name="shippingWeightKg"
                         type="number"
-                        min="0"
-                        value={form.price}
+                        min="0.1"
+                        step="0.1"
+                        value={form.shippingWeightKg}
                         onChange={handleChange}
-                        placeholder="350"
-                        required
+                        placeholder="0.5"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="admin-form-row">
+                    <div className="admin-form-group">
+                      <label>Length (cm)</label>
+                      <input
+                        name="shippingLengthCm"
+                        type="number"
+                        min="1"
+                        step="1"
+                        value={form.shippingLengthCm}
+                        onChange={handleChange}
+                        placeholder="20"
+                      />
+                    </div>
+
+                    <div className="admin-form-group">
+                      <label>Breadth (cm)</label>
+                      <input
+                        name="shippingBreadthCm"
+                        type="number"
+                        min="1"
+                        step="1"
+                        value={form.shippingBreadthCm}
+                        onChange={handleChange}
+                        placeholder="15"
                       />
                     </div>
                   </div>
 
                   <div className="admin-form-group">
-                    <label>Original Price / MRP (optional — for strikethrough + discount)</label>
+                    <label>Height (cm)</label>
+                    <input
+                      name="shippingHeightCm"
+                      type="number"
+                      min="1"
+                      step="1"
+                      value={form.shippingHeightCm}
+                      onChange={handleChange}
+                      placeholder="10"
+                    />
+                  </div>
+
+                  <div className="admin-form-group">
+                    <label>Current Price (₹) *</label>
+                    <input
+                      name="price"
+                      type="number"
+                      min="0"
+                      value={form.price}
+                      onChange={handleChange}
+                      placeholder="350"
+                      required
+                    />
+                  </div>
+
+                  <div className="admin-form-group">
+                    <label>
+                      Original Price / MRP (optional — for strikethrough +
+                      discount)
+                    </label>
                     <input
                       name="originalPrice"
                       type="number"
@@ -572,8 +747,16 @@ function AdminProducts() {
                       onChange={handleChange}
                       placeholder="400 (leave empty if no discount)"
                     />
-                    <p style={{ fontSize: '0.75rem', color: '#888', marginTop: 4 }}>
-                      If set higher than current price, store will show: crossed old price (golden) + "Discounted" label + current price + % OFF badge
+                    <p
+                      style={{
+                        fontSize: "0.75rem",
+                        color: "#888",
+                        marginTop: 4,
+                      }}
+                    >
+                      If set higher than current price, store will show: crossed
+                      old price (golden) + "Discounted" label + current price +
+                      % OFF badge
                     </p>
                   </div>
 
@@ -584,25 +767,66 @@ function AdminProducts() {
                     if (orig > curr && curr > 0) {
                       const disc = Math.round(((orig - curr) / orig) * 100);
                       return (
-                        <div style={{
-                          marginTop: 8,
-                          padding: '10px 12px',
-                          background: 'rgba(0,0,0,0.3)',
-                          border: '1px solid rgba(212,175,55,0.2)',
-                          borderRadius: 6,
-                          fontSize: '0.9rem'
-                        }}>
-                          <div style={{ fontSize: '0.7rem', color: '#888', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        <div
+                          style={{
+                            marginTop: 8,
+                            padding: "10px 12px",
+                            background: "rgba(0,0,0,0.3)",
+                            border: "1px solid rgba(212,175,55,0.2)",
+                            borderRadius: 6,
+                            fontSize: "0.9rem",
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontSize: "0.7rem",
+                              color: "#888",
+                              marginBottom: 4,
+                              textTransform: "uppercase",
+                              letterSpacing: "0.5px",
+                            }}
+                          >
                             Customer preview (price row)
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                            <span style={{ textDecoration: 'line-through', color: '#d4af37', fontSize: '0.9rem', fontWeight: 500, opacity: 0.75 }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "6px",
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            <span
+                              style={{
+                                textDecoration: "line-through",
+                                color: "#d4af37",
+                                fontSize: "0.9rem",
+                                fontWeight: 500,
+                                opacity: 0.75,
+                              }}
+                            >
                               ₹{orig}
                             </span>
-                            <span style={{ fontSize: '0.62rem', color: '#b89c5e', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                            <span
+                              style={{
+                                fontSize: "0.62rem",
+                                color: "#b89c5e",
+                                fontWeight: 700,
+                                textTransform: "uppercase",
+                                letterSpacing: "0.6px",
+                              }}
+                            >
                               Discounted
                             </span>
-                            <span style={{ color: '#d4af37', fontWeight: 700, fontSize: '1.05rem' }}>₹{curr}</span>
+                            <span
+                              style={{
+                                color: "#d4af37",
+                                fontWeight: 700,
+                                fontSize: "1.05rem",
+                              }}
+                            >
+                              ₹{curr}
+                            </span>
                           </div>
                         </div>
                       );
@@ -634,11 +858,23 @@ function AdminProducts() {
               </div>
 
               <div className="admin-product-form-footer">
-                <button type="button" className="admin-btn admin-btn-outline" onClick={closeModal}>
+                <button
+                  type="button"
+                  className="admin-btn admin-btn-outline"
+                  onClick={closeModal}
+                >
                   Cancel
                 </button>
-                <button type="submit" className="admin-btn admin-btn-primary" disabled={saving || uploading}>
-                  {saving ? 'Saving...' : editing ? 'Save Changes' : 'Publish Product'}
+                <button
+                  type="submit"
+                  className="admin-btn admin-btn-primary"
+                  disabled={saving || uploading}
+                >
+                  {saving
+                    ? "Saving..."
+                    : editing
+                      ? "Save Changes"
+                      : "Publish Product"}
                 </button>
               </div>
             </form>

@@ -1,19 +1,22 @@
-import { Link } from 'react-router-dom';
-import { useSiteImages } from '../context/SiteImagesContext';
-import { HOME_ASSETS } from '../utils/homeAssets';
-import { resolveImageUrl } from '../utils/imageUrl';
+import { Link } from "react-router-dom";
+import { useSiteImages } from "../context/SiteImagesContext";
+import { HOME_ASSETS } from "../utils/homeAssets";
+import { resolveImageUrl } from "../utils/imageUrl";
 
-const MOBILE_FALLBACK = '/mobile-banner.png';
+const DESKTOP_FALLBACK = resolveImageUrl(HOME_ASSETS.bannerBrand1);
+const MOBILE_FALLBACK = "/mobile-banner.png";
 
 function Hero() {
   const { heroDesktop, heroMobile } = useSiteImages();
 
   // If heroDesktop is not set in DB, fallback to the original default image
-  const desktopBanner = heroDesktop && heroDesktop !== '/hero-desktop-new.png' 
-    ? resolveImageUrl(heroDesktop) 
-    : resolveImageUrl(HOME_ASSETS.bannerBrand1);
-    
-  const mobileBanner = heroMobile || resolveImageUrl(HOME_ASSETS.mobileBanner) || MOBILE_FALLBACK;
+  const desktopBanner =
+    heroDesktop && heroDesktop !== "/hero-desktop-new.png"
+      ? resolveImageUrl(heroDesktop)
+      : DESKTOP_FALLBACK;
+
+  const mobileBanner =
+    heroMobile || resolveImageUrl(HOME_ASSETS.mobileBanner) || MOBILE_FALLBACK;
 
   return (
     <section className="karyorHeroSection">
@@ -28,7 +31,10 @@ function Hero() {
               fetchPriority="high"
               decoding="async"
               onError={(e) => {
-                if (e.currentTarget.src !== window.location.origin + DESKTOP_FALLBACK) {
+                if (
+                  e.currentTarget.src !==
+                  window.location.origin + DESKTOP_FALLBACK
+                ) {
                   e.currentTarget.src = DESKTOP_FALLBACK;
                 }
               }}
@@ -51,7 +57,10 @@ function Hero() {
               fetchPriority="high"
               decoding="async"
               onError={(e) => {
-                if (e.currentTarget.src !== window.location.origin + MOBILE_FALLBACK) {
+                if (
+                  e.currentTarget.src !==
+                  window.location.origin + MOBILE_FALLBACK
+                ) {
                   e.currentTarget.src = MOBILE_FALLBACK;
                 }
               }}

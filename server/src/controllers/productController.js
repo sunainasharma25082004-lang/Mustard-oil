@@ -1,40 +1,44 @@
-const fs = require('fs');
-const path = require('path');
-const Product = require('../models/Product');
-const { cached, bust } = require('../utils/memoryCache');
+const fs = require("fs");
+const path = require("path");
+const Product = require("../models/Product");
+const { cached, bust } = require("../utils/memoryCache");
 const {
   MAX_PRODUCT_IMAGES,
   normalizeImagesInput,
   collectProductImagePaths,
-} = require('../utils/productImages');
+} = require("../utils/productImages");
 
-const PRODUCTS_CACHE_KEY = 'products:active';
+const PRODUCTS_CACHE_KEY = "products:active";
 const PRODUCT_CACHE_TTL_MS = 2 * 60 * 1000;
 
 const bustProductCache = () => {
-  bust('products:');
-  bust('content:home');
+  bust("products:");
+  bust("content:home");
 };
 
 const fetchActiveProducts = () =>
-  Product.find({ isActive: true }).sort({ price: 1 }).select('-__v').lean();
+  Product.find({ isActive: true }).sort({ price: 1 }).select("-__v").lean();
 
 const slugify = (text) =>
   text
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 
 const deleteUploadedImage = (imagePath) => {
-  if (!imagePath?.startsWith('/uploads/products/')) return;
-  const filePath = path.join(__dirname, '../..', imagePath);
+  if (!imagePath?.startsWith("/uploads/products/")) return;
+  const filePath = path.join(__dirname, "../..", imagePath);
   fs.unlink(filePath, () => {});
 };
 
 const getProducts = async (req, res, next) => {
   try {
-    const products = await cached(PRODUCTS_CACHE_KEY, PRODUCT_CACHE_TTL_MS, fetchActiveProducts);
+    const products = await cached(
+      PRODUCTS_CACHE_KEY,
+      PRODUCT_CACHE_TTL_MS,
+      fetchActiveProducts,
+    );
 
     res.json({
       success: true,
@@ -59,7 +63,7 @@ const getProduct = async (req, res, next) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Product not found',
+        message: "Product not found",
       });
     }
 
@@ -85,20 +89,33 @@ const getAllProductsAdmin = async (req, res, next) => {
 
 const createProduct = async (req, res, next) => {
   try {
-    const { name, description, price, originalPrice, badge, size, inStock, isActive } = req.body;
+    const {
+      name,
+      description,
+      price,
+      originalPrice,
+      badge,
+      size,
+      shippingWeightKg,
+      shippingLengthCm,
+      shippingBreadthCm,
+      shippingHeightCm,
+      inStock,
+      isActive,
+    } = req.body;
     const { images, image } = normalizeImagesInput(req.body);
 
     if (!name || price === undefined) {
       return res.status(400).json({
         success: false,
-        message: 'Product name and price are required',
+        message: "Product name and price are required",
       });
     }
 
     if (!images.length) {
       return res.status(400).json({
         success: false,
-        message: 'At least one product image is required',
+        message: "At least one product image is required",
       });
     }
 
@@ -114,6 +131,14 @@ const createProduct = async (req, res, next) => {
       images,
       badge,
       size,
+      shippingWeightKg:
+        shippingWeightKg === undefined ? undefined : Number(shippingWeightKg),
+      shippingLengthCm:
+        shippingLengthCm === undefined ? undefined : Number(shippingLengthCm),
+      shippingBreadthCm:
+        shippingBreadthCm === undefined ? undefined : Number(shippingBreadthCm),
+      shippingHeightCm:
+        shippingHeightCm === undefined ? undefined : Number(shippingHeightCm),
       inStock: inStock !== false,
       isActive: isActive !== false,
     });
@@ -122,7 +147,7 @@ const createProduct = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: 'Product created successfully',
+      message: "Product created successfully",
       data: product,
     });
   } catch (error) {
@@ -137,16 +162,36 @@ const updateProduct = async (req, res, next) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Product not found',
+        message: "Product not found",
       });
     }
 
-    const fields = ['name', 'description', 'price', 'originalPrice', 'badge', 'size', 'inStock', 'isActive'];
+    const fields = [
+      "name",
+      "description",
+      "price",
+      "originalPrice",
+      "badge",
+      "size",
+      "shippingWeightKg",
+      "shippingLengthCm",
+      "shippingBreadthCm",
+      "shippingHeightCm",
+      "inStock",
+      "isActive",
+    ];
 
     fields.forEach((field) => {
       if (req.body[field] !== undefined) {
-        if (field === 'price' || field === 'originalPrice') {
-          product[field] = req.body[field] === '' || req.body[field] == null ? undefined : Number(req.body[field]);
+        if (
+          field === "price" ||
+          field === "originalPrice" ||
+          field.startsWith("shipping")
+        ) {
+          product[field] =
+            req.body[field] === "" || req.body[field] == null
+              ? undefined
+              : Number(req.body[field]);
         } else {
           product[field] = req.body[field];
         }
@@ -162,7 +207,7 @@ const updateProduct = async (req, res, next) => {
       if (!images.length) {
         return res.status(400).json({
           success: false,
-          message: 'At least one product image is required',
+          message: "At least one product image is required",
         });
       }
 
@@ -181,7 +226,7 @@ const updateProduct = async (req, res, next) => {
 
     res.json({
       success: true,
-      message: 'Product updated successfully',
+      message: "Product updated successfully",
       data: product,
     });
   } catch (error) {
@@ -196,7 +241,7 @@ const deleteProduct = async (req, res, next) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Product not found',
+        message: "Product not found",
       });
     }
 
@@ -207,7 +252,7 @@ const deleteProduct = async (req, res, next) => {
 
     res.json({
       success: true,
-      message: 'Product deleted successfully',
+      message: "Product deleted successfully",
     });
   } catch (error) {
     next(error);
