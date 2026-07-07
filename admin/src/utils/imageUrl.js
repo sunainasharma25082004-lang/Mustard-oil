@@ -7,7 +7,7 @@ export function resolveImageUrl(image) {
   const trimmed = String(image).trim();
   if (!trimmed) return '';
 
-  if (/^https?:\/\//i.test(trimmed)) {
+  if (/^https?:\/\//i.test(trimmed) || /^data:image\//i.test(trimmed) || /^blob:/i.test(trimmed)) {
     return trimmed;
   }
 

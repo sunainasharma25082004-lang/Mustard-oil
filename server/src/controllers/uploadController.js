@@ -9,20 +9,18 @@ cloudinary.config({
 
 const ALLOWED_FOLDERS = new Set(['products', 'site', 'certificates', 'recipes']);
 
+const buildDataUrl = (file) => {
+  if (!file?.buffer?.length) return '';
+  const mime = file.mimetype || 'image/png';
+  return `data:${mime};base64,${file.buffer.toString('base64')}`;
+};
+
 const uploadImage = async (req, res, next) => {
   try {
     if (!req.file) {
       return res.status(400).json({
         success: false,
         message: 'Please select an image file',
-      });
-    }
-
-    // Only upload to Cloudinary if keys are configured, else fail gracefully
-    if (!process.env.CLOUDINARY_CLOUD_NAME) {
-      return res.status(500).json({
-        success: false,
-        message: 'Cloudinary is not configured. Please add API keys to environment variables.',
       });
     }
 
@@ -44,15 +42,49 @@ const uploadImage = async (req, res, next) => {
       });
     };
 
-    const result = await streamUpload(req);
+    let result = null;
+    const hasCloudinaryConfig = Boolean(
+      process.env.CLOUDINARY_CLOUD_NAME &&
+        process.env.CLOUDINARY_API_KEY &&
+        process.env.CLOUDINARY_API_SECRET
+    );
 
-    res.json({
+    if (hasCloudinaryConfig) {
+      try {
+        result = await streamUpload(req);
+      } catch {
+        result = null;
+      }
+    }
+
+    if (result?.secure_url) {
+      return res.json({
+        success: true,
+        message: 'Image uploaded successfully',
+        data: {
+          url: result.secure_url,
+          publicId: result.public_id,
+          folder,
+        },
+      });
+    }
+
+    const fallbackUrl = buildDataUrl(req.file);
+    if (!fallbackUrl) {
+      return res.status(500).json({
+        success: false,
+        message: 'Image upload failed. Please try again with a smaller image.',
+      });
+    }
+
+    return res.json({
       success: true,
-      message: 'Image uploaded successfully',
+      message: 'Image uploaded successfully using local fallback.',
       data: {
-        url: result.secure_url,
-        publicId: result.public_id,
+        url: fallbackUrl,
+        publicId: null,
         folder,
+        fallback: true,
       },
     });
   } catch (error) {
