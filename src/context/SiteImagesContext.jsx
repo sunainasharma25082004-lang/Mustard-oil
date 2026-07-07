@@ -41,14 +41,17 @@ export function SiteImagesProvider({ children }) {
 
   useEffect(() => {
     const onUpdated = () => fetchImages();
-    window.addEventListener("site-images-updated", onUpdated);
-    window.addEventListener("storage", (event) => {
+    const onStorage = (event) => {
       if (event.key === "karyor:site-images:updated") {
         onUpdated();
       }
-    });
+    };
+
+    window.addEventListener("site-images-updated", onUpdated);
+    window.addEventListener("storage", onStorage);
     return () => {
       window.removeEventListener("site-images-updated", onUpdated);
+      window.removeEventListener("storage", onStorage);
     };
   }, [fetchImages]);
 

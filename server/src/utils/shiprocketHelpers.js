@@ -149,10 +149,6 @@ const saveShiprocketConfig = async (config = {}) => {
     "companyCity",
     "companyState",
     "companyPincode",
-    "defaultWeight",
-    "defaultLength",
-    "defaultBreadth",
-    "defaultHeight",
     "autoAssignAwb",
   ];
 
@@ -212,10 +208,6 @@ const formatSettingsForAdmin = (settings) => ({
   companyCity: settings.companyCity || "",
   companyState: settings.companyState || "Delhi",
   companyPincode: settings.companyPincode || "",
-  defaultWeight: settings.defaultWeight ?? 0.5,
-  defaultLength: settings.defaultLength ?? 20,
-  defaultBreadth: settings.defaultBreadth ?? 15,
-  defaultHeight: settings.defaultHeight ?? 10,
   autoAssignAwb: settings.autoAssignAwb !== false,
 });
 

@@ -1,5 +1,8 @@
-const { DELIVERY_CHARGE, resolveDeliveryCharge } = require('../utils/orderHelpers');
-const { getPublicShippingConfig } = require('../utils/shiprocketHelpers');
+const {
+  DELIVERY_CHARGE,
+  resolveDeliveryCharge,
+} = require("../utils/orderHelpers");
+const { getPublicShippingConfig } = require("../utils/shiprocketHelpers");
 
 const getShippingConfig = async (req, res, next) => {
   try {
@@ -18,20 +21,23 @@ const getShippingConfig = async (req, res, next) => {
 
 const getServiceability = async (req, res, next) => {
   try {
-    const { pincode, weight, quantity } = req.query;
-    const deliveryPincode = String(pincode || '').trim();
+    const deliveryPincode = String(
+      req.body?.pincode || req.query?.pincode || "",
+    ).trim();
+    const items = Array.isArray(req.body?.items) ? req.body.items : undefined;
+    const quantity = Number(req.body?.quantity || req.query?.quantity || 0);
 
     if (!/^\d{6}$/.test(deliveryPincode)) {
       return res.status(400).json({
         success: false,
-        message: 'Valid 6-digit delivery pincode is required',
+        message: "Valid 6-digit delivery pincode is required",
       });
     }
 
-    const units = Math.max(1, Number(quantity) || 1);
     const quote = await resolveDeliveryCharge({
       pincode: deliveryPincode,
-      totalQuantity: units,
+      items,
+      totalQuantity: items ? undefined : Math.max(1, quantity || 1),
     });
 
     res.json({
@@ -48,7 +54,7 @@ const getServiceability = async (req, res, next) => {
         serviceable: true,
         shiprocketEnabled: false,
         deliveryCharge: DELIVERY_CHARGE,
-        message: 'Using standard delivery rate',
+        message: "Using standard delivery rate",
         fallbackReason: error.message,
       },
     });

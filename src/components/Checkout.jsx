@@ -147,8 +147,7 @@ function Checkout() {
       return;
     }
     try {
-      const qty = items.reduce((sum, item) => sum + item.quantity, 0);
-      const res = await shippingApi.checkServiceability(pincode, qty);
+      const res = await shippingApi.checkServiceability(pincode, items);
       setPincodeStatus(res.data);
       applyDeliveryQuote(res.data);
     } catch {
@@ -224,7 +223,9 @@ function Checkout() {
       const refreshed = await refreshItemPrices();
       cartItems = refreshed || items;
       if (!cartItems.length) {
-        setError("Some cart items are no longer available. Please update your cart.");
+        setError(
+          "Some cart items are no longer available. Please update your cart.",
+        );
         return;
       }
     } catch {
@@ -236,8 +237,7 @@ function Checkout() {
 
     let quote;
     try {
-      const qty = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-      const res = await shippingApi.checkServiceability(pincode, qty);
+      const res = await shippingApi.checkServiceability(pincode, cartItems);
       quote = res.data;
       setPincodeStatus(quote);
       applyDeliveryQuote(quote);
@@ -247,7 +247,9 @@ function Checkout() {
     }
 
     if (!quote.serviceable) {
-      setError("Delivery is not available to this pincode. Try another address.");
+      setError(
+        "Delivery is not available to this pincode. Try another address.",
+      );
       return;
     }
 
@@ -826,7 +828,13 @@ function Checkout() {
                     autoComplete="name"
                   />
                   {fieldErrors.fullName && (
-                    <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: 6 }}>
+                    <p
+                      style={{
+                        color: "#f87171",
+                        fontSize: "0.78rem",
+                        marginTop: 6,
+                      }}
+                    >
                       {fieldErrors.fullName}
                     </p>
                   )}
@@ -847,7 +855,13 @@ function Checkout() {
                     autoComplete="tel"
                   />
                   {fieldErrors.phone && (
-                    <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: 6 }}>
+                    <p
+                      style={{
+                        color: "#f87171",
+                        fontSize: "0.78rem",
+                        marginTop: 6,
+                      }}
+                    >
                       {fieldErrors.phone}
                     </p>
                   )}
@@ -863,7 +877,13 @@ function Checkout() {
                     autoComplete="email"
                   />
                   {fieldErrors.email && (
-                    <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: 6 }}>
+                    <p
+                      style={{
+                        color: "#f87171",
+                        fontSize: "0.78rem",
+                        marginTop: 6,
+                      }}
+                    >
                       {fieldErrors.email}
                     </p>
                   )}
@@ -891,7 +911,13 @@ function Checkout() {
                     autoComplete="street-address"
                   />
                   {fieldErrors.address && (
-                    <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: 6 }}>
+                    <p
+                      style={{
+                        color: "#f87171",
+                        fontSize: "0.78rem",
+                        marginTop: 6,
+                      }}
+                    >
                       {fieldErrors.address}
                     </p>
                   )}
@@ -911,7 +937,13 @@ function Checkout() {
                       autoComplete="address-level2"
                     />
                     {fieldErrors.city && (
-                      <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: 6 }}>
+                      <p
+                        style={{
+                          color: "#f87171",
+                          fontSize: "0.78rem",
+                          marginTop: 6,
+                        }}
+                      >
                         {fieldErrors.city}
                       </p>
                     )}
@@ -948,17 +980,35 @@ function Checkout() {
                       autoComplete="postal-code"
                     />
                     {fieldErrors.pincode && (
-                      <p style={{ color: "#f87171", fontSize: "0.78rem", marginTop: 6 }}>
+                      <p
+                        style={{
+                          color: "#f87171",
+                          fontSize: "0.78rem",
+                          marginTop: 6,
+                        }}
+                      >
                         {fieldErrors.pincode}
                       </p>
                     )}
                     {lookingUp && (
-                      <p style={{ marginTop: 6, fontSize: "0.78rem", color: "#aaa" }}>
+                      <p
+                        style={{
+                          marginTop: 6,
+                          fontSize: "0.78rem",
+                          color: "#aaa",
+                        }}
+                      >
                         Looking up location...
                       </p>
                     )}
                     {locationHint && !fieldErrors.pincode && (
-                      <p style={{ marginTop: 6, fontSize: "0.78rem", color: "#9ca3af" }}>
+                      <p
+                        style={{
+                          marginTop: 6,
+                          fontSize: "0.78rem",
+                          color: "#9ca3af",
+                        }}
+                      >
                         {locationHint}
                       </p>
                     )}
@@ -1050,7 +1100,9 @@ function Checkout() {
                     <>
                       {" "}
                       · Shiprocket delivery charge{" "}
-                      <strong style={{ color: "#d4af37" }}>₹{deliveryCharge}</strong>
+                      <strong style={{ color: "#d4af37" }}>
+                        ₹{deliveryCharge}
+                      </strong>
                     </>
                   )}
                 </div>
@@ -1268,12 +1320,14 @@ function Checkout() {
                 <div className="order-item">
                   <span>
                     Delivery
-                    {deliveryQuote?.shiprocketEnabled && deliveryQuote?.courierName
+                    {deliveryQuote?.shiprocketEnabled &&
+                    deliveryQuote?.courierName
                       ? ` (${deliveryQuote.courierName})`
                       : ""}
                   </span>
                   <span>
-                    {!formData.pincode.trim() || formData.pincode.trim().length < 6
+                    {!formData.pincode.trim() ||
+                    formData.pincode.trim().length < 6
                       ? "Enter pincode"
                       : pincodeStatus && !pincodeStatus.serviceable
                         ? "Not available"

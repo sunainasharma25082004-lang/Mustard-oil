@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { authApi, TOKEN_KEY } from '../utils/api';
+import { createContext, useContext, useEffect, useState } from "react";
+import { authApi, TOKEN_KEY } from "../utils/api";
 
 const AuthContext = createContext(null);
 
@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
     authApi
       .getMe()
       .then((res) => {
-        if (res.data.user.role !== 'admin') {
+        if (res.data.user.role !== "admin") {
           localStorage.removeItem(TOKEN_KEY);
           return;
         }
@@ -28,13 +28,20 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const res = await authApi.login({ email, password });
-    if (res.data.user.role !== 'admin') {
-      throw new Error('Access denied. Admin credentials required.');
+    try {
+      const res = await authApi.login({ email, password });
+      if (res.data.user.role !== "admin") {
+        throw new Error("Access denied. Admin credentials required.");
+      }
+      localStorage.setItem(TOKEN_KEY, res.data.token);
+      setUser(res.data.user);
+      return res;
+    } catch (err) {
+      if (/too many requests/i.test(err.message)) {
+        throw new Error("Login failed. Please wait a moment and try again.");
+      }
+      throw err;
     }
-    localStorage.setItem(TOKEN_KEY, res.data.token);
-    setUser(res.data.user);
-    return res;
   };
 
   const logout = () => {
@@ -52,7 +59,7 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 }
