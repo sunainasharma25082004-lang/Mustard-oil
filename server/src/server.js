@@ -74,6 +74,16 @@ const defaultOrigins = [
 
 const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
 
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+
+  const cleanOrigin = origin.replace(/\/$/, '');
+  if (allowedOrigins.includes(cleanOrigin)) return true;
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(cleanOrigin)) return true;
+  if (/^https?:\/\/([a-z0-9-]+\.)*karyor\.com(:\d+)?$/i.test(cleanOrigin)) return true;
+  return false;
+};
+
 app.use(compression());
 
 app.use(
@@ -85,16 +95,7 @@ app.use(
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-
-      const cleanOrigin = origin.replace(/\/$/, "");
-
-      if (allowedOrigins.includes(cleanOrigin)) {
-        return callback(null, true);
-      }
-
-      // Allow any localhost / 127.0.0.1 for local development (any port)
-      if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(cleanOrigin)) {
+      if (isAllowedOrigin(origin)) {
         return callback(null, true);
       }
 
@@ -103,6 +104,8 @@ app.use(
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+    optionsSuccessStatus: 204,
   })
 );
 
